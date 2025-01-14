@@ -1182,6 +1182,7 @@ read_key_file (ctrl_t ctrl, const unsigned char *grip,
   }
 
  leave:
+  xfree (buf);
   if (!err && r_keymeta)
     *r_keymeta = pk;
   else
