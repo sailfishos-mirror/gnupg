@@ -1,7 +1,7 @@
 /* ks-engine-ldap.c - talk to a LDAP keyserver
  * Copyright (C) 2001, 2002, 2004, 2005, 2006
  *               2007  Free Software Foundation, Inc.
- * Copyright (C) 2015, 2020, 2023  g10 Code GmbH
+ * Copyright (C) 2015, 2020, 2023, 2025  g10 Code GmbH
  *
  * This file is part of GnuPG.
  *
@@ -557,6 +557,8 @@ interrogate_ldap_dn (LDAP *ldap_conn, const char *basedn_search,
   lerr = ldap_search_s (ldap_conn, object, LDAP_SCOPE_BASE,
                         "(objectClass=*)", attr2, 0, &si_res);
   npth_protect ();
+  if (DBG_LDAP)
+    log_debug ("%s: searched for '%s': ldaprc=%d\n", __func__, object, lerr);
   xfree (object);
 
   if (lerr == LDAP_SUCCESS)
@@ -565,12 +567,14 @@ interrogate_ldap_dn (LDAP *ldap_conn, const char *basedn_search,
       if (vals && vals[0])
         basedn = xtrystrdup (vals[0]);
       my_ldap_value_free (vals);
+      if (DBG_LDAP)
+        log_debug ("%s: baseDN='%s'\n", __func__, basedn);
 
       vals = ldap_get_values (ldap_conn, si_res, "pgpSoftware");
       if (vals && vals[0])
         {
-          if (opt.debug)
-            log_debug ("Server: \t%s\n", vals[0]);
+          if (DBG_LDAP)
+            log_debug ("%s: pgpSoftware: \t%s\n", __func__, vals[0]);
           if (!ascii_strcasecmp (vals[0], "GnuPG"))
             is_gnupg = 1;
         }
@@ -579,8 +583,6 @@ interrogate_ldap_dn (LDAP *ldap_conn, const char *basedn_search,
       vals = ldap_get_values (ldap_conn, si_res, "pgpVersion");
       if (vals && vals[0])
         {
-          if (opt.debug)
-            log_debug ("Version:\t%s\n", vals[0]);
           if (is_gnupg)
             {
               char *fields[2];
@@ -595,6 +597,11 @@ interrogate_ldap_dn (LDAP *ldap_conn, const char *basedn_search,
                        && !ascii_strcasecmp (fields[1], "cnfpr"))
                 *r_serverinfo |= SERVERINFO_CNFPR;
             }
+          if (DBG_LDAP)
+            log_debug ("%s: pgpVersion:\t%s%s%s%s\n", __func__, vals[0],
+                       (*r_serverinfo & SERVERINFO_SCHEMAV2)? " schema2":"",
+                       (*r_serverinfo & SERVERINFO_NTDS)? " ntds":"",
+                       (*r_serverinfo & SERVERINFO_CNFPR)? "cnfpr":"");
         }
       my_ldap_value_free (vals);
     }
@@ -699,9 +706,9 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
   if (opt.verbose)
     log_info ("ldap connect to '%s:%d:%s:%s:%s:%s%s%s'%s\n",
               host, port,
-              basedn_arg ? basedn_arg : "",
               bindname ? bindname : "",
               password ? "*****" : "",
+              basedn_arg ? basedn_arg : "",
               use_tls == 1? "starttls" : use_tls == 2? "ldaptls" : "plain",
               use_ntds ? ",ntds":"",
               use_areconly? ",areconly":"",
@@ -851,11 +858,13 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
       npth_protect ();
       if (lerr != LDAP_SUCCESS)
 	{
-	  log_error ("error binding to LDAP via AD: %s\n",
+	  log_error ("error binding to LDAP via NTDS: %s\n",
                      ldap_err2string (lerr));
           err = ldap_err_to_gpg_err (lerr);
 	  goto out;
 	}
+      if (DBG_LDAP)
+        log_debug ("%s: ldap_bind to NTDS succeeded\n", __func__);
 #else
       log_error ("ldap: no Active Directory support but 'ntds' requested\n");
       err = gpg_error (GPG_ERR_NOT_SUPPORTED);
@@ -877,10 +886,14 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
           err = ldap_err_to_gpg_err (lerr);
 	  goto out;
 	}
+      if (DBG_LDAP)
+        log_debug ("%s: ldap_bind to '%s' succeeded\n", __func__, bindname);
     }
   else
     {
       /* By default we don't bind as there is usually no need to.  */
+      if (DBG_LDAP)
+        log_debug ("%s: ldap_bind not used\n", __func__);
     }
 
   if (generic)
@@ -896,6 +909,9 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
               goto out;
             }
         }
+      if (DBG_LDAP)
+        log_debug ("%s: serverinfo set to generic; basedn '%s'\n", __func__,
+                   basedn);
     }
   else if (basedn_arg && *basedn_arg)
     {
@@ -916,6 +932,9 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
             basedn = interrogate_ldap_dn (ldap_conn, basedn_parent + 1,
                                           r_serverinfo);
         }
+      if (DBG_LDAP)
+        log_debug ("%s: serverinfo set to realldap; basedn '%s'\n", __func__,
+                   basedn);
     }
   else
     { /* Look for namingContexts.  */
@@ -926,6 +945,8 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
       lerr = ldap_search_s (ldap_conn, "", LDAP_SCOPE_BASE,
 			   "(objectClass=*)", attr, 0, &res);
       npth_protect ();
+      if (DBG_LDAP)
+        log_debug ("%s: searched namingContexts: lerr=%d\n", __func__, lerr);
 
       if (lerr == LDAP_SUCCESS)
 	{
@@ -949,7 +970,15 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
                                               r_serverinfo);
 
 	      ldap_value_free (context);
+              if (DBG_LDAP)
+                log_debug ("%s: namingContext found (realldap); basedn='%s'\n",
+                           __func__, basedn);
 	    }
+          else
+            {
+              if (DBG_LDAP)
+                log_debug ("%s: namingContext not found\n", __func__);
+            }
 	}
       else /* ldap_search failed.  */
 	{
@@ -964,6 +993,9 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
 	  lerr = ldap_search_s (ldap_conn, "cn=pgpServerInfo", LDAP_SCOPE_BASE,
 			       "(objectClass=*)", attr2, 0, &si_res);
           npth_protect ();
+          if (DBG_LDAP)
+            log_debug ("%s: searched cn=pgpServerInfo: lerr=%d\n",
+                       __func__, lerr);
 	  if (lerr == LDAP_SUCCESS)
 	    {
 	      /* For the PGP LDAP keyserver, this is always
@@ -974,6 +1006,8 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
 	      if (vals && vals[0])
 		{
 		  basedn = xtrystrdup (vals[0]);
+                  if (DBG_LDAP)
+                    log_debug ("%s: baseKeySpaceDN='%s'\n", __func__, basedn);
 		}
               my_ldap_value_free (vals);
 
@@ -981,7 +1015,8 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
 	      if (vals && vals[0])
 		{
                   if (opt.debug)
-                    log_debug ("ks-ldap: PGP Server: \t%s\n", vals[0]);
+                    log_debug ("%s: PGP Server software='%s'\n",
+                               __func__, vals[0]);
 		}
               my_ldap_value_free (vals);
 
@@ -989,7 +1024,8 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
 	      if (vals && vals[0])
 		{
                   if (opt.debug)
-                    log_debug ("ks-ldap: PGP Server Version:\t%s\n", vals[0]);
+                    log_debug ("%s: PGP Server version='%s'\n",
+                               __func__, vals[0]);
 
 		  /* If the version is high enough, use the new
 		     pgpKeyV2 attribute.  This design is iffy at best,
@@ -1014,7 +1050,7 @@ my_ldap_connect (parsed_uri_t uri, unsigned int generic, LDAP **ldap_connp,
     }
 
  out:
-  if (!err && opt.debug)
+  if (!err && DBG_LDAP)
     {
       log_debug ("ldap_conn: %p\n", ldap_conn);
       log_debug ("server_type: %s\n",
@@ -1761,7 +1797,7 @@ ks_ldap_get (ctrl_t ctrl, parsed_uri_t uri, const char *keyspec,
           filter = fstr;
         }
 
-      if (opt.debug)
+      if (DBG_LDAP)
         log_debug ("ks-ldap: using filter: %s\n", filter);
 
       /* Replace "dummy".  */
@@ -1919,7 +1955,7 @@ ks_ldap_search (ctrl_t ctrl, parsed_uri_t uri, const char *pattern,
         NULL
       };
 
-    if (opt.debug)
+    if (DBG_LDAP)
       log_debug ("SEARCH '%s' => '%s' BEGIN\n", pattern, filter);
 
     npth_unprotect ();
@@ -2128,7 +2164,7 @@ ks_ldap_search (ctrl_t ctrl, parsed_uri_t uri, const char *pattern,
     free_strlist (dupelist);
   }
 
-  if (opt.debug)
+  if (DBG_LDAP)
     log_debug ("SEARCH %s END\n", pattern);
 
  out:
@@ -2958,7 +2994,7 @@ ks_ldap_put (ctrl_t ctrl, parsed_uri_t uri,
         err = gpg_error_from_syserror ();
         goto out;
       }
-    if (opt.debug)
+    if (DBG_LDAP)
       log_debug ("ks-ldap: using DN: %s\n", dn);
 
     npth_unprotect ();
@@ -3271,7 +3307,7 @@ ks_ldap_query (ctrl_t ctrl, parsed_uri_t uri, unsigned int ks_get_flags,
           basedn = basedn_from_rootdse (ctrl, uri);
         }
 
-      if (opt.debug)
+      if (DBG_LDAP)
         {
           log_debug ("ks-ldap: using basedn: %s\n", basedn);
           log_debug ("ks-ldap: using filter: %s\n", filter);

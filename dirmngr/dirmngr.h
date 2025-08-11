@@ -178,6 +178,7 @@ struct
 #define DBG_NETWORK_VALUE 2048  /* debug network I/O.  */
 #define DBG_LOOKUP_VALUE  8192  /* debug lookup details */
 #define DBG_EXTPROG_VALUE 16384 /* debug external program calls */
+#define DBG_LDAP_VALUE    65536 /* debug ldap connection problems.  */
 
 #define DBG_X509    (opt.debug & DBG_X509_VALUE)
 #define DBG_CRYPTO  (opt.debug & DBG_CRYPTO_VALUE)
@@ -189,6 +190,7 @@ struct
 #define DBG_NETWORK (opt.debug & DBG_NETWORK_VALUE)
 #define DBG_LOOKUP  (opt.debug & DBG_LOOKUP_VALUE)
 #define DBG_EXTPROG (opt.debug & DBG_EXTPROG_VALUE)
+#define DBG_LDAP    (opt.debug & DBG_LDAP_VALUE)
 
 /* Compatibility flags */
 #define COMPAT_OCSP_SHA256_CERTID   1

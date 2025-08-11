@@ -379,7 +379,7 @@ ks_action_get (ctrl_t ctrl, uri_item_t keyservers,
           server = ldapserver_parse_one (uri->parsed_uri->path, NULL, 0);
           if (server && server->upload)
             {
-              if (opt.debug)
+              if (DBG_LDAP)
                 log_debug ("skipping upload-only server '%s'\n",
                            uri->parsed_uri->path);
               is_ldap = 0;
@@ -537,7 +537,7 @@ ks_action_put (ctrl_t ctrl, uri_item_t keyservers,
       server = ldapserver_parse_one (uri->parsed_uri->path, NULL, 0);
       if (server && server->upload)
         {
-          if (opt.debug)
+          if (DBG_LDAP)
             log_debug ("found upload-only server '%s'\n",
                        uri->parsed_uri->path);
           upload_uri = uri;  /* found */
