@@ -1417,6 +1417,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
   char *answer = NULL;
   int redisplay = 1;
   int modified = 0;
+  int upload = 0;  /* Set if the key maybe be uploaded.  */
   int sec_shadowing = 0;
   int run_subkey_warnings = 0;
   int have_commands = !!commands;
@@ -1658,6 +1659,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	case cmdSIGN:
 	  {
 	    int localsig = 0, nonrevokesig = 0, trustsig = 0, interactive = 0;
+            int my_modified = 0;
 
 	    if (pk->flags.revoked)
 	      {
@@ -1711,8 +1713,12 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 		break;
 	      }
 
-	    sign_uids (ctrl, NULL, keyblock, locusr, &modified,
+	    sign_uids (ctrl, NULL, keyblock, locusr, &my_modified,
 		       localsig, nonrevokesig, trustsig, interactive, 0);
+            if (my_modified)  /* sign_uids modified the keyblock      */
+              modified = 1;   /* thus set the general modified flag.  */
+            if (my_modified && !localsig)
+              upload = 1;     /* exportable signature -> mark uploadable.  */
 	  }
 	  break;
 
@@ -1743,6 +1749,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	      update_trust = 1;
 	      redisplay = 1;
 	      modified = 1;
+              upload = 1;
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	    }
 	  break;
@@ -1767,6 +1774,8 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 		menu_deluid (keyblock);
 		redisplay = 1;
 		modified = 1;
+                /* upload does not make sense here.  Eventually we may
+                 * decide to delete a key from the keyserver.*/
 	      }
 	  }
 	  break;
@@ -1795,6 +1804,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      redisplay = 1;
 	      modified = 1;
+              upload = 1;
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	    }
 	  break;
@@ -1805,6 +1815,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      redisplay = 1;
 	      modified = 1;
+              upload = 1;
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	    }
 	  break;
@@ -1951,6 +1962,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 		menu_delkey (keyblock);
 		redisplay = 1;
 		modified = 1;
+                /* upload does not make sense. */
 	      }
 	  }
 	  break;
@@ -1965,6 +1977,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	      {
 		redisplay = 1;
 		modified = 1;
+                upload = 1;
 		merge_keys_and_selfsig (ctrl, keyblock);
 	      }
 	  }
@@ -1975,6 +1988,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
             {
               redisplay = 1;
               modified = 1;
+              upload = 1;
               merge_keys_and_selfsig (ctrl, keyblock);
             }
 	  break;
@@ -1998,6 +2012,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 		  {
 		    modified = 1;
 		    redisplay = 1;
+                    upload = 1;
 		  }
 	      }
 	  }
@@ -2014,7 +2029,10 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 					     " the entire key? (y/N) ")))
 		  {
 		    if (menu_revkey (ctrl, keyblock))
-		      modified = 1;
+                      {
+                        modified = 1;
+                        upload = 1;
+                      }
 
 		    redisplay = 1;
 		  }
@@ -2027,7 +2045,10 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 						" this subkey? (y/N) ")))
 	      {
 		if (menu_revsubkey (ctrl, keyblock))
-		  modified = 1;
+                  {
+                    modified = 1;
+                    upload = 1;
+                  }
 
 		redisplay = 1;
 	      }
@@ -2043,6 +2064,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	      merge_keys_and_selfsig (ctrl, keyblock);
               run_subkey_warnings = 1;
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2052,6 +2074,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2060,6 +2083,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	  if (menu_backsign (ctrl, keyblock))
 	    {
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2069,6 +2093,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2141,6 +2166,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 		  {
 		    merge_keys_and_selfsig (ctrl, keyblock);
 		    modified = 1;
+                    upload = 1;
 		    redisplay = 1;
 		  }
 	      }
@@ -2153,6 +2179,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2163,6 +2190,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      merge_keys_and_selfsig (ctrl, keyblock);
 	      modified = 1;
+              upload = 1;
 	      redisplay = 1;
 	    }
 	  break;
@@ -2175,6 +2203,7 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
 	    {
 	      redisplay = 1;
 	      modified = 1;
+              upload = 1;
 	    }
 	  break;
 
@@ -2226,6 +2255,15 @@ keyedit_menu (ctrl_t ctrl, const char *username, strlist_t locusr,
                 {
                   log_error (_("update failed: %s\n"), gpg_strerror (err));
                   break;
+                }
+              if (upload && opt.flags.auto_key_upload)
+                {
+                  unsigned int saved_options = opt.keyserver_options.options;
+
+                  opt.keyserver_options.options |= KEYSERVER_LDAP_ONLY;
+                  opt.keyserver_options.options |= KEYSERVER_WARN_ONLY;
+                  keyserver_export_pubkey (ctrl, pk, 0);
+                  opt.keyserver_options.options = saved_options;
                 }
 	    }
 
