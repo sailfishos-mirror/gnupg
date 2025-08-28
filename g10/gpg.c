@@ -360,6 +360,7 @@ enum cmd_and_opt_values
     oNoAutoKeyRetrieve,
     oAutoKeyImport,
     oNoAutoKeyImport,
+    oAutoKeyUpload,
     oUseAgent,
     oNoUseAgent,
     oGpgAgentInfo,
@@ -772,6 +773,7 @@ static ARGPARSE_OPTS opts[] = {
   ARGPARSE_s_n (oNoAutoKeyImport, "no-auto-key-import", "@"),
   ARGPARSE_s_n (oAutoKeyRetrieve, "auto-key-retrieve", "@"),
   ARGPARSE_s_n (oNoAutoKeyRetrieve, "no-auto-key-retrieve", "@"),
+  ARGPARSE_s_n (oAutoKeyUpload, "auto-key-upload", "@"),
   ARGPARSE_s_n (oIncludeKeyBlock, "include-key-block",
                 N_("include the public key in signatures")),
   ARGPARSE_s_n (oNoIncludeKeyBlock, "no-include-key-block", "@"),
@@ -3446,6 +3448,7 @@ main (int argc, char **argv)
             opt.keyserver_options.options &= ~KEYSERVER_AUTO_KEY_RETRIEVE;
             break;
 
+          case oAutoKeyUpload: opt.flags.auto_key_upload = 1; break;
 	  case oShowSessionKey: opt.show_session_key = 1; break;
 	  case oOverrideSessionKey:
 		opt.override_session_key = pargs.r.ret_str;

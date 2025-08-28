@@ -247,6 +247,8 @@ struct
     unsigned int disable_signer_uid:1;
     unsigned int include_key_block:1;
     unsigned int auto_key_import:1;
+    /* Option to upload new or modified keys to an LDAP server.  */
+    unsigned int auto_key_upload:1;
     /* Flag to enable experimental features from RFC4880bis.  */
     unsigned int rfc4880bis:1;
     /* Hack: --output is not given but OUTFILE was temporary set to "-".  */
@@ -398,6 +400,7 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define EXPORT_DANE_FORMAT               (1<<7)
 #define EXPORT_BACKUP                    (1<<10)
 #define EXPORT_REVOCS                    (1<<11)
+#define EXPORT_NO_STATUS                 (1<<20) /*Do not emit status lines.*/
 
 #define LIST_SHOW_PHOTOS                 (1<<0)
 #define LIST_SHOW_POLICY_URLS            (1<<1)
@@ -433,8 +436,10 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define KEYSERVER_ADD_FAKE_V3            (1<<2)
 #define KEYSERVER_AUTO_KEY_RETRIEVE      (1<<3)
 #define KEYSERVER_HONOR_KEYSERVER_URL    (1<<4)
-#define KEYSERVER_HONOR_PKA_RECORD       (1<<5)
+#define KEYSERVER_HONOR_PKA_RECORD       (1<<5) /* Legacy */
 #define KEYSERVER_UPDATE_BEFORE_SEND     (1<<6)
+#define KEYSERVER_LDAP_ONLY              (1<<7) /* Use only LDAP servers.  */
+#define KEYSERVER_WARN_ONLY              (1<<8) /* no error - just warn.   */
 
 
 #endif /*G10_OPTIONS_H*/
