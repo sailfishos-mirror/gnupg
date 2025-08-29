@@ -361,6 +361,7 @@ enum cmd_and_opt_values
     oAutoKeyImport,
     oNoAutoKeyImport,
     oAutoKeyUpload,
+    oNoAutoKeyUpload,
     oUseAgent,
     oNoUseAgent,
     oGpgAgentInfo,
@@ -774,6 +775,7 @@ static ARGPARSE_OPTS opts[] = {
   ARGPARSE_s_n (oAutoKeyRetrieve, "auto-key-retrieve", "@"),
   ARGPARSE_s_n (oNoAutoKeyRetrieve, "no-auto-key-retrieve", "@"),
   ARGPARSE_s_n (oAutoKeyUpload, "auto-key-upload", "@"),
+  ARGPARSE_s_n (oNoAutoKeyUpload, "no-auto-key-upload", "@"),
   ARGPARSE_s_n (oIncludeKeyBlock, "include-key-block",
                 N_("include the public key in signatures")),
   ARGPARSE_s_n (oNoIncludeKeyBlock, "no-include-key-block", "@"),
@@ -3449,13 +3451,17 @@ main (int argc, char **argv)
             break;
 
           case oAutoKeyUpload: opt.flags.auto_key_upload = 1; break;
+          case oNoAutoKeyUpload: opt.flags.auto_key_upload = 0; break;
+
 	  case oShowSessionKey: opt.show_session_key = 1; break;
+
 	  case oOverrideSessionKey:
 		opt.override_session_key = pargs.r.ret_str;
 		break;
 	  case oOverrideSessionKeyFD:
                 ovrseskeyfd = translate_sys2libc_fd_int (pargs.r.ret_int, 0);
 		break;
+
 	  case oMergeOnly:
 	        deprecated_warning(configname,pargs.lineno,"--merge-only",
 				   "--import-options ","merge-only");
