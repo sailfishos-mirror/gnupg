@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnupg-2.4.1\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-09-02 14:02+0200\n"
+"PO-Revision-Date: 2025-10-21 11:27+0200\n"
 "Last-Translator: Werner Koch <wk@gnupg.org>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -1858,6 +1858,10 @@ msgstr "Anzahl der entfernten Empfänger: %u\n"
 #, c-format
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "Die Benutzung der Option \"%s\" ist im %s-Modus nicht erlaubt.\n"
+
+#, c-format
+msgid "already encrypted to %08lX\n"
+msgstr "Verschlüsselung an %08lX ist bereits vorhanden\n"
 
 #, c-format
 msgid "%s encrypted data\n"
