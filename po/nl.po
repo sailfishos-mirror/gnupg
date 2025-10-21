@@ -28,9 +28,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2_2.4.7-13\n"
+"Project-Id-Version: gnupg 2_2.4.8-3\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-04-14 23:31+0200\n"
+"PO-Revision-Date: 2025-08-28 20:24+0200\n"
 "Last-Translator: Frans Spiesschaert <Frans.Spiesschaert@yucom.be>\n"
 "Language-Team: Debian Dutch l10n Team <debian-l10n-dutch@lists.debian.org>\n"
 "Language: nl\n"
@@ -4584,6 +4584,16 @@ msgstr "kan reservebestand '%s' niet aanmaken: %s\n"
 msgid "Note: backup of card key saved to '%s'\n"
 msgstr "Let op: reservebestand van de kaartsleutel opgeslagen naar '%s'\n"
 
+msgid ""
+"Warning: Although the key has been written to the card, a backup file was\n"
+"         not properly written to the disk.  You may want to repeat the\n"
+"         entire operation or just create a new encryption key on the card.\n"
+msgstr ""
+"Hoewel de sleutel naar de kaart is geschreven, is er geen back-upbestand\n"
+"         correct naar de schijf geschreven. Mogelijk wilt u de hele\n"
+"         bewerking herhalen of gewoon een nieuwe encryptiesleutel\n"
+"         op de kaart aanmaken.\n"
+
 #, c-format
 msgid "writing public key to '%s'\n"
 msgstr "publieke sleutel wordt weggeschreven naar '%s'\n"
@@ -6675,7 +6685,6 @@ msgstr "|N|Voer de nieuwe globale pincode in."
 msgid "||Please enter the Global-PIN of your PIV card"
 msgstr "||Voer de globale pincode van uw PIV-kaart in"
 
-#| msgid "||Please enter the PIN"
 msgid "|N|Please enter the new PIN"
 msgstr "|N|Voer de nieuwe pincode in"
 
