@@ -1210,7 +1210,10 @@ remove_key_file (const unsigned char *grip)
     {
       return gpg_error_from_syserror ();
     }
-  if (gnupg_remove (fname))
+  /* On Windows we wait up to 400ms until a sharing violation has
+   * vanished.  This may for example happen if Kleopatra or another
+   * frontend directly reads a private key file.  */
+  if (gnupg_remove_ext (fname, 400))
     err = gpg_error_from_syserror ();
   xfree (fname);
   return err;
