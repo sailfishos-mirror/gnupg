@@ -516,6 +516,8 @@ with the current user.
 @item areconly
 On Windows use only the A or AAAA record when resolving the LDAP
 server name.
+@item upload
+This server is only used for uploading (sending) data to an LDAP server.
 @end table
 
 Note that in an URL style specification the scheme @code{ldaps://}

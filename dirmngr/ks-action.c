@@ -31,6 +31,7 @@
 #include "ks-engine.h"
 #include "ks-action.h"
 #if USE_LDAP
+# include "ldapserver.h"  /* (ldapserver_parse_one) */
 # include "ldap-parse-uri.h"
 #endif
 
@@ -373,6 +374,22 @@ ks_action_get (ctrl_t ctrl, uri_item_t keyservers,
 		 || !strcmp (uri->parsed_uri->scheme, "ldaps")
 		 || !strcmp (uri->parsed_uri->scheme, "ldapi")
                  || uri->parsed_uri->opaque);
+      if (is_ldap && uri->parsed_uri->opaque)
+        {
+          ldap_server_t server;
+
+          server = ldapserver_parse_one (uri->parsed_uri->path, NULL, 0);
+          if (server && server->upload)
+            {
+              if (DBG_LDAP)
+                log_debug ("skipping upload-only server '%s'\n",
+                           uri->parsed_uri->path);
+              is_ldap = 0;
+            }
+          ldapserver_list_free (server);
+          if (!is_ldap )
+            continue;
+        }
 #else
       (void)newer;
 #endif
@@ -503,14 +520,43 @@ ks_action_put (ctrl_t ctrl, uri_item_t keyservers,
   gpg_error_t first_err = 0;
   int any_server = 0;
   uri_item_t uri;
+  uri_item_t upload_uri = NULL;
 
   (void) info;
   (void) infolen;
+
+
+#if USE_LDAP
+  /* Check whether we have an upload only server and save the first
+   * one.  Fixme: We should do the parsing when loading the list of
+   * ldap servers to keep the upload flags in the uri_item_t.   */
+  for (uri = keyservers; uri && !upload_uri; uri = uri->next)
+    {
+      ldap_server_t server;
+
+      if (!uri->parsed_uri->opaque)
+        continue;
+      server = ldapserver_parse_one (uri->parsed_uri->path, NULL, 0);
+      if (server && server->upload)
+        {
+          if (DBG_LDAP)
+            log_debug ("found upload-only server '%s'\n",
+                       uri->parsed_uri->path);
+          upload_uri = uri;  /* found */
+        }
+      ldapserver_list_free (server);
+    }
+#endif /*USE_LDAP*/
+
 
   for (uri = keyservers; !err && uri; uri = uri->next)
     {
       int is_http = uri->parsed_uri->is_http;
       int is_ldap = 0;
+
+      /* If we have an upload server skip all other servers.  */
+      if (upload_uri && upload_uri != uri)
+        continue;
 
 #if USE_LDAP
       is_ldap = (!strcmp (uri->parsed_uri->scheme, "ldap")
