@@ -56,7 +56,9 @@ struct ldap_server_s
   unsigned int ldap_over_tls:1;  /* Use LDAP over an TLS tunnel */
   unsigned int ntds:1;           /* Use Active Directory authentication.  */
   unsigned int areconly:1;       /* Set LDAP_OPT_AREC_EXCLUSIVE.  */
+  unsigned int upload:1;         /* Use this server only for upload.  */
 };
+
 typedef struct ldap_server_s *ldap_server_t;
 
 
