@@ -2436,6 +2436,12 @@ check_inet_support (int *r_v4, int *r_v6)
     struct addrinfo *aibuf = NULL;
     struct addrinfo *ai;
 
+    if (windows_semihosted_by_wine)
+      {
+        *r_v4 = *r_v6 = 1;
+        goto leave;
+      }
+
     ret = getaddrinfo ("..localmachine", NULL, NULL, &aibuf);
     if (ret)
       {
@@ -2489,6 +2495,7 @@ check_inet_support (int *r_v4, int *r_v6)
     if (aibuf)
       freeaddrinfo (aibuf);
   }
+ leave:
 #else /*!HAVE_W32_SYSTEM*/
   {
     /* For now we assume that we have both protocols.  */

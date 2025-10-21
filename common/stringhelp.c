@@ -71,6 +71,9 @@ change_slashes (char *name)
 #ifdef HAVE_DOSISH_SYSTEM
   char *p;
 
+  if (windows_semihosted_by_wine)
+    return name;
+
   if (strchr (name, '\\'))
     {
       for (p=name; *p; p++)

@@ -242,6 +242,7 @@ const char *get_keyalgo_string (enum gcry_pk_algos algo,
 /*-- homedir.c --*/
 #ifdef HAVE_W32_SYSTEM
 int gnupg_isatty (int fd);
+extern int windows_semihosted_by_wine;
 #else
 #define gnupg_isatty(a)  isatty ((a))
 #endif
