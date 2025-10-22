@@ -1888,6 +1888,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "du kan ikke bruke valget «%s» i %s-modus\n"
 
 #, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "klarte ikke å kryptere til «%s»\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s krypterte data\n"

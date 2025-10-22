@@ -1920,6 +1920,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "non se pode empregar %s no modo %s\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "non se puido conectar a `%s': %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "datos cifrados con %s\n"

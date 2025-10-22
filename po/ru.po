@@ -1872,6 +1872,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "параметр '%s' нельзя использовать в режиме %s\n"
 
 #, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "не могу зашифровать для '%s'\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "данные зашифрованы алгоритмом %s\n"

@@ -2027,6 +2027,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "du kan ikke bruge %s i tilstanden %s\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "kan ikke forbinde til »%s«: %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s krypterede data\n"

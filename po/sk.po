@@ -1918,6 +1918,11 @@ msgstr ""
 "\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "nemôžem sa pripojiť k `%s': %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s zašifrované dáta\n"

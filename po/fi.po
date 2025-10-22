@@ -1926,6 +1926,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "valitsinta %s ei voi käyttää %s-tilassa\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "yhteys kohteeseen \"%s\" ei onnistu: %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s salattua dataa\n"

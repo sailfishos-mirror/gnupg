@@ -1920,6 +1920,13 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "no se puede usar la opción '%s' en modo %s\n"
 
 #, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr ""
+"no se puede cifrar a '%s'\n"
+"\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "datos cifrados %s\n"

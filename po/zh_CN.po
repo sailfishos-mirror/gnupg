@@ -1801,6 +1801,11 @@ msgstr "接收者数目"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "选项 ‘%s’ 可能不能用于 %s 模式\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "无法加密给‘%s’\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "%s 已加密的数据\n"

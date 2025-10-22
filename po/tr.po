@@ -1824,6 +1824,11 @@ msgstr "kaldırılan alıcıların sayısı: %u\n"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "'%s' seçeneği, %s kipinde kullanılamayabilir\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "'%s' ögesine şifrelenemiyor\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "%s şifreli veri\n"

@@ -1909,6 +1909,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "%s ei ole moodis %s lubatud.\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "ei õnnestu luua ühendust serveriga `%s': %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s krüpteeritud andmed\n"

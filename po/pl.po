@@ -1818,6 +1818,11 @@ msgstr "Liczba odbiorców"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "opcja „%s” nie może być używana w trybie %s\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "nie można zaszyfrować do „%s”\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "dane zaszyfrowano za pomocą %s\n"

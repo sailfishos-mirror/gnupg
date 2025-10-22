@@ -1781,6 +1781,11 @@ msgstr "已移除的收件者數量: %u\n"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "選項 '%s' 不能在 %s 模式中使用\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "無法加密到 '%s'\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "%s 已加密的資料\n"

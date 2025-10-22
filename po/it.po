@@ -1858,6 +1858,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "l'opzione '%s' non può essere utilizzata in modalità %s\n"
 
 #, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "impossibile crittografare in '%s'\n"
+
+#, fuzzy, c-format
 #| msgid "%s.%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s.%s dati crittografati della commissione\n"

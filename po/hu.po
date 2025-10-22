@@ -1910,6 +1910,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "Lehet, hogy nem használhatja %s-t %s módban!\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "Nem tudok kapcsolódni \"%s\" objektumhoz: %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s titkosított adat.\n"

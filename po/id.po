@@ -1916,6 +1916,11 @@ msgid "option '%s' may not be used in %s mode\n"
 msgstr "anda tidak boleh menggunakan %s saat dalam mode %s.\n"
 
 #, fuzzy, c-format
+#| msgid "can't connect to `%s': %s\n"
+msgid "already encrypted to %08lX\n"
+msgstr "tidak dapat terkoneksi ke `%s': %s\n"
+
+#, fuzzy, c-format
 #| msgid "%s encrypted data\n"
 msgid "%s encrypted data\n"
 msgstr "%s data terenkripsi\n"

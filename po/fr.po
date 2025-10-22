@@ -1868,6 +1868,11 @@ msgstr "nombre de destinataires supprimés : %u\n"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "l'option « %s » ne peut pas être utilisée en mode %s.\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "impossible de chiffrer en « %s »\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "données chiffrées avec %s\n"

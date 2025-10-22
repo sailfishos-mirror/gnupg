@@ -1860,6 +1860,11 @@ msgstr "Počet příjemců"
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "volba „%s“ se nesmí používat v režimu %s\n"
 
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "nelze zašifrovat pro „%s“\n"
+
 #, c-format
 msgid "%s encrypted data\n"
 msgstr "data zašifrovaná pomocí %s\n"
