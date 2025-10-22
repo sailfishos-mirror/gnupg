@@ -890,7 +890,7 @@ check_key_signature (ctrl_t ctrl, kbnode_t root, kbnode_t node,
  * be found.  Returns GPG_ERR_BAD_SIGNATURE if the signature is bad.
  * Other errors codes may be returned if something else goes wrong.
  *
- * IF IS_SELFSIG is not NULL, sets *IS_SELFSIG to 1 if this is a
+ * If IS_SELFSIG is not NULL, sets *IS_SELFSIG to 1 if this is a
  * self-signature (by the key's primary key) or 0 if not.
  *
  * If RET_PK is not NULL, returns a copy of the public key that
@@ -909,6 +909,8 @@ check_signature_over_key_or_uid (ctrl_t ctrl, PKT_public_key *signer,
 
   if (!is_selfsig)
     is_selfsig = &stub_is_selfsig;
+
+  *is_selfsig = 0; /* Init early to comply with function description. */
 
   rc = openpgp_pk_test_algo (sig->pubkey_algo);
   if (rc)
