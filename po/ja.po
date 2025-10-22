@@ -9,9 +9,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.5.7\n"
+"Project-Id-Version: gnupg 2.5.12\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-06-03 13:59+0900\n"
+"PO-Revision-Date: 2025-10-22 10:19+0900\n"
 "Last-Translator: NIIBE Yutaka <gniibe@fsij.org>\n"
 "Language-Team: none\n"
 "Language: ja\n"
@@ -1658,8 +1658,7 @@ msgstr "管理者コマンドは禁止されています\n"
 msgid "Invalid command  (try \"help\")\n"
 msgstr "無効なコマンド (\"help\"を参照)\n"
 
-#, fuzzy, c-format
-#| msgid "modifiying the recipients is not possible: %s\n"
+#, c-format
 msgid "modifying the recipients is not possible: %s\n"
 msgstr "受取人を変更することはできません: %s\n"
 
@@ -2620,7 +2619,7 @@ msgid "|ALGO|reject signatures made with ALGO"
 msgstr "|ALGO|ALGOで作成された署名を拒絶する"
 
 msgid "|NAME|print the notation NAME to stdout"
-msgstr ""
+msgstr "|NAME|stdoutに注釈 NAME を出力する"
 
 msgid "Usage: gpgv [options] [files] (-h for help)"
 msgstr "使い方: gpgv [オプション] [ファイル] (ヘルプは -h)"
@@ -4578,7 +4577,7 @@ msgid "honor the preferred keyserver URL set on the key"
 msgstr "鍵に設定される優先鍵サーバURLを与える"
 
 msgid "update a key before sending it"
-msgstr ""
+msgstr "送信する前に鍵を更新する"
 
 msgid "disabled"
 msgstr "使用禁止"
@@ -4594,10 +4593,9 @@ msgstr "無効な鍵サーバ・プロトコルです (us %d!=handler %d)\n"
 msgid "\"%s\" not a key ID: skipping\n"
 msgstr "\"%s\"鍵IDではありません: スキップします\n"
 
-#, fuzzy, c-format
-#| msgid "\"%s\" is not a fingerprint\n"
+#, c-format
 msgid "\"%s\" not a fingerprint: skipping\n"
-msgstr "\"%s\"はフィンガープリントではありません\n"
+msgstr "\"%s\"はフィンガープリントではありません: スキップします\n"
 
 #, c-format
 msgid "refreshing %d key from %s\n"
@@ -4626,7 +4624,7 @@ msgstr "鍵サーバがわかりません\n"
 
 #, c-format
 msgid "upload skipped due to non-LDAP keyserver\n"
-msgstr ""
+msgstr "非LDAP鍵サーバのため、アップロードはスキップしました\n"
 
 #, c-format
 msgid "skipped \"%s\": %s\n"
@@ -4954,10 +4952,8 @@ msgstr "無圧縮|なし"
 msgid "this message may not be usable by %s\n"
 msgstr "このメッセージは、%sでは使用できません\n"
 
-#, fuzzy
-#| msgid "enable key"
 msgid "enabled"
-msgstr "鍵を有効にする"
+msgstr "有効"
 
 #, c-format
 msgid "ambiguous option '%s'\n"
@@ -5684,7 +5680,7 @@ msgstr "鍵%s: 副鍵対応への署名に対する副鍵がありません\n"
 
 #, c-format
 msgid "WARNING: unable to %%-expand notation (too large).  Using unexpanded.\n"
-msgstr "*警告*: 表記を%%拡張不能 (大きすぎ)。拡張せずに使用。\n"
+msgstr "*警告*: 注釈を%%拡張不能 (大きすぎ)。拡張せずに使用。\n"
 
 #, c-format
 msgid ""
