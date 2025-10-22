@@ -755,23 +755,9 @@ keydb_add_resource (const char *url, unsigned int flags)
                 all_resources[used_resources].token = token;
 
                 if (!(flags & KEYDB_RESOURCE_FLAG_READONLY))
-                  {
-                    KEYBOX_HANDLE kbxhd;
-
-                    /* Do a compress run if needed and no other user is
-                     * currently using the keybox. */
-                    kbxhd = keybox_new_openpgp (token, 0);
-                    if (kbxhd)
-                      {
-                        if (!keybox_lock (kbxhd, 1, 0))
-                          {
-                            keybox_compress (kbxhd);
-                            keybox_lock (kbxhd, 0, 0);
-                          }
-
-                        keybox_release (kbxhd);
-                      }
-                  }
+                  /* Do a compress run if needed and no other user is
+                   * currently using the keybox. */
+                  keybox_compress_when_no_other_users (token, 1);
                 used_resources++;
               }
           }
