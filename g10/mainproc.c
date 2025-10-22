@@ -1783,10 +1783,14 @@ do_proc_packets (ctrl_t ctrl, CTX c, iobuf_t a)
        * packet and not to reuse the current one ...  It works right
        * when there is a compression packet between which adds just
        * an extra layer.
+       *
+       * Note that we should not reset the any.data due to another
+       * packets.  Just set it once on seeing a plaintext.
+       *
        * Hmmm: Rewrite this whole module here??
        */
       if (pkt->pkttype != PKT_SIGNATURE && pkt->pkttype != PKT_MDC)
-        c->any.data = (pkt->pkttype == PKT_PLAINTEXT);
+        c->any.data |= (pkt->pkttype == PKT_PLAINTEXT);
 
       if (newpkt == -1)
         ;
