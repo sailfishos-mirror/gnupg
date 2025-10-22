@@ -1,4 +1,4 @@
-Noteworthy changes in version 2.5.13 (unreleased)
+Noteworthy changes in version 2.5.13 (2025-10-22)
 -------------------------------------------------
 
   * gpg: Fix de-vs compliance with OCB and additional password.
