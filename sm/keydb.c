@@ -808,9 +808,6 @@ lock_all (KEYDB_HANDLE hd)
 {
   int i, rc = 0;
 
-  if (hd->use_keyboxd)
-    return 0;
-
   if (hd->keep_lock)
     return 0;
 
@@ -853,14 +850,31 @@ lock_all (KEYDB_HANDLE hd)
 }
 
 static void
+do_fp_close (KEYDB_HANDLE hd)
+{
+  int i;
+
+  for (i=0; i < hd->used; i++)
+    {
+      switch (hd->active[i].type)
+        {
+        case KEYDB_RESOURCE_TYPE_NONE:
+          break;
+        case KEYDB_RESOURCE_TYPE_KEYBOX:
+          keybox_fp_close (hd->active[i].u.kr);
+          break;
+        }
+    }
+}
+
+static void
 unlock_all (KEYDB_HANDLE hd)
 {
   int i;
 
-  if (hd->use_keyboxd)
-    return;
+  do_fp_close (hd);
 
-  if (!hd->locked || hd->keep_lock)
+  if (!hd->locked)
     return;
 
   for (i=hd->used-1; i >= 0; i--)
