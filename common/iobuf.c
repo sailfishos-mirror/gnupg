@@ -2043,6 +2043,8 @@ underflow_target (iobuf_t a, int clear_pending_eof, size_t target)
         }
       else
         {
+          size_t tmplen;
+
           /* If no buffered data and drain buffer has been setup, and
            * drain buffer is largish, read data directly to drain buffer. */
           if (a->d.len == 0
@@ -2056,8 +2058,10 @@ underflow_target (iobuf_t a, int clear_pending_eof, size_t target)
                            " A->FILTER (%lu bytes, to external drain)\n",
                            a->no, a->subno, (ulong)len);
 
+              tmplen = len;  /* Used to check for bugs in the filter.  */
               rc = a->filter (a->filter_ov, IOBUFCTRL_UNDERFLOW, a->chain,
                               a->e_d.buf, &len);
+              log_assert (len <= tmplen);
               a->e_d.used = len;
               len = 0;
             }
@@ -2067,8 +2071,10 @@ underflow_target (iobuf_t a, int clear_pending_eof, size_t target)
                 log_debug ("iobuf-%d.%d: underflow: A->FILTER (%lu bytes)\n",
                            a->no, a->subno, (ulong)len);
 
+              tmplen = len;
               rc = a->filter (a->filter_ov, IOBUFCTRL_UNDERFLOW, a->chain,
                               &a->d.buf[a->d.len], &len);
+              log_assert (len <= tmplen);
             }
         }
       a->d.len += len;

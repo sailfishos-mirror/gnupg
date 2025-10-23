@@ -1312,8 +1312,8 @@ armor_filter( void *opaque, int control,
 	n = 0;
 	if( afx->buffer_len ) {
             /* Copy the data from AFX->BUFFER to BUF.  */
-	    for(; n < size && afx->buffer_pos < afx->buffer_len; n++ )
-		buf[n++] = afx->buffer[afx->buffer_pos++];
+            for(; n < size && afx->buffer_pos < afx->buffer_len;)
+                buf[n++] = afx->buffer[afx->buffer_pos++];
 	    if( afx->buffer_pos >= afx->buffer_len )
 		afx->buffer_len = 0;
 	}
