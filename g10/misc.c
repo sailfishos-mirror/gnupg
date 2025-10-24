@@ -1231,7 +1231,10 @@ obsolete_scdaemon_option (const char *configname, unsigned int configlineno,
 
 /*
  * Wrapper around gcry_cipher_map_name to provide a fallback using the
- * "Sn" syntax as used by the preference strings.
+ * "Sn" syntax as used by the preference strings.  Note that only the
+ * second syntax does a check on the actual availibily of the
+ * algorithm.  That might make a difference in case Libgcrypt is
+ * running in FIPS mode.
  */
 int
 string_to_cipher_algo (const char *string)

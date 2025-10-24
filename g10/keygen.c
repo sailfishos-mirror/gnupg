@@ -479,16 +479,18 @@ keygen_set_std_prefs (const char *string,int personal)
                possible to prefer AES128.
             */
 
-	    /* Make sure we do not add more than 15 items here, as we
-	       could overflow the size of dummy_string.  We currently
-	       have at most 12. */
+	    /* Make sure we do not add more than a total of 15 items
+	     * here, as we could overflow the size of dummy_string.
+	     * Note further that we try to add AES/3DES despite that
+	     * they are anyway implictly used by LibrePGP/rfc4880.  */
 	    if ( !openpgp_cipher_test_algo (CIPHER_ALGO_AES256) )
 	      strcat(dummy_string,"S9 ");
 	    if ( !openpgp_cipher_test_algo (CIPHER_ALGO_AES192) )
 	      strcat(dummy_string,"S8 ");
 	    if ( !openpgp_cipher_test_algo (CIPHER_ALGO_AES) )
-	      strcat(dummy_string,"S7 ");
-	    strcat(dummy_string,"S2 "); /* 3DES */
+	      strcat(dummy_string,"S7 "); /* AES-128 - LibrePGP default. */
+	    if ( !openpgp_cipher_test_algo (CIPHER_ALGO_3DES) )
+              strcat(dummy_string,"S2 "); /* 3DES - RFC4880 default. */
 
             if (!openpgp_aead_test_algo (AEAD_ALGO_OCB))
 	      strcat(dummy_string,"A2 ");
@@ -564,6 +566,8 @@ keygen_set_std_prefs (const char *string,int personal)
       {
 	char *prefstringbuf;
         char *tok, *prefstring;
+        int any_cipher=0, any_digest=0, any_compress=0, any_aead=0;
+        int err_cipher=0, err_digest=0, err_compress=0, err_aead=0;
 
         /* We need a writable string. */
 	prefstring = prefstringbuf = xstrdup (string);
@@ -575,22 +579,30 @@ keygen_set_std_prefs (const char *string,int personal)
 	    else if((val=string_to_cipher_algo (tok)))
 	      {
 		if(set_one_pref(val,1,tok,sym,&nsym))
-		  rc=-1;
+		  err_cipher = 1;
+                else
+                  any_cipher = 1;
 	      }
 	    else if((val=string_to_digest_algo (tok)))
 	      {
 		if(set_one_pref(val,2,tok,hash,&nhash))
-		  rc=-1;
+		  err_digest = 1;
+                else
+                  any_digest = 1;
 	      }
 	    else if((val=string_to_compress_algo(tok))>-1)
 	      {
 		if(set_one_pref(val,3,tok,zip,&nzip))
-		  rc=-1;
+		  err_compress = 1;
+                else
+                  any_compress = 1;
 	      }
 	    else if ((val=string_to_aead_algo (tok)))
 	      {
 		if (set_one_pref (val, 4, tok, aead, &naead))
-		  rc = -1;
+		  err_aead = 1;
+                else
+                  any_aead = 1;
 	      }
 	    else if (!ascii_strcasecmp(tok, "mdc")
                      || !ascii_strcasecmp(tok, "[mdc]"))
@@ -616,6 +628,18 @@ keygen_set_std_prefs (const char *string,int personal)
 		rc=-1;
 	      }
 	  }
+
+        /* We return an error only if we have seen a parsing error for
+         * one class but did not add any algorithm of that class.
+         * Note that the set_one_pref functions already print log_info
+         * diagnostics so that the user is made aware of the problems.
+         * But tjhis way things work better even if an algorithm has
+         * been disabled at the Libgcrypt level.  */
+        if (!rc && ((err_cipher && !any_cipher)
+                    || (err_digest && !any_digest)
+                    || (err_compress && !any_compress)
+                    || (err_aead && !any_aead)))
+          rc = 1;
 
 	xfree (prefstringbuf);
       }
