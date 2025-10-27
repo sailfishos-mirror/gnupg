@@ -125,7 +125,7 @@ make_outfile_name (const char *iname)
    NAMELEN is its actual length.
  */
 char *
-ask_outfile_name( const char *name, size_t namelen )
+ask_outfile_name (const char *name, size_t namelen)
 {
   size_t n;
   const char *s;
@@ -136,8 +136,14 @@ ask_outfile_name( const char *name, size_t namelen )
   if ( opt.batch )
     return NULL;
 
-  defname = name && namelen? make_printable_string (name, namelen, 0) : NULL;
-
+  /* To avoid tricking the user into using the embedded filename we do
+   * not anymore include that name in the prompt as default.  For
+   * modern v5 signature this might make sense as they are now covered
+   * by the signature but we better leave such a decision to a GUI.  */
+  if (name && namelen && (opt.compat_flags & COMPAT_SUGGEST_EMBEDDED_NAME))
+    defname = make_printable_string (name, namelen, 0);
+  else
+    defname = NULL;
   s = _("Enter new filename");
   n = strlen(s) + (defname?strlen (defname):0) + 10;
   prompt = xmalloc (n);

@@ -404,6 +404,11 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define COMPAT_T7014_OLD      2  /* Use initial T7014 test data.  */
 #define COMPAT_COMPR_KEYS     4  /* Allow import of compressed keys. (T7014) */
 #define COMPAT_NO_MANU        8  /* Do not include a "manu" notation.  */
+#define COMPAT_SUGGEST_EMBEDDED_NAME 16 /* Show the non-signed
+                                         * embedded filename as
+                                         * suggestion.  */
+
+
 
 /* Compliance test macros.  */
 #define GNUPG   (opt.compliance==CO_GNUPG || opt.compliance==CO_DE_VS)

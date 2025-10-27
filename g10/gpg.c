@@ -1064,6 +1064,7 @@ static struct compatibility_flags_s compatibility_flags [] =
     { COMPAT_T7014_OLD,    "t7014-old" },
     { COMPAT_COMPR_KEYS,   "compr-keys" },
     { COMPAT_NO_MANU,      "no-manu" },
+    { COMPAT_SUGGEST_EMBEDDED_NAME, "suggest-embedded-name" },
     { 0, NULL }
   };
 
