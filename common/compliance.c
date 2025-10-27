@@ -589,7 +589,7 @@ gnupg_rng_is_compliant (enum gnupg_compliance_mode compliance)
               && atoi (fields[4]) > 0)
             ; /* Field 5 > 0 := Jent is active.  */
           else
-            result = 0;  /* Force non-compliance.  */
+            res = 0;  /* Force non-compliance.  */
           gcry_free (buf);
         }
 #endif /*HAVE_W32_SYSTEM*/
