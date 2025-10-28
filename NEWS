@@ -1,5 +1,16 @@
-Noteworthy changes in version 2.2.51 (unreleased)
+Noteworthy changes in version 2.2.51 (2025-10-28)
 -------------------------------------------------
+
+  * gpg: Avoid potential downgrade to SHA1 in 3rd party key
+    signatures.  [rG4329e47463]
+
+  * gpg: Fix possible memory corruption in the armor parser.
+    [rG1e929abd20]
+
+  * Make the extra check for a compliant RNG on Windows actually
+    work.  [rGbad0e15d87]
+
+  Release-info: https://dev.gnupg.org/T7888
 
 
 Noteworthy changes in version 2.2.50 (2025-10-13)
