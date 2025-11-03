@@ -57,6 +57,7 @@ described here.
     - ssb :: Secret subkey (secondary key)
     - uid :: User id
     - uat :: User attribute (same as user id except for field 10).
+    - pfc :: preference record [*]
     - sig :: Signature
     - rev :: Revocation signature
     - rvs :: Revocation signature (standalone) [since 2.2.9]
@@ -304,6 +305,19 @@ described here.
     without running a --with-sigs listing.
 
 ** Special fields
+
+*** PFC - Preferences on User ID
+
+    - Field 1 :: "pfc"
+    - Field 2 :: RFU
+    - Field 3 :: Symmetric algo preferences (decimal, comma delimited)
+    - Field 4 :: Digest algo preferences (decimal, comma delimited)
+    - Field 5 :: Compress algo preferences (decimal, comma delimited)
+    - Field 6 :: AEAD algo preferences (decimal, comma delimited)
+    - Field 7 :: RFU
+    - Field 8 :: RFU
+    - Field 9 :: Comma delimited flags.  For example:
+                 "mdc", "aead", "no-ks-modify
 
 *** PKD - Public key data
 

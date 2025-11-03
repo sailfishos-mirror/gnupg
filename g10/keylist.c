@@ -367,11 +367,12 @@ print_card_key_info (estream_t fp, kbnode_t keyblock)
  *  -1 - print to the TTY
  *   0 - print to stdout.
  *   1 - use log_info
+ *   2 - print colon delimited pfc record to stdout.
  */
 void
 show_preferences (PKT_user_id *uid, int indent, int mode, int verbose)
 {
-  estream_t fp = mode < 0? NULL : mode ? log_get_stream () : es_stdout;
+  estream_t fp;
   const prefitem_t fake = { 0, 0 };
   const prefitem_t *prefs;
   int i;
@@ -386,7 +387,44 @@ show_preferences (PKT_user_id *uid, int indent, int mode, int verbose)
   else
     return;
 
-  if (verbose)
+  if (mode < 0 )
+    fp = NULL;
+  else if (mode == 1)
+    fp = log_get_stream ();
+  else /* Mode 0 or 2 */
+    fp = es_stdout;
+
+  if (mode == 2)  /* Print preference record.  */
+    {
+      static char ptypes[] = { PREFTYPE_SYM, PREFTYPE_HASH,
+                               PREFTYPE_ZIP, PREFTYPE_AEAD };
+      int t, any;
+
+      es_fputs ("pfc::", fp); /* Second field is RFU */
+      for (t=0; t < DIM (ptypes); t++)
+        {
+          any = 0;
+          for (i = 0; prefs[i].type; i++)
+            if (prefs[i].type == ptypes[t])
+              {
+                es_fprintf (fp, "%s%d", any? ",":"", prefs[i].value);
+                any = 1;
+              }
+          es_putc (':', fp);
+        }
+      es_putc (':', fp);  /* Two more reserved fields.  */
+      es_putc (':', fp);
+      any = 0;
+      if (uid->flags.mdc)
+        { es_fprintf (fp, "mdc"); any = 1; }
+      if (uid->flags.aead)
+        { es_fprintf (fp, "%saead", any?",":"");  any = 1; };
+      if (!uid->flags.ks_modify)
+        { es_fprintf (fp, "%sno-ks-modify", any?",":""); }
+      es_putc (':', fp); /* One final colon for easier reading.  */
+      es_putc ('\n', fp);
+    }
+  else if (verbose)
     {
       int any, des_seen = 0, sha1_seen = 0, uncomp_seen = 0;
 
@@ -2197,6 +2235,8 @@ list_keyblock_colon (ctrl_t ctrl, kbnode_t keyblock,
                                 ":", NULL);
           es_putc (':', es_stdout);	/* End of field 20 (origin). */
 	  es_putc ('\n', es_stdout);
+          if ((opt.list_options & (LIST_SHOW_PREF|LIST_SHOW_PREF_VERBOSE)))
+            show_preferences (uid, 0, 2, 0);
 #ifdef USE_TOFU
 	  if (!uid->attrib_data && opt.with_tofu_info
               && (opt.trust_model == TM_TOFU || opt.trust_model == TM_TOFU_PGP))
