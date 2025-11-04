@@ -162,6 +162,7 @@ read_one_trustfile (const char *fname, int systrust,
   int tableidx;
   size_t tablesize;
   int lnr = 0;
+  int no_trailing_lf = 0;
 
   table = *addr_of_table;
   tablesize = *addr_of_tablesize;
@@ -182,13 +183,17 @@ read_one_trustfile (const char *fname, int systrust,
       n = strlen (line);
       if (!n || line[n-1] != '\n')
         {
+          if (n && es_feof (fp))
+            no_trailing_lf = 1;  /* (The next fgets will break the loop.) */
           /* Eat until end of line. */
           while ( (c=es_getc (fp)) != EOF && c != '\n')
             ;
-          err = gpg_error (*line? GPG_ERR_LINE_TOO_LONG
+          err = gpg_error (*line && !no_trailing_lf? GPG_ERR_LINE_TOO_LONG
                            : GPG_ERR_INCOMPLETE_LINE);
           log_error (_("file '%s', line %d: %s\n"),
                      fname, lnr, gpg_strerror (err));
+          if (no_trailing_lf)
+            err = 0;  /* Clear the error.  */
           continue;
         }
       line[--n] = 0; /* Chop the LF. */
