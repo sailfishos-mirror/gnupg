@@ -26,6 +26,7 @@
    RFC-4252 - Authentication Protocol
    RFC-4253 - Transport Layer Protocol
    RFC-5656 - ECC support
+   RFC-8332 - Use of RSA Keys with SHA-256 and SHA-512
 
    The protocol for the agent is defined in:
 
@@ -90,10 +91,11 @@
 #define SSH_DSA_SIGNATURE_ELEMS    2
 #define SSH_AGENT_RSA_SHA2_256            0x02
 #define SSH_AGENT_RSA_SHA2_512            0x04
-#define SPEC_FLAG_USE_PKCS1V2 (1 << 0)
-#define SPEC_FLAG_IS_ECDSA    (1 << 1)
-#define SPEC_FLAG_IS_EdDSA    (1 << 2)  /*(lowercase 'd' on purpose.)*/
-#define SPEC_FLAG_WITH_CERT   (1 << 7)
+#define SPEC_FLAG_USE_PKCS1V2      (1 << 0)
+#define SPEC_FLAG_IS_ECDSA         (1 << 1)
+#define SPEC_FLAG_IS_EdDSA         (1 << 2)  /*(lowercase 'd' on purpose.)*/
+#define SPEC_FLAG_WITH_CERT        (1 << 7)
+#define SPEC_FLAG_WITH_FIXEDLENGTH (1 << 8)
 
 /* The name of the control file.  */
 #define SSH_CONTROL_FILE_NAME "sshcontrol"
@@ -212,6 +214,9 @@ struct ssh_key_type_spec
 
   /* Misc flags.  */
   unsigned int flags;
+
+  /* Optional key size (possibly used by RSA) */
+  size_t keysize;
 };
 
 
@@ -1464,7 +1469,25 @@ ssh_signature_encoder_rsa (ssh_key_type_spec_t *spec,
   /* RSA specific */
   s = mpis[0];
 
-  err = gcry_mpi_aprint (GCRYMPI_FMT_USG, &data, &data_n, s);
+  if ((spec->flags & SPEC_FLAG_WITH_FIXEDLENGTH))
+    {
+      data = xtrymalloc (spec->keysize);
+      if (!data)
+        {
+          err = gpg_error_from_syserror ();
+          goto out;
+        }
+
+      err = gcry_mpi_print (GCRYMPI_FMT_USG, data, spec->keysize, &data_n, s);
+      if (data_n < spec->keysize)
+        {
+          memmove (data, data+spec->keysize-data_n, data_n);
+          memset (data, 0, spec->keysize-data_n);
+          data_n = spec->keysize;
+        }
+    }
+  else
+    err = gcry_mpi_aprint (GCRYMPI_FMT_USG, &data, &data_n, s);
   if (err)
     goto out;
 
@@ -3007,7 +3030,7 @@ ssh_handler_sign_request (ctrl_t ctrl, estream_t request, estream_t response)
 
   /* Flag processing.  */
   {
-    u32 flags;
+    u32 flags = 0;
 
     err = stream_read_uint32 (request, &flags);
     if (err)
@@ -3020,6 +3043,7 @@ ssh_handler_sign_request (ctrl_t ctrl, estream_t request, estream_t response)
             flags &= ~SSH_AGENT_RSA_SHA2_512;
             spec.ssh_identifier = "rsa-sha2-512";
             spec.hash_algo = GCRY_MD_SHA512;
+            spec.flags |= SPEC_FLAG_WITH_FIXEDLENGTH;
           }
         if ((flags & SSH_AGENT_RSA_SHA2_256))
           {
@@ -3027,6 +3051,22 @@ ssh_handler_sign_request (ctrl_t ctrl, estream_t request, estream_t response)
             flags &= ~SSH_AGENT_RSA_SHA2_256;
             spec.ssh_identifier = "rsa-sha2-256";
             spec.hash_algo = GCRY_MD_SHA256;
+            spec.flags |= SPEC_FLAG_WITH_FIXEDLENGTH;
+          }
+        if ((spec.flags &SPEC_FLAG_WITH_FIXEDLENGTH))
+          {
+            unsigned int n;
+            size_t modulus_n;
+
+            n = gcry_pk_get_nbits (key);
+            if (!n)
+              {
+                err = gpg_error (GPG_ERR_BAD_PUBKEY);
+                goto out;
+              }
+
+            modulus_n = (n+7)/8;
+            spec.keysize = modulus_n;
           }
       }
 
