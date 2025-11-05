@@ -353,6 +353,7 @@ write_status_text_and_buffer (int no, const char *string,
   const char *s, *text;
   int esc, first;
   int lower_limit = ' ';
+  int escape_more;
   size_t n, count, dowrap;
 
   if (!statusfp || !status_currently_allowed (no))
@@ -363,6 +364,8 @@ write_status_text_and_buffer (int no, const char *string,
       lower_limit--;
       wrap = 0;
     }
+
+  escape_more = (no == STATUS_NOTATION_NAME || no == STATUS_NOTATION_DATA);
 
   text = get_status_string (no);
   count = dowrap = first = 1;
@@ -388,7 +391,7 @@ write_status_text_and_buffer (int no, const char *string,
       for (esc=0, s=buffer, n=len; n; s++, n--)
         {
           if (*s == '%' || *(const byte*)s <= lower_limit
-              || *(const byte*)s == 127 )
+              || *(const byte*)s == 127 || (escape_more && (*s & 0x80)))
             esc = 1;
           if (wrap && ++count > wrap)
             dowrap=1;
