@@ -859,8 +859,11 @@ ecc_kem_decrypt (int is_pgp, ctrl_t ctrl, const char *desc_text,
 
  leave:
   wipememory (sessionkey, sizeof sessionkey);
-  wipememory (kek, sizeof kek);
-  xfree (kek);
+  if (kek)
+    {
+      wipememory (kek, sizeof kek);
+      xfree (kek);
+    }
   mpi_release (ecc_ct_mpi);
   mpi_release (encrypted_sessionkey_mpi);
   gcry_free (kdf_params.data);
