@@ -2768,7 +2768,14 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
             }
           if (err)
             goto leave;
-          if (list_mode)
+        }
+      if (list_mode)
+        {  /* Again so that we have all parameters in pkey[] and can
+            * do a look forward.  We use a hack for Kyber because the
+            * commonly used function pubkey_string requires an extra
+            * buffer and, more important, its result depends on an
+            * configure option.  */
+          for (i = 0; i < npkey; i++)
             {
               es_fprintf (listfp, "\tpkey[%d]: ", i);
               mpi_print (listfp, pk->pkey[i], mpi_print_mode);
@@ -2778,8 +2785,13 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
                    || algorithm == PUBKEY_ALGO_KYBER) && i==0)
                 {
                   char *curve = openpgp_oid_to_str (pk->pkey[0]);
-                  const char *name = openpgp_oid_to_curve (curve, 0);
-                  es_fprintf (listfp, " %s (%s)", name?name:"", curve);
+                  const char *name = openpgp_oid_to_curve (curve, 2);
+
+                  if (algorithm == PUBKEY_ALGO_KYBER)
+                    es_fprintf (listfp, " ky%u_%s (%s)",
+                                nbits_from_pk (pk), name?name:"", curve);
+                  else
+                    es_fprintf (listfp, " %s (%s)", name?name:"", curve);
                   xfree (curve);
                 }
               es_putc ('\n', listfp);

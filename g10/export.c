@@ -2361,7 +2361,7 @@ do_export_stream (ctrl_t ctrl, iobuf_t out, strlist_t users, int secret,
           if (pk->version == 3)
             {
               log_info ("key %s: PGP 2.x style key (v3) export "
-                        "not yet supported - skipped\n", keystr (keyid));
+                        "not supported - skipped\n", keystr (keyid));
               continue;
             }
           stats->secret_count++;

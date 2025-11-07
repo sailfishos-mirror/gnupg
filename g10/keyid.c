@@ -873,7 +873,8 @@ namehash_from_uid (PKT_user_id *uid)
 /*
  * Return the number of bits used in PK.  For Kyber we return the
  * octet count of the Kyber part and not of the ECC (thus likely
- * values are 768 or 1024).
+ * values are 768 or 1024).  Note that this function may be called
+ * with only pubkey_algo and pkey[] correctly set.
  */
 unsigned int
 nbits_from_pk (PKT_public_key *pk)
