@@ -944,7 +944,7 @@ ocsp_isvalid (ctrl_t ctrl, ksba_cert_t cert, const char *cert_fpr,
       gnupg_copy_time (tmp_time, next_update);
       add_seconds_to_isotime (tmp_time,
                               opt.ocsp_current_period+opt.ocsp_max_clock_skew);
-      if (!*tmp_time && strcmp (tmp_time, current_time) < 0 )
+      if (strcmp (tmp_time, current_time) < 0 )
         {
           log_error (_("OCSP responder returned an too old status\n"));
           log_info ("used now: %s  next_update: %s\n",
