@@ -307,12 +307,15 @@ EXTRA_DIST = defs.scm trust-pgp/common.scm $(XTESTS) $(TEST_FILES) \
 	     setup.scm shell.scm all-tests.scm signed-messages.scm
 
 CLEANFILES = prepared.stamp x y yy z out err  $(data_files) \
-	     plain-1 plain-2 plain-3 trustdb.gpg *.lock .\#lk* \
+	     plain-1 plain-2 plain-3 trustdb.gpg *.lock \
 	     *.log gpg_dearmor gpg.conf gpg-agent.conf S.gpg-agent \
 	     pubring.gpg pubring.gpg~ pubring.kbx pubring.kbx~ \
 	     common.conf secring.gpg pubring.pkr secring.skr \
 	     gnupg-test.stop random_seed gpg-agent.log tofu.db \
 	     passphrases sshcontrol S.gpg-agent.ssh report.xml
+
+# Path with # (octal 043) needs special care in portable Makefile.
+CLEANFILES += `printf  '.\043lk*'`
 
 clean-local:
 	-rm -rf private-keys-v1.d openpgp-revocs.d tofu.d gpgtar.d
