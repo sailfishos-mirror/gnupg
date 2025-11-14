@@ -978,6 +978,10 @@ test_split_fields_colon (void)
 }
 
 
+/*
+ * Escape the newline control character.
+ * Replace the space into underscore character.
+ */
 static char *
 stresc (char *s)
 {
@@ -996,8 +1000,7 @@ stresc (char *s)
       else if (*p == '\n')
         {
           p[l ++] = '\\';
-          p[l ++] = 'n';
-          p[l] = '\n';
+          p[l] = 'n';
         }
       else
         p[l] = *s;
