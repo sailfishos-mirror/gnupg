@@ -3079,9 +3079,22 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
               if (mpi_print_mode)
                 {
                   char *tmpsxp = canon_sexp_to_string (tmpp, pktlen);
+                  size_t len1 = gcry_sexp_canon_len (tmpp, pktlen, NULL, NULL);
+                  const char *tp = tmpp;
+
                   es_fprintf (listfp, "\tskey[%d]: %s\n", npkey,
                               tmpsxp? trim_trailing_spaces (tmpsxp)
                               /*  */: "[invalid S-expression]");
+                  if (len1 && len1 < pktlen
+                      && tp[len1] == '(' && tp[pktlen-1] == ')' )
+                    {
+                      /* Second s-expression from a dual key.  */
+                      xfree (tmpsxp);
+                      tmpsxp = canon_sexp_to_string (tp+len1, pktlen-len1);
+                      es_fprintf (listfp, "\t part-2: %s\n",
+                                  tmpsxp? trim_trailing_spaces (tmpsxp)
+                                  /*  */: "[invalid S-expression]");
+                    }
                   xfree (tmpsxp);
                 }
               else
