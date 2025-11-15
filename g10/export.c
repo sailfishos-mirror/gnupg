@@ -837,6 +837,8 @@ secret_key_to_mode1003 (gcry_sexp_t s_key, PKT_public_key *pk, int is_part2)
         goto leave;
       if (is_part2)  /* Append secret s-expr to the existing one.  */
         {
+          char const prefix[] = "(13:composite-key";
+          unsigned int prefixlen = strlen (prefix);
           const unsigned char *oldbuf;
           unsigned int oldbuflen;
           unsigned char *newbuf;
@@ -845,16 +847,18 @@ secret_key_to_mode1003 (gcry_sexp_t s_key, PKT_public_key *pk, int is_part2)
                       gcry_mpi_get_flag (pk->pkey[npkey], GCRYMPI_FLAG_OPAQUE));
           oldbuf = gcry_mpi_get_opaque (pk->pkey[npkey], &oldbuflen);
           oldbuflen = (oldbuflen +7)/8;  /* Fixup bits to bytes */
-          newbuf = xtrymalloc_secure (oldbuflen + buflen);
+          newbuf = xtrymalloc_secure (prefixlen + oldbuflen + buflen + 1);
           if (!newbuf)
             {
               err = gpg_error_from_syserror ();
               goto leave;
             }
-          memcpy (newbuf, oldbuf, oldbuflen);
-          memcpy (newbuf+oldbuflen, buf, buflen);
+          memcpy (newbuf, prefix, prefixlen);
+          memcpy (newbuf+prefixlen, oldbuf, oldbuflen);
+          memcpy (newbuf+prefixlen+oldbuflen, buf, buflen);
+          newbuf[prefixlen+oldbuflen+buflen] = ')'; /* close prefix */
           buf = newbuf;
-          buflen = oldbuflen + buflen;
+          buflen = prefixlen + oldbuflen + buflen + 1;
         }
       /* Note that BUF is consumed by gcry_mpi_set_opaque.  */
       pk->pkey[npkey] = gcry_mpi_set_opaque (NULL, buf, buflen*8);
