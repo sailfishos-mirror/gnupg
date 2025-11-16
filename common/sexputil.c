@@ -153,7 +153,7 @@ make_canon_sexp (gcry_sexp_t sexp, unsigned char **r_buffer, size_t *r_buflen)
   len = gcry_sexp_sprint (sexp, GCRYSEXP_FMT_CANON, NULL, 0);
   if (!len)
     return gpg_error (GPG_ERR_BUG);
-  buf = xtrymalloc (len);
+  buf = gcry_is_secure (sexp)? xtrymalloc_secure (len) : xtrymalloc (len);
   if (!buf)
     return gpg_error_from_syserror ();
   len = gcry_sexp_sprint (sexp, GCRYSEXP_FMT_CANON, buf, len);

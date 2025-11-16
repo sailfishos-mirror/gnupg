@@ -3334,7 +3334,7 @@ ssh_identity_register (ctrl_t ctrl, ssh_key_type_spec_t *spec,
   /* Store this key to our key storage.  We do not store a creation
    * timestamp because we simply do not know.  */
   err = agent_write_private_key (ctrl, key_grip_raw, buffer, buffer_n, 0,
-                                 NULL, NULL, NULL, 0);
+                                 NULL, NULL, NULL, 0, NULL);
   if (err)
     goto out;
 

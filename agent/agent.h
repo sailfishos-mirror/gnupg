@@ -479,7 +479,7 @@ gpg_error_t agent_write_private_key (ctrl_t ctrl,
                                      int force,
                                      const char *serialno, const char *keyref,
                                      const char *dispserialno,
-                                     time_t timestamp);
+                                     time_t timestamp, const char *linkattr);
 gpg_error_t agent_key_from_file (ctrl_t ctrl,
                                  const char *cache_nonce,
                                  const char *desc_text,

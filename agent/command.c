@@ -2813,7 +2813,7 @@ cmd_keywrap_key (assuan_context_t ctx, char *line)
 
 
 static const char hlp_import_key[] =
-  "IMPORT_KEY [--unattended] [--force] [--timestamp=<isodate>]\n"
+  "IMPORT_KEY [--unattended] [--force] [--mode1003] [--timestamp=<isodate>]\n"
   "           [<cache_nonce>]\n"
   "\n"
   "Import a secret key into the key store.  The key is expected to be\n"
@@ -2832,7 +2832,7 @@ cmd_import_key (assuan_context_t ctx, char *line)
   gpg_error_t err;
   int opt_unattended;
   time_t opt_timestamp;
-  int force;
+  int mode1003, force;
   unsigned char *wrappedkey = NULL;
   size_t wrappedkeylen;
   gcry_cipher_hd_t cipherhd = NULL;
@@ -2841,11 +2841,18 @@ cmd_import_key (assuan_context_t ctx, char *line)
   char *passphrase = NULL;
   unsigned char *finalkey = NULL;
   size_t finalkeylen;
-  unsigned char grip[20];
-  gcry_sexp_t openpgp_sexp = NULL;
+  unsigned char grip1[KEYGRIP_LEN] = { 0 };
+  unsigned char grip2[KEYGRIP_LEN] = { 0 };
+  char hexgrip[2*KEYGRIP_LEN+1];
+  gcry_sexp_t keydata = NULL;
+  gcry_sexp_t skey1 = NULL;  /* Part 1 of a composite key.  */
+  gcry_sexp_t skey2 = NULL;  /* Part 2 of a composite key.  */
   char *cache_nonce = NULL;
   char *p;
   const char *s;
+  const char *tag;
+  size_t taglen;
+  enum { KEYDATA_NORMAL,KEYDATA_PGP_TRANSFER, KEYDATA_COMPOSITE } keydata_type;
 
   if (ctrl->restricted)
     return leave_cmd (ctx, gpg_error (GPG_ERR_FORBIDDEN));
@@ -2857,6 +2864,7 @@ cmd_import_key (assuan_context_t ctx, char *line)
     }
 
   opt_unattended = has_option (line, "--unattended");
+  mode1003 = has_option (line, "--mode1003");
   force = has_option (line, "--force");
   if ((s=has_option_name (line, "--timestamp")))
     {
@@ -2919,45 +2927,44 @@ cmd_import_key (assuan_context_t ctx, char *line)
   xfree (wrappedkey);
   wrappedkey = NULL;
 
+  /* Check what kind of key we received.  */
   realkeylen = gcry_sexp_canon_len (key, keylen, NULL, &err);
   if (!realkeylen)
     goto leave; /* Invalid canonical encoded S-expression.  */
 
-  err = keygrip_from_canon_sexp (key, realkeylen, grip);
+  err = gcry_sexp_sscan (&keydata, NULL, key, realkeylen);
   if (err)
+    goto leave;
+  tag = gcry_sexp_nth_data (keydata, 0, &taglen);
+  if (tag && taglen == 19 && !memcmp (tag, "openpgp-private-key", 19))
+    keydata_type = KEYDATA_PGP_TRANSFER;
+  else if (tag && taglen == 13 && !memcmp (tag, "composite-key", 13))
+    keydata_type = KEYDATA_COMPOSITE;
+  else if (gcry_pk_get_keygrip (keydata, grip1))
+    keydata_type = KEYDATA_NORMAL;
+  else /* get_keygrip failed */
     {
-      /* This might be due to an unsupported S-expression format.
-         Check whether this is openpgp-private-key and trigger that
-         import code.  */
-      if (!gcry_sexp_sscan (&openpgp_sexp, NULL, key, realkeylen))
-        {
-          const char *tag;
-          size_t taglen;
-
-          tag = gcry_sexp_nth_data (openpgp_sexp, 0, &taglen);
-          if (tag && taglen == 19 && !memcmp (tag, "openpgp-private-key", 19))
-            ;
-          else
-            {
-              gcry_sexp_release (openpgp_sexp);
-              openpgp_sexp = NULL;
-            }
-        }
-      if (!openpgp_sexp)
-        goto leave; /* Note that ERR is still set.  */
+      err = gpg_error (GPG_ERR_INTERNAL);
+      goto leave;
     }
 
-  if (openpgp_sexp)
+  if (opt_unattended && keydata_type != KEYDATA_PGP_TRANSFER)
+    {
+      err = set_error (GPG_ERR_ASS_PARAMETER,
+                       "\"--unattended\" may only be used with OpenPGP keys");
+      goto leave;
+    }
+
+  if (keydata_type == KEYDATA_PGP_TRANSFER && !mode1003)
     {
       /* In most cases the key is encrypted and thus the conversion
-         function from the OpenPGP format to our internal format will
-         ask for a passphrase.  That passphrase will be returned and
-         used to protect the key using the same code as for regular
-         key import. */
-
+       * function from the OpenPGP format to our internal format will
+       * ask for a passphrase.  That passphrase will be returned and
+       * used to protect the key using the same code as for regular
+       * key import. */
       xfree (key);
       key = NULL;
-      err = convert_from_openpgp (ctrl, openpgp_sexp, force, grip,
+      err = convert_from_openpgp (ctrl, keydata, force, grip1,
                                   ctrl->server_local->keydesc, cache_nonce,
                                   &key, opt_unattended? NULL : &passphrase);
       if (err)
@@ -2980,16 +2987,69 @@ cmd_import_key (assuan_context_t ctx, char *line)
             assuan_write_status (ctx, "CACHE_NONCE", cache_nonce);
         }
     }
-  else if (opt_unattended)
+  else if (keydata_type == KEYDATA_COMPOSITE)
     {
-      err = set_error (GPG_ERR_ASS_PARAMETER,
-                       "\"--unattended\" may only be used with OpenPGP keys");
-      goto leave;
+      if (!mode1003)
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER,
+                           "\"--mode1003\" required for composite keys");
+          goto leave;
+        }
+      /* Split the key up.  */
+      skey1 = gcry_sexp_nth (keydata, 1);
+      skey2 = gcry_sexp_nth (keydata, 2);
+      if (!skey1 || !skey2)
+        {
+          log_error ("broken composite key detected\n");
+          err = gpg_error (GPG_ERR_BAD_SECKEY);
+          goto leave;
+        }
+      if (!gcry_pk_get_keygrip (skey1, grip1)
+          || !gcry_pk_get_keygrip (skey2, grip2))
+        {
+          log_error ("keygrip computation failed for"
+                     " at least one part of composite key\n");
+          err = gpg_error (GPG_ERR_BAD_PUBKEY);
+          goto leave;
+        }
+
+      /* Test whether a key already exists.  We do not yet implement
+       * FORCE because gpg is not yet able to correcly detect that
+       * both keys are on a smartcard (which is the only sensible way
+       * to allow overwriting both private keys.  */
+      if (!agent_key_available (ctrl, grip1)
+          || !agent_key_available (ctrl, grip2))
+        {
+          log_error ("at least one part of a composite key already exists\n");
+          err = gpg_error (GPG_ERR_EEXIST);
+          goto leave;
+        }
+
+      /* Convert the key parts into canonical form and write them.  */
+      xfree (key);
+      bin2hex (grip2, KEYGRIP_LEN, hexgrip);
+      err = make_canon_sexp (skey1, &key, &keylen);
+      if (!err)
+        err = agent_write_private_key (ctrl, grip1, key, keylen, 0, NULL,
+                                       NULL, NULL, opt_timestamp, hexgrip);
+      xfree (key); key = NULL;
+      bin2hex (grip1, KEYGRIP_LEN, hexgrip);
+      if (!err)
+        err = make_canon_sexp (skey2, &key, &keylen);
+      if (!err)
+        err = agent_write_private_key (ctrl, grip2, key, keylen, 0, NULL,
+                                       NULL, NULL, opt_timestamp, hexgrip);
+      if (err)
+        goto leave;
     }
-  else
+  else /* KEYDATA_NORMAL.  */
     {
-      if (!force && !agent_key_available (ctrl, grip))
+      if (!force && !agent_key_available (ctrl, grip1))
         err = gpg_error (GPG_ERR_EEXIST);
+      else if (mode1003)
+        {
+          /* (No passphrase used) */
+        }
       else
         {
           char *prompt = xtryasprintf
@@ -3005,20 +3065,25 @@ cmd_import_key (assuan_context_t ctx, char *line)
         goto leave;
     }
 
-  if (passphrase)
+  if (keydata_type == KEYDATA_COMPOSITE)
+    ; /* Has already been written.  */
+  else if (passphrase)
     {
       err = agent_protect (key, passphrase, &finalkey, &finalkeylen,
                            ctrl->s2k_count);
       if (!err)
-        err = agent_write_private_key (ctrl, grip, finalkey, finalkeylen, force,
-                                       NULL, NULL, NULL, opt_timestamp);
+        err = agent_write_private_key (ctrl, grip1,
+                                       finalkey, finalkeylen, force,
+                                       NULL, NULL, NULL, opt_timestamp, NULL);
     }
   else
-    err = agent_write_private_key (ctrl, grip, key, realkeylen, force,
-                                   NULL, NULL, NULL, opt_timestamp);
+    err = agent_write_private_key (ctrl, grip1, key, realkeylen, force,
+                                   NULL, NULL, NULL, opt_timestamp, NULL);
 
  leave:
-  gcry_sexp_release (openpgp_sexp);
+  gcry_sexp_release (skey1);
+  gcry_sexp_release (skey2);
+  gcry_sexp_release (keydata);
   xfree (finalkey);
   xfree (passphrase);
   xfree (key);
@@ -4328,6 +4393,11 @@ command_has_option (const char *cmd, const char *cmdopt)
         return 1;
     }
   else if (!strcmp (cmd, "EXPORT_KEY"))
+    {
+      if (!strcmp (cmdopt, "mode1003"))
+        return 1;
+    }
+  else if (!strcmp (cmd, "IMPORT_KEY"))
     {
       if (!strcmp (cmdopt, "mode1003"))
         return 1;

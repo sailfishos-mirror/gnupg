@@ -3106,7 +3106,8 @@ inq_import_key_parms (void *opaque, const char *line)
 
 /* Call the agent to import a key into the agent.  */
 gpg_error_t
-agent_import_key (ctrl_t ctrl, const char *desc, char **cache_nonce_addr,
+agent_import_key (ctrl_t ctrl, const char *desc, int mode1003,
+                  char **cache_nonce_addr,
                   const void *key, size_t keylen, int unattended, int force,
 		  u32 *keyid, u32 *mainkeyid, int pubkey_algo, u32 timestamp)
 {
@@ -3127,6 +3128,12 @@ agent_import_key (ctrl_t ctrl, const char *desc, char **cache_nonce_addr,
   if (err)
     return err;
   dfltparm.ctx = agent_ctx;
+
+  /* Check that the gpg-agent supports the --mode1003 option.  */
+  if (mode1003 && assuan_transact (agent_ctx,
+                                   "GETINFO cmd_has_option IMPORT_KEY mode1003",
+                                   NULL, NULL, NULL, NULL, NULL, NULL))
+    return gpg_error (GPG_ERR_NOT_SUPPORTED);
 
   /* Do not use our cache of secret keygrips anymore - this command
    * would otherwise requiring to update that cache.  */
@@ -3157,9 +3164,10 @@ agent_import_key (ctrl_t ctrl, const char *desc, char **cache_nonce_addr,
   parm.key    = key;
   parm.keylen = keylen;
 
-  snprintf (line, sizeof line, "IMPORT_KEY%s%s%s%s%s",
+  snprintf (line, sizeof line, "IMPORT_KEY%s%s%s%s%s%s",
             *timestamparg? timestamparg : "",
             unattended? " --unattended":"",
+            mode1003? " --mode1003":"",
             force? " --force":"",
             cache_nonce_addr && *cache_nonce_addr? " ":"",
             cache_nonce_addr && *cache_nonce_addr? *cache_nonce_addr:"");

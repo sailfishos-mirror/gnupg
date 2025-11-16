@@ -132,14 +132,15 @@ linefeed_to_percent0A (const char *string)
  * GRIP will get overwritten.  If SERIALNO and KEYREF are given a
  * Token line is added to the key if the extended format is used.  If
  * TIMESTAMP is not zero and the key does not yet exists it will be
- * recorded as creation date.  */
+ * recorded as creation date.  If LINKATTR is not NULL a Link: entry
+ * with that value will also be written.  */
 gpg_error_t
 agent_write_private_key (ctrl_t ctrl,
                          const unsigned char *grip,
                          const void *buffer, size_t length, int force,
                          const char *serialno, const char *keyref,
                          const char *dispserialno,
-                         time_t timestamp)
+                         time_t timestamp, const char *linkattr)
 {
   gpg_error_t err;
   char *fname = NULL;
@@ -308,6 +309,15 @@ agent_write_private_key (ctrl_t ctrl,
       if (err)
         goto leave;
     }
+
+  /* Write a link attribute if supplied.  */
+  if (linkattr && *linkattr)
+    {
+      err = nvc_add (pk, "Link:", linkattr);
+      if (err)
+        goto leave;
+    }
+
 
   /* Check whether we need to write the file at all.  */
   if (!nvc_modified (pk, 0))
@@ -2104,7 +2114,7 @@ agent_write_shadow_key (ctrl_t ctrl, const unsigned char *grip,
 
   len = gcry_sexp_canon_len (shdkey, 0, NULL, NULL);
   err = agent_write_private_key (ctrl, grip, shdkey, len, force,
-                                 serialno, keyid, dispserialno, 0);
+                                 serialno, keyid, dispserialno, 0, NULL);
   xfree (shdkey);
   if (err)
     log_error ("error writing key: %s\n", gpg_strerror (err));

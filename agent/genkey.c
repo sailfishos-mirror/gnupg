@@ -119,7 +119,7 @@ store_key (ctrl_t ctrl, gcry_sexp_t private,
     }
   else
     err = agent_write_private_key (ctrl, grip, buf, len, force,
-                                   NULL, NULL, NULL, timestamp);
+                                   NULL, NULL, NULL, timestamp, NULL);
 
   if (!err)
     {

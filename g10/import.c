@@ -2853,7 +2853,31 @@ transfer_secret_keys (ctrl_t ctrl, struct import_stats_s *stats,
           continue;
         }
 
-      err = build_classic_transfer_sexp (pk, &tmpsexp);
+      tmpsexp = NULL;
+      if (ski->s2k.mode == 1003)
+        {
+          const void *tmpbuf;
+          unsigned int tmpbuflen;
+          int npkey;
+
+          /* Fixme: Check that the public key parameters in pkey match
+           *        those in the s-expression of the secret key.  */
+          npkey = pubkey_get_npkey (pk->pubkey_algo);
+          if (npkey+1 > PUBKEY_MAX_NSKEY)
+            err = gpg_error (GPG_ERR_BAD_SECKEY);
+          else if (!pk->pkey[npkey]
+                   || !gcry_mpi_get_flag (pk->pkey[npkey], GCRYMPI_FLAG_OPAQUE))
+            err = gpg_error (GPG_ERR_BAD_SECKEY);
+          else
+            {
+              tmpbuf = gcry_mpi_get_opaque (pk->pkey[npkey], &tmpbuflen);
+              tmpbuflen = (tmpbuflen +7)/8;  /* Fixup bits to bytes */
+              err = gcry_sexp_new (&tmpsexp, tmpbuf, tmpbuflen, 0);
+            }
+        }
+      else
+        err = build_classic_transfer_sexp (pk, &tmpsexp);
+
       xfree (transferkey);
       transferkey = NULL;
       if (!err)
@@ -2883,7 +2907,8 @@ transfer_secret_keys (ctrl_t ctrl, struct import_stats_s *stats,
       /* Send the wrapped key to the agent.  */
       {
         char *desc = gpg_format_keydesc (ctrl, pk, FORMAT_KEYDESC_IMPORT, 1);
-        err = agent_import_key (ctrl, desc, &cache_nonce,
+        err = agent_import_key (ctrl, desc, ski->s2k.mode == 1003,
+                                &cache_nonce,
                                 wrappedkey, wrappedkeylen, batch, force,
 				pk->keyid, pk->main_keyid, pk->pubkey_algo,
                                 pk->timestamp);

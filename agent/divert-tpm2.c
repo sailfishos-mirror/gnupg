@@ -59,7 +59,7 @@ agent_write_tpm2_shadow_key (ctrl_t ctrl, const unsigned char *grip,
 
   len = gcry_sexp_canon_len (shdkey, 0, NULL, NULL);
   err = agent_write_private_key (ctrl, grip, shdkey, len, 1 /*force*/,
-                                 NULL, NULL, NULL, 0);
+                                 NULL, NULL, NULL, 0, NULL);
   xfree (shdkey);
   if (err)
     {
@@ -72,7 +72,7 @@ agent_write_tpm2_shadow_key (ctrl_t ctrl, const unsigned char *grip,
 
       gcry_sexp_sprint(s_key, GCRYSEXP_FMT_CANON, pkbuf, len);
       err1 = agent_write_private_key (ctrl, grip, pkbuf, len, 1 /*force*/,
-				      NULL, NULL, NULL, 0);
+				      NULL, NULL, NULL, 0, NULL);
       xfree(pkbuf);
       if (err1)
 	  log_error ("error trying to restore private key: %s\n",
