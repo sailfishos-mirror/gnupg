@@ -1431,6 +1431,7 @@ keyinfo_status_cb (void *opaque, const char *line)
                   parm->serialno[s2 - s] = 0;
                 }
             }
+          s -= 3;
         }
 
       if (parm->fill_mode && *s0)
