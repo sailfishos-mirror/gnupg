@@ -482,6 +482,15 @@ GnuPG may ask you to enter the passphrase for the key.  This is
 required, because the internal protection method of the secret key is
 different from the one specified by the OpenPGP protocol.
 
+To support Kyber keys, which are implemented as a composite key along
+with an ECC key (aka PQ/T hybrid key), a GNU specific protocol
+extension is used.  This allows the use of a smartcard for just one
+part of such a composite key.  A re-encryption to an internal format
+is not needed as the keys restored in the very same way as GnuPG
+stores them.  This extension may also be forced for all key types
+using the option @option{--export-options=mode1003}.
+
+
 @item --export-ssh-key
 @opindex export-ssh-key
 This command is used to export a key in the OpenSSH public key format.
