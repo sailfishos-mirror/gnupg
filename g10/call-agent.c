@@ -3236,7 +3236,7 @@ agent_export_key (ctrl_t ctrl, const char *hexkeygrip, const char *desc,
 
   snprintf (line, DIM(line), "EXPORT_KEY %s%s%s %s",
             mode1003? "--mode1003" : openpgp_protected ? "--openpgp ":"",
-            cache_nonce_addr && *cache_nonce_addr? "--cache-nonce=":"",
+            cache_nonce_addr && *cache_nonce_addr? " --cache-nonce=":"",
             cache_nonce_addr && *cache_nonce_addr? *cache_nonce_addr:"",
             hexkeygrip);
 
