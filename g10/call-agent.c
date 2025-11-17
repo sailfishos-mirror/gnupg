@@ -2471,7 +2471,6 @@ gpg_error_t
 agent_get_keyinfo (ctrl_t ctrl, const char *hexkeygrip,
                    char **r_serialno, int *r_cleartext)
 {
-  WORK;
   gpg_error_t err;
   char line[ASSUAN_LINELENGTH];
   struct keyinfo_data_parm_s keyinfo;
