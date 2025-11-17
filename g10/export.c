@@ -645,7 +645,7 @@ canon_pk_algo (enum gcry_pk_algos algo)
 
 /* Take an s-expression with the public and private key and change the
  * parameter array in PK to include the secret parameters.  With
- * IS_PART2 set the second key from a dual key is merged into PK.  */
+ * IS_PART2 set the second key from a composite key is merged into PK.  */
 static gpg_error_t
 secret_key_to_mode1003 (gcry_sexp_t s_key, PKT_public_key *pk, int is_part2)
 {
@@ -802,7 +802,7 @@ secret_key_to_mode1003 (gcry_sexp_t s_key, PKT_public_key *pk, int is_part2)
 
   /* Note that we always have just one secret key parameter in
    * mode1003.  That one is the entire s-expression as received from
-   * the agent and thus also includes the public part.  For a dual key
+   * the agent and thus also includes the public part.  For a composite key
    * both s-expressions are simply concatenated.  */
   nskey = npkey + 1;
   if (nskey > PUBKEY_MAX_NSKEY)
@@ -1486,7 +1486,7 @@ print_status_exported (PKT_public_key *pk)
  * If MODE1003 is set, the key is requested in raw GnuPG format from
  * the agent.  This usually does not require a passphrase unless the
  * gpg-agent has not yet used the key and needs to convert it to its
- * internal format first.  For the second key of a dual key IS_PART2
+ * internal format first.  For the second key of a composite key IS_PART2
  * needs to be set.
  *
  * CACHE_NONCE_ADDR is used to share nonce for multiple key retrievals.
@@ -2019,7 +2019,7 @@ do_export_one_keyblock (ctrl_t ctrl, kbnode_t keyblock, u32 *keyid,
               continue;
             }
 
-          /* In case of a dual key let hexgrip2 point to the second.  */
+          /* In case of a composite key let hexgrip2 point to the second.  */
           if ((p = strchr (hexgrip, ',')))
             {
               *p = 0;

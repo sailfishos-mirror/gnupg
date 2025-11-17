@@ -514,7 +514,7 @@ do_sign (ctrl_t ctrl, PKT_public_key *pksk, PKT_signature *sig,
       gcry_sexp_t s_sigval;
 
       desc = gpg_format_keydesc (ctrl, pksk, FORMAT_KEYDESC_NORMAL, 1);
-      /* FIXME: Eventually support dual keys.  */
+      /* FIXME: Eventually support composite keys.  */
       err = agent_pksign (NULL/*ctrl*/, cache_nonce, hexgrip, desc,
                           pksk->keyid, pksk->main_keyid, pksk->pubkey_algo,
                           dp, gcry_md_get_algo_dlen (mdalgo), mdalgo,
@@ -600,7 +600,7 @@ openpgp_card_v1_p (PKT_public_key *pk)
     {
       char *hexgrip;
 
-      /* Note: No need to care about dual keys for non-RSA keys.  */
+      /* Note: No need to care about composite keys for non-RSA keys.  */
       err = hexkeygrip_from_pk (pk, &hexgrip);
       if (err)
         {

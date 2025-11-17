@@ -1082,7 +1082,7 @@ agent_keytotpm (ctrl_t ctrl, const char *hexgrip)
 
   if (strchr (hexgrip, ','))
     {
-      log_error ("storing a part of a dual key is not yet supported\n");
+      log_error ("storing a part of a composite key is not yet supported\n");
       return gpg_error (GPG_ERR_NOT_IMPLEMENTED);
     }
 
@@ -1117,7 +1117,7 @@ agent_keytocard (const char *hexgrip, int keyno, int force,
 
   if (strchr (hexgrip, ','))
     {
-      log_error ("storing a part of a dual key is not yet supported\n");
+      log_error ("storing a part of a composite key is not yet supported\n");
       return gpg_error (GPG_ERR_NOT_IMPLEMENTED);
     }
 
@@ -2471,6 +2471,7 @@ gpg_error_t
 agent_get_keyinfo (ctrl_t ctrl, const char *hexkeygrip,
                    char **r_serialno, int *r_cleartext)
 {
+  WORK;
   gpg_error_t err;
   char line[ASSUAN_LINELENGTH];
   struct keyinfo_data_parm_s keyinfo;
@@ -2484,8 +2485,6 @@ agent_get_keyinfo (ctrl_t ctrl, const char *hexkeygrip,
   if (err)
     return err;
 
-  /* FIXME: Support dual keys.  Maybe under the assumption that the
-   *        first key might be on a card.  */
   if (!hexkeygrip)
     return gpg_error (GPG_ERR_INV_VALUE);
   s = strchr (hexkeygrip, ',');
@@ -3322,7 +3321,7 @@ agent_delete_key (ctrl_t ctrl, const char *hexkeygrip, const char *desc,
         return err;
     }
 
-  /* FIXME: Shall we add support to DELETE_KEY for dual keys?  */
+  /* FIXME: Shall we add support to DELETE_KEY for composite keys?  */
   snprintf (line, DIM(line), "DELETE_KEY%s %s",
             force? " --force":"", hexkeygrip);
   err = assuan_transact (agent_ctx, line, NULL, NULL,

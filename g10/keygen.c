@@ -1859,7 +1859,7 @@ do_create_from_keygrip (ctrl_t ctrl, int algo,
 
 /* Common code for the key generation function gen_xxx.  The optional
  * (COMMON_GEN_CB,COMMON_GEN_CB_PARM) can be used as communication
- * object.  A KEYPARMS2 forces the use of a dual key (e.g. Kyber+ECC).
+ * object.  A KEYPARMS2 forces the use of a composite key (e.g. Kyber+ECC).
  */
 static int
 common_gen (const char *keyparms, const char *keyparms2,
@@ -6965,7 +6965,7 @@ generate_subkeypair (ctrl_t ctrl, kbnode_t keyblock, const char *algostr,
   err = hexkeygrip_from_pk (pri_psk, &hexgrip);
   if (err)
     goto leave;
-  /* FIXME: Right now the primary key won't be a dual key.  But this
+  /* FIXME: Right now the primary key won't be a composite key.  But this
    *        will change */
   if (agent_get_keyinfo (NULL, hexgrip, &serialno, NULL))
     {
