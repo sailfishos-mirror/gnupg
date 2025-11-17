@@ -1201,6 +1201,7 @@ change_passphrase (ctrl_t ctrl, kbnode_t keyblock)
   int any;
   u32 keyid[2], subid[2];
   char *hexgrip = NULL;
+  const char *hexgrip2;
   char *cache_nonce = NULL;
   char *passwd_nonce = NULL;
 
@@ -1258,7 +1259,7 @@ change_passphrase (ctrl_t ctrl, kbnode_t keyblock)
       if (node->pkt->pkttype == PKT_PUBLIC_KEY
 	  || node->pkt->pkttype == PKT_PUBLIC_SUBKEY)
         {
-          char *desc;
+          char *desc, *p;
 
           pk = node->pkt->pkt.public_key;
           keyid_from_pk (pk, subid);
@@ -1267,12 +1268,22 @@ change_passphrase (ctrl_t ctrl, kbnode_t keyblock)
           err = hexkeygrip_from_pk (pk, &hexgrip);
           if (err)
             goto leave;
+          if ((p=strchr (hexgrip, ',')))
+            {
+              *p++ = 0;
+              hexgrip2 = p;
+            }
+          else
+            hexgrip2 = NULL;
 
           /* Note that when using --dry-run we don't change the
            * passphrase but merely verify the current passphrase.  */
           desc = gpg_format_keydesc (ctrl, pk, FORMAT_KEYDESC_NORMAL, 1);
           err = agent_passwd (ctrl, hexgrip, desc, !!opt.dry_run,
                               &cache_nonce, &passwd_nonce);
+          if (!err && hexgrip2)
+            err = agent_passwd (ctrl, hexgrip2, desc, !!opt.dry_run,
+                                &cache_nonce, &passwd_nonce);
           xfree (desc);
 
           if (err)
