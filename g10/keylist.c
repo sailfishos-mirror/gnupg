@@ -934,7 +934,10 @@ list_one (ctrl_t ctrl, strlist_t names, int secret, int mark_secret)
    * functions) or to have the search function return indicators for
    * found names.  Yet another way is to use the keydb search
    * facilities directly. */
-  rc = getkey_bynames (ctrl, &ctx, NULL, names, secret, &keyblock);
+  rc = getkey_bynames (ctrl, &ctx, NULL, names,
+                       (GETKEY_ALLOW_ADSK
+                        | (secret ? GETKEY_WANT_SECRET : 0)),
+                       &keyblock);
   if (rc)
     {
       log_error ("error reading key: %s\n", gpg_strerror (rc));

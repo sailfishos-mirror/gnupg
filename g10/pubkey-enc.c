@@ -461,7 +461,7 @@ get_it (ctrl_t ctrl,
   {
     PKT_public_key *pk = NULL;
     PKT_public_key *mainpk = NULL;
-    KBNODE pkb = get_pubkeyblock_ext (ctrl, keyid, GET_PUBKEYBLOCK_FLAG_ADSK);
+    kbnode_t pkb = get_pubkeyblock_ext (ctrl, keyid, GETKEY_ALLOW_ADSK);
 
     if (!pkb)
       {

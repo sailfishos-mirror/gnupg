@@ -444,7 +444,8 @@ enum_secret_keys (ctrl_t ctrl, void **context, PKT_public_key *sk)
                   break;
 
                 case 5: /* Init search context to enum all secret keys.  */
-                  err = getkey_bynames (ctrl, &c->ctx, NULL, NULL, 1,
+                  err = getkey_bynames (ctrl, &c->ctx, NULL, NULL,
+                                        GETKEY_WANT_SECRET,
                                         &keyblock);
                   if (err)
                     {

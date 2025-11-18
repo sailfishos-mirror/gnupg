@@ -357,7 +357,6 @@ int get_pubkey_fast (ctrl_t ctrl, PKT_public_key *pk, u32 *keyid);
 kbnode_t get_pubkeyblock_for_sig (ctrl_t ctrl, PKT_signature *sig);
 
 /* Return the key block for the key with KEYID.  */
-#define GET_PUBKEYBLOCK_FLAG_ADSK  1 /* Allow returning ADSK key.  */
 kbnode_t get_pubkeyblock_ext (ctrl_t ctrl, u32 *keyid, unsigned int flags);
 kbnode_t get_pubkeyblock (ctrl_t ctrl, u32 *keyid);
 
@@ -387,6 +386,8 @@ enum get_pubkey_modes
 /* Other flags for functions in getkey.c  */
 #define GETKEY_WANT_SECRET   1  /* Only return keys having a secret key.  */
 #define GETKEY_WITH_UNUSABLE 2  /* Include unusable keys.  */
+#define GETKEY_ALLOW_ADSK    4  /* Always return ADSK keys.  */
+
 
 /* Find a public key identified by NAME.  */
 int get_pubkey_byname (ctrl_t ctrl, enum get_pubkey_modes mode,
@@ -453,7 +454,7 @@ gpg_error_t get_seckey_default_or_card (ctrl_t ctrl, PKT_public_key *pk,
 /* Search for keys matching some criteria.  */
 gpg_error_t getkey_bynames (ctrl_t ctrl,
                             getkey_ctx_t *retctx, PKT_public_key *pk,
-                            strlist_t names, int want_secret,
+                            strlist_t names, unsigned int flags,
                             kbnode_t *ret_keyblock);
 
 /* Search for one key matching some criteria.  */

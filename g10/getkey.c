@@ -613,6 +613,7 @@ get_pubkey_fast (ctrl_t ctrl, PKT_public_key * pk, u32 * keyid)
 
 /* Return the key block for the key with key id KEYID or NULL, if an
  * error occurs.  Use release_kbnode() to release the key block.
+ * The only supported FLAGS bit is GETKEY_ALLOW_ADSK.
  *
  * The self-signed data has already been merged into the public key
  * using merge_selfsigs.  */
@@ -633,7 +634,7 @@ get_pubkeyblock_ext (ctrl_t ctrl, u32 * keyid, unsigned int flags)
   ctx.items[0].mode = KEYDB_SEARCH_MODE_LONG_KID;
   ctx.items[0].u.kid[0] = keyid[0];
   ctx.items[0].u.kid[1] = keyid[1];
-  ctx.allow_adsk = !!(flags & GET_PUBKEYBLOCK_FLAG_ADSK);
+  ctx.allow_adsk = !!(flags & GETKEY_ALLOW_ADSK);
   rc = lookup (ctrl, &ctx, 0, &keyblock, NULL);
   getkey_end (ctrl, &ctx);
 
@@ -796,6 +797,10 @@ leave:
    (see the documentation for skip_unusable for an exact definition)
    are skipped unless they are looked up by key id or by fingerprint.
 
+   If the GETKEY_ALLOW_ADSK bit is set in FLAGS, ADSK keys are always
+   returned.  Without that they are only returned if they have been
+   requested by PK->REQ_USAGE.
+
    If RET_KB is not NULL, the keyblock is returned in *RET_KB.  This
    should be freed using release_kbnode().
 
@@ -884,6 +889,7 @@ key_byname (ctrl_t ctrl, GETKEY_CTX *retctx, strlist_t namelist,
     }
 
   ctx->want_secret = !!(flags & GETKEY_WANT_SECRET);
+  ctx->allow_adsk  = !!(flags & GETKEY_ALLOW_ADSK);
   ctx->kr_handle = keydb_new (ctrl);
   if (!ctx->kr_handle)
     {
@@ -897,6 +903,7 @@ key_byname (ctrl_t ctrl, GETKEY_CTX *retctx, strlist_t namelist,
 
   if (ret_kdbhd)
     keydb_lock (ctx->kr_handle);
+
 
   if (pk)
     {
@@ -2302,8 +2309,9 @@ get_seckey_default (ctrl_t ctrl, PKT_public_key *pk)
  * database does an OR of the terms, not an AND.)  If NAMES is
  * NULL, then all results are returned.
  *
- * If WANT_SECRET is set, then only keys with an available secret key
- * (either locally or via key registered on a smartcard) are returned.
+ * If GETKEY_WANT_SECRET is set in FLAGS, only keys with an available
+ * secret key (either locally or via key registered on a smartcard)
+ * are returned.
  *
  * This function does not skip unusable keys (see the documentation
  * for skip_unusable for an exact definition).
@@ -2316,11 +2324,10 @@ get_seckey_default (ctrl_t ctrl, PKT_public_key *pk)
  * (if want_secret is set) is returned if the key is not found.  */
 gpg_error_t
 getkey_bynames (ctrl_t ctrl, getkey_ctx_t *retctx, PKT_public_key *pk,
-                strlist_t names, int want_secret, kbnode_t *ret_keyblock)
+                strlist_t names, unsigned int flags, kbnode_t *ret_keyblock)
 {
   return key_byname (ctrl, retctx, names, pk,
-                     ((want_secret ? GETKEY_WANT_SECRET : 0)
-                      | GETKEY_WITH_UNUSABLE),
+                     (flags | GETKEY_WITH_UNUSABLE),
                      ret_keyblock, NULL);
 }
 
