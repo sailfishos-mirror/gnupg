@@ -89,14 +89,16 @@ static sqlite3 *database_hd;
 /* A lockfile used make sure only we are accessing the database.  */
 static dotlock_t database_lock;
 
-/* The version of our current database schema.  */
-#define DATABASE_VERSION 1
+/* The version of our current database schema and the maximum version
+ * supported without migration.  */
+#define DATABASE_VERSION 2
+#define DATABASE_VERSION_MAX 2
 
 /* Table definitions for the database.  */
 static struct
 {
   const char *sql;
-  int special;
+  const char *name;
 } table_definitions[] =
   {
    { "PRAGMA foreign_keys = ON" },
@@ -109,7 +111,7 @@ static struct
    { "CREATE TABLE IF NOT EXISTS config ("
      "name  TEXT NOT NULL UNIQUE,"
      "value TEXT NOT NULL "
-     ")", 1 },
+     ")", "config" },
 
    /* The actual data; either X.509 certificates or OpenPGP
     * keyblocks.  */
@@ -132,7 +134,7 @@ static struct
    { "CREATE TABLE IF NOT EXISTS fingerprint ("
      /* The fingerprint, for OpenPGP either 20 octets or 32 octets;
       * for X.509 it is the same as the UBID.  */
-     "fpr  BLOB NOT NULL PRIMARY KEY,"
+     "fpr  BLOB NOT NULL,"
      /* The long keyid as a 64 bit blob.  */
      "kid  BLOB NOT NULL,"
      /* The keygrip for this key.  */
@@ -142,12 +144,15 @@ static struct
      "subkey INTEGER NOT NULL,"
      /* The Unique Blob ID (possibly truncated fingerprint).  */
      "ubid BLOB NOT NULL REFERENCES pubkey"
-     ")"  },
+     ")", "fpr"  },
 
    /* Indices for the fingerprint table.  */
-   { "CREATE INDEX IF NOT EXISTS fingerprintidx0 on fingerprint (ubid)"    },
-   { "CREATE INDEX IF NOT EXISTS fingerprintidx1 on fingerprint (fpr)"     },
-   { "CREATE INDEX IF NOT EXISTS fingerprintidx2 on fingerprint (keygrip)" },
+   { "CREATE INDEX IF NOT EXISTS fingerprintidx0 on fingerprint (ubid)",
+     "fpr-index"    },
+   { "CREATE INDEX IF NOT EXISTS fingerprintidx1 on fingerprint (fpr)",
+     "fpr-index"    },
+   { "CREATE INDEX IF NOT EXISTS fingerprintidx2 on fingerprint (keygrip)",
+     "fpr-index"    },
 
    /* Table to allow fast access via user ids or mail addresses.  */
    { "CREATE TABLE IF NOT EXISTS userid ("
@@ -555,6 +560,82 @@ dblock_info_cb (dotlock_t h, void *opaque, enum dotlock_reasons reason,
   return rc;
 }
 
+
+/* Migrate from database version 1 to 2.  We need apply this change:
+ *        CREATE TABLE IF NOT EXISTS fingerprint (
+ *    -     fpr  BLOB NOT NULL PRIMARY KEY,
+ *    +     fpr  BLOB NOT NULL,
+ * That is dropping the wrong PRIMARY KEY constraint.  Unfortunately
+ * this is not a straightforward ALTER TABLE.  The function is only
+ * called from create_or_open_database but it is guaranteed that the
+ * database is open.
+ */
+static gpg_error_t
+migrate_from_v1_to_v2 (void)
+{
+  gpg_error_t err;
+  int idx;
+  const char *origsql = NULL;
+  char *sql = NULL;
+  int intransaction = 0;
+
+  log_info ("migrating database from version 1 to version 2\n");
+  for (idx=0; idx < DIM(table_definitions); idx++)
+    if (table_definitions[idx].name
+        && !strcmp (table_definitions[idx].name, "fpr"))
+      {
+        origsql = table_definitions[idx].sql;
+        break;
+      }
+  log_assert (origsql);
+  sql = replace_substr (origsql, " fingerprint ", " fingerprint_new ");
+  if (!sql)
+    return gpg_error_from_syserror ();
+
+  err = run_sql_statement ("begin transaction");
+  if (err)
+    goto leave;
+  intransaction = 1;
+  err = run_sql_statement (sql);
+  if (err)
+    goto leave;
+  err = run_sql_statement ("INSERT INTO fingerprint_new"
+                           " SELECT * FROM fingerprint");
+  if (err)
+    goto leave;
+  err = run_sql_statement ("DROP TABLE fingerprint");
+  if (err)
+    goto leave;
+  err = run_sql_statement ("ALTER TABLE fingerprint_new RENAME TO fingerprint");
+  if (err)
+    goto leave;
+  for (idx=0; idx < DIM(table_definitions); idx++)
+    if (table_definitions[idx].name
+        && !strcmp (table_definitions[idx].name, "fpr-index"))
+      {
+        err = run_sql_statement (table_definitions[idx].sql);
+        if (err)
+          goto leave;
+      }
+  err = set_config_value ("dbversion", STR2(DATABASE_VERSION));
+  if (err)
+    goto leave;
+  err = run_sql_statement ("commit");
+  if (err)
+    goto leave;
+  intransaction = 0;
+  log_info ("database migration succeeded\n");
+
+
+ leave:
+  if (intransaction && run_sql_statement ("rollback"))
+    log_error ("Warning: database rollback failed - should not happen!\n");
+  xfree (sql);
+  return err;
+}
+
+
+
 /* Create and initialize a new SQL database file if it does not
  * exists; else open it and check that all required objects are
  * available.  */
@@ -567,6 +648,7 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
   char *value;
   int dbversion;
   int setdbversion = 0;
+  int baddbversion = 0;
 
   acquire_mutex ();
 
@@ -631,12 +713,14 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
   sqlite3_extended_result_codes (database_hd, 1);
 
   /* Create the tables if needed.  */
+  dbversion = 0; /* unknown.  */
   for (idx=0; idx < DIM(table_definitions); idx++)
     {
       err = run_sql_statement (table_definitions[idx].sql);
       if (err)
         goto leave;
-      if (table_definitions[idx].special == 1)
+      if (table_definitions[idx].name
+          && !strcmp (table_definitions[idx].name, "config"))
         {
           /* Check and create dbversion etc entries.  */
           err = get_config_value ("dbversion", &value);
@@ -652,10 +736,11 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
               err = 0;
               dbversion = 0;
             }
-          else if ((dbversion = atoi (value)) < 1)
+          else if ((dbversion = atoi (value)) < DATABASE_VERSION
+                   || dbversion > DATABASE_VERSION_MAX)
             {
               log_error ("database version %d is not valid\n", dbversion);
-              dbversion = 0;
+              baddbversion = 1;
             }
           log_info ("database version: %d\n", dbversion);
 
@@ -674,8 +759,12 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
         }
     }
 
-  if (!opt.quiet)
-    log_info (_("database '%s' created\n"), filename);
+  if (opt.quiet)
+    ;
+  else if (setdbversion)
+    log_info ("database '%s' created\n", filename);
+  else
+    log_info ("database '%s' opened\n", filename);
 
   if (setdbversion)
     {
@@ -683,9 +772,19 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
       if (!err)
         err = set_config_value ("created", isotimestamp (gnupg_get_time ()));
     }
+  else if (dbversion == 1 && DATABASE_VERSION == 2)
+    err = migrate_from_v1_to_v2 ();
+  else if (baddbversion)
+    {
+      log_info ("no migration procedure for this database version available\n");
+      err = gpg_error (GPG_ERR_NOT_SUPPORTED);
+    }
+  else
+    err = 0;
 
+  if (err)
+    goto leave;
 
-  err = 0;
 
  leave:
   if (err)
