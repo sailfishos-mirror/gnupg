@@ -384,6 +384,10 @@ enum get_pubkey_modes
    GET_PUBKEY_TRY_LDAP = 3
   };
 
+/* Other flags for functions in getkey.c  */
+#define GETKEY_WANT_SECRET   1  /* Only return keys having a secret key.  */
+#define GETKEY_WITH_UNUSABLE 2  /* Include unusable keys.  */
+
 /* Find a public key identified by NAME.  */
 int get_pubkey_byname (ctrl_t ctrl, enum get_pubkey_modes mode,
                        GETKEY_CTX *retctx, PKT_public_key *pk,
