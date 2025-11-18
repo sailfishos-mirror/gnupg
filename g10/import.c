@@ -209,6 +209,9 @@ parse_import_options(char *str,unsigned int *options,int noisy)
       {"repair-keys", IMPORT_REPAIR_KEYS, NULL,
        N_("repair keys on import")},
 
+      {"force-update", IMPORT_FORCE_UPDATE, NULL,
+       N_("update even unchanged keys")},
+
       /* New options.  Right now, without description string.  */
       {"ignore-attributes", IMPORT_IGNORE_ATTRIBUTES, NULL, NULL},
 
@@ -2364,7 +2367,8 @@ import_one_real (ctrl_t ctrl,
                              NULL, NULL);
         }
 
-      if (n_uids || n_sigs || n_subk || n_sigs_cleaned || n_uids_cleaned)
+      if (n_uids || n_sigs || n_subk || n_sigs_cleaned || n_uids_cleaned
+          || (options & IMPORT_FORCE_UPDATE))
         {
           /* Unless we are in restore mode apply meta data to the
            * keyblock.  Note that this will never change the first packet
