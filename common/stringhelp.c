@@ -2,7 +2,7 @@
  * Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004, 2005, 2006, 2007,
  *               2008, 2009, 2010  Free Software Foundation, Inc.
  * Copyright (C) 2014 Werner Koch
- * Copyright (C) 2015, 2021  g10 Code GmbH
+ * Copyright (C) 2015, 2021, 2025  g10 Code GmbH
  *
  * This file is part of GnuPG.
  *
@@ -1718,6 +1718,37 @@ format_text (const char *text_in, int target_cols, int max_cols)
     text[strlen (text) - 1] = '\0';
 
   return text;
+}
+
+
+/* In STRING replace the first occurance of SUBSTR by the string
+ * REPLACE.  Return a new malloced string or set ERRNO and set NULL on
+ * error.  If SUBSTR is not found a verbatim copy of STRING is
+ * returned.  */
+char *
+replace_substr (const char *string, const char *substr, const char *replace)
+{
+  size_t stringlen, substrlen, replacelen, n;
+  const char *s;
+  char *buffer;
+
+  stringlen = strlen (string);
+  substrlen = strlen (substr);
+  replacelen = strlen (replace);
+
+  if (stringlen < substrlen || !(s = strstr (string, substr)))
+    return xtrystrdup (string);
+
+  stringlen -= substrlen;  /* Found thus sryinglen >= substrlen */
+  buffer = xtrymalloc (stringlen + replacelen +1);
+  if (!buffer)
+    return NULL;
+  memcpy (buffer, string, n=(s-string));
+  memcpy (buffer+n, replace, replacelen);
+  strcpy (buffer+n+replacelen, s+substrlen);
+
+
+  return buffer;
 }
 
 

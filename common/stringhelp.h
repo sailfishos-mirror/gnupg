@@ -170,6 +170,13 @@ int compare_version_strings (const char *my_version, const char *req_version);
 /* Format a string so that it fits within about TARGET_COLS columns.  */
 char *format_text (const char *text, int target_cols, int max_cols);
 
+
+/* Return a new malloced string with the first occurance of SUBSTR in
+ * STRING replaced by REPLACE.  Returns NULL on memory error.  */
+char *replace_substr (const char *string,
+                      const char *substr, const char *replace);
+
+
 /* Substitute variables in STRING.  */
 char *substitute_vars (const char *string,
                        const char *(*getval)(void *cookie, const char *name),
