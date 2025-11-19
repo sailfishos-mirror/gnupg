@@ -143,7 +143,9 @@ static struct
       * order number for the keys similar to uidno.  */
      "subkey INTEGER NOT NULL,"
      /* The Unique Blob ID (possibly truncated fingerprint).  */
-     "ubid BLOB NOT NULL REFERENCES pubkey"
+     "ubid BLOB NOT NULL REFERENCES pubkey,"
+     /* Various bit flags for future extensions.  */
+     "flags INTEGER NOT NULL DEFAULT 0"
      ")", "fpr"  },
 
    /* Indices for the fingerprint table.  */
