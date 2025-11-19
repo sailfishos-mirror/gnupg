@@ -2842,6 +2842,9 @@ msgstr "припускати формат резервних копій ключ
 msgid "repair keys on import"
 msgstr "відновлювати ключі при імпортуванні"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

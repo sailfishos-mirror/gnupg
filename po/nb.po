@@ -2801,6 +2801,9 @@ msgstr "forvent GnuPG-format på sikkerhetskopierte nøkler"
 msgid "repair keys on import"
 msgstr "reparer nøkler under importering"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

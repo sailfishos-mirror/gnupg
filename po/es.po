@@ -2846,6 +2846,9 @@ msgstr "asumir entrada en formato de backup de clave GnuPG"
 msgid "repair keys on import"
 msgstr "reparar claves al importar"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

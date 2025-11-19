@@ -2790,6 +2790,9 @@ msgstr "présumer le format GnuPG de sauvegarde de clef"
 msgid "repair keys on import"
 msgstr "réparer les clefs lors de l'importation"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

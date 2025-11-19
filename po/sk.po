@@ -2899,6 +2899,9 @@ msgstr ""
 msgid "repair keys on import"
 msgstr "vypísať fingerprint"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

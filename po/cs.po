@@ -2759,6 +2759,9 @@ msgstr "předpokládat vstup ve formátu zálohy klíčů GnuPG"
 msgid "repair keys on import"
 msgstr "při importu opravit klíče"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

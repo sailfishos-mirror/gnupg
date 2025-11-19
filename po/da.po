@@ -3022,6 +3022,9 @@ msgstr "antag inddata er i binært format"
 msgid "repair keys on import"
 msgstr "vis nøglefingeraftryk"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

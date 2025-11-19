@@ -2684,6 +2684,9 @@ msgstr "GnuPGの鍵のバックアップフォーマットを仮定します"
 msgid "repair keys on import"
 msgstr "インポートの際、鍵を修復する"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 msgid "do not import secret keys"
 msgstr "秘密鍵をインポートしない"
 

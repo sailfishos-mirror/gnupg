@@ -2775,6 +2775,9 @@ msgstr "assumir o formato de backup de chave GnuPG"
 msgid "repair keys on import"
 msgstr "reparar chaves ao importar"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 msgid "do not import secret keys"
 msgstr "não importar chaves secretas"
 

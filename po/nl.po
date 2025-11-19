@@ -2808,6 +2808,9 @@ msgstr "ervan uitgaan dat de indeling in GnuPG sleutelback-up is"
 msgid "repair keys on import"
 msgstr "sleutels repareren bij import"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

@@ -2718,6 +2718,9 @@ msgstr "GnuPG anahtar yedekleme biçimini varsay"
 msgid "repair keys on import"
 msgstr "içe aktarırken anahtarları onar"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 msgid "do not import secret keys"
 msgstr "gizli anahtarlar içe aktarma"
 

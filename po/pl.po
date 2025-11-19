@@ -2728,6 +2728,9 @@ msgstr "przyjęcie wejścia w formacie kopii zapasowej klucza GnuPG"
 msgid "repair keys on import"
 msgstr "naprawienie kluczy przy imporcie"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

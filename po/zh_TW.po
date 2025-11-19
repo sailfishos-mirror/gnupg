@@ -2656,6 +2656,9 @@ msgstr "假設使用 GnuPG 金鑰備份格式"
 msgid "repair keys on import"
 msgstr "匯入時修復金鑰"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

@@ -2978,6 +2978,9 @@ msgstr ""
 msgid "repair keys on import"
 msgstr "mostra empremta"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 #, fuzzy
 #| msgid "list secret keys"
 msgid "do not import secret keys"

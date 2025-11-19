@@ -2759,6 +2759,9 @@ msgstr "Eingabedaten sind im GnuPG Datensicherungsformat für Schlüssel"
 msgid "repair keys on import"
 msgstr "Schlüssel beim Import reparieren"
 
+msgid "update even unchanged keys"
+msgstr ""
+
 msgid "do not import secret keys"
 msgstr "Geheime Schlüssel nicht importieren"
 
