@@ -65,7 +65,6 @@ static const struct {
   { "ecdsa","pabgnqd", 6, 6, 1 },
   { "ecdh", "pabgnqd", 6, 6, 1 },
   { "ecc",  "pabgnqd", 6, 6, 1 },
-  { "ecc",  "pabgnqd", 6, 6, 1 },
   { "kyber512", "ps", 1, 1 },
   { "kyber768", "ps", 1, 1 },
   { "kyber1024", "ps", 1, 1 },
