@@ -694,7 +694,7 @@ agent_tpm2d_ecc_kem (ctrl_t ctrl, const unsigned char *shadow_info,
                      const unsigned char *ecc_ct,
                      size_t ecc_point_len, unsigned char *ecc_ecdh)
 {
-  (void)ctrl; (void)ecc_ct;
+  (void)ctrl; (void)shadow_info; (void)ecc_ct;
   (void)ecc_point_len; (void)ecc_ecdh;
   return gpg_error (GPG_ERR_NOT_SUPPORTED);
 }
