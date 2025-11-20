@@ -1245,11 +1245,13 @@ string_to_cipher_algo (const char *string)
   if (!val && string && (string[0]=='S' || string[0]=='s'))
     {
       char *endptr;
+      long longval;
 
       string++;
-      val = strtol (string, &endptr, 10);
-      if (!*string || *endptr || openpgp_cipher_test_algo (val))
-        val = 0;
+      longval = strtol (string, &endptr, 10);
+      if (*string && !*endptr && longval >= 0 && longval < 256
+          && openpgp_cipher_test_algo ((int)longval))
+        val = longval;
     }
 
   return val;
@@ -1272,17 +1274,20 @@ string_to_aead_algo (const char *string)
     result = 1;
   else if (!ascii_strcasecmp (string, "OCB"))
     result = 2;
-  else if ((string[0]=='A' || string[0]=='a'))
-    {
-      char *endptr;
-
-      string++;
-      result = strtol (string, &endptr, 10);
-      if (!*string || *endptr || result < 1 || result > 2)
-        result = 0;
-    }
   else
-    result = 0;
+    {
+      result = 0;
+      if ((string[0]=='A' || string[0]=='a'))
+        {
+          char *endptr;
+          long longval;
+
+          string++;
+          longval = strtol (string, &endptr, 10);
+          if (*string && !*endptr && longval >= 1 && longval <= 2)
+            result = longval;
+        }
+    }
 
   return result;
 }
@@ -1303,11 +1308,13 @@ string_to_digest_algo (const char *string)
   if (!val && string && (string[0]=='H' || string[0]=='h'))
     {
       char *endptr;
+      long longval;
 
       string++;
-      val = strtol (string, &endptr, 10);
-      if (!*string || *endptr || openpgp_md_test_algo (val))
-        val = 0;
+      longval = strtol (string, &endptr, 10);
+      if (*string && !*endptr && longval >= 0 && longval < 256
+          && openpgp_md_test_algo ((int)longval))
+        val = longval;
     }
 
   return val;
