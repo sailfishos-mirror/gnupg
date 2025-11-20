@@ -3441,6 +3441,7 @@ static int dns_aaaa_cmp0(const void *a, const void *b) {
 }
 
 size_t dns_aaaa_arpa(void *_dst, size_t lim, const struct dns_aaaa *aaaa) {
+	GPGRT_ATTR_NONSTRING
 	static const unsigned char hex[16] = "0123456789abcdef";
 	struct dns_buf dst = DNS_B_INTO(_dst, lim);
 	unsigned nyble;
@@ -4222,6 +4223,7 @@ static int dns_sshfp_cmp0(const void *a, const void *b) {
 
 
 size_t dns_sshfp_print(void *_dst, size_t lim, struct dns_sshfp *fp) {
+	GPGRT_ATTR_NONSTRING
 	static const unsigned char hex[16] = "0123456789abcdef";
 	struct dns_buf dst = DNS_B_INTO(_dst, lim);
 	size_t i;

@@ -5844,7 +5844,7 @@ void scheme_load_memory(scheme *sc, const char *buf, size_t len, const char *fil
 
 void scheme_define(scheme *sc, pointer envir, pointer symbol, pointer value) {
      pointer x;
-     pointer *sslot;
+     pointer *sslot = NULL;
      x = find_slot_spec_in_env(sc, envir, symbol, 0, &sslot);
      if (x != sc->NIL) {
           set_slot_in_env(sc, x, value);

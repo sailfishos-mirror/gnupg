@@ -3418,7 +3418,7 @@ cmd_keytocard (assuan_context_t ctx, char *line)
       timestamp = isotime2epoch (argv[3]);
       if (argc > 4)
         {
-          size_t n;
+          size_t n = 0;
 
           err = parse_hexstring (ctx, argv[4], &n);
           if (err)
