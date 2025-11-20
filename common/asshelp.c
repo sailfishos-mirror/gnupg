@@ -536,6 +536,8 @@ start_new_service (assuan_context_t *r_ctx,
           && assuan_socket_connect (ctx, sockname, 0, connect_flags))
         {
 #ifdef HAVE_W32_SYSTEM
+          gpgrt_process_t proc;
+
           /* On Windows we remove the socketname before creating it.
            * This is so that we can wait for a client which is
            * currently trying to connect.  The 10000 will make the
@@ -543,7 +545,40 @@ start_new_service (assuan_context_t *r_ctx,
            * violation to go away.  */
           gnupg_remove_ext (sockname, 10000);
           err = gpgrt_process_spawn (program? program : program_name, argv,
-                                     GPGRT_PROCESS_DETACHED, NULL, NULL);
+                                     (GPGRT_PROCESS_DETACHED
+                                      |GPGRT_PROCESS_STDIO_NUL
+                                      |GPGRT_PROCESS_STDOUT_PIPE
+                                      |GPGRT_PROCESS_STDERR_KEEP),
+                                     NULL, &proc);
+          if (!err)
+            {
+              int pipe_in;
+              err = gpgrt_process_get_fds (proc, 0, NULL, &pipe_in, NULL);
+              if (!err)
+                {
+                  char buf[256];
+                  int r;
+
+                  /* We wait until the child process says it's ready
+                     to serve, by reading from the pipe.  */
+                  r = read (pipe_in, buf, sizeof buf);
+                  close (pipe_in);
+                  if (r < 0)
+                    {
+                      if (verbose)
+                        log_info ("read from child process failed: %s\n",
+                                  strerror (errno));
+                      /*
+                       * Go ahead, ignoring the read error, so that
+                       * we can still support older Windows (< Vista).
+                       *
+                       * In future, we should return error with
+                       * GPG_ERR_SERVER_FAILED here.
+                       */
+                    }
+                }
+              gpgrt_process_release (proc);
+            }
 #else /*!W32*/
           err = gpgrt_process_spawn (program? program : program_name, argv,
                                      0, NULL, NULL);
@@ -763,3 +798,38 @@ warn_server_version_mismatch (assuan_context_t ctx,
   xfree (serverversion);
   return err;
 }
+
+
+#ifdef HAVE_W32_SYSTEM
+#include <fcntl.h>
+
+/*
+ * At the start of service (gpg-agent/dirmngr/keyboxd), after the
+ * preparation of socket, send "OK" (or "ERR 1") to the frontend
+ * (gpg/gpgsm).
+ */
+void
+w32_ack_to_frontend (void)
+{
+  int null_fd = open ("NUL", O_RDWR);
+
+  /* For the case of older Windows (< Vista), stdin/stdout/stder is
+   * invalid handle and write to stdout may fail.  We ignore this
+   * error.  */
+  if (null_fd < 0)
+    {
+      perror ("open failed");
+      /* Reply "General Error".  */
+      write (1, "ERR 1\n", 6);
+    }
+  else
+    {
+      /* Reply, it's OK (because it's ready to serve).  */
+      write (1, "OK\n", 3);
+      if (dup2 (null_fd, 1) < 0)
+        perror ("dup2 failed");
+      dup2 (null_fd, 2);
+      close (null_fd);
+    }
+}
+#endif
