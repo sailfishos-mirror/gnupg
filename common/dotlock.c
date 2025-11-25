@@ -331,7 +331,7 @@
 # define xfree(a)	   free ((a))
 #endif
 
-/* Wrapper to set ERRNO (required for W32CE).  */
+/* Wrapper to set ERRNO.  */
 #ifdef GPG_ERROR_VERSION
 #  define my_set_errno(e)  gpg_err_set_errno ((e))
 #else
@@ -460,10 +460,8 @@ map_w32_to_errno (DWORD w32_err)
       return EIO;
     }
 }
-#endif /*HAVE_DOSISH_SYSTEM*/
 
 
-#ifdef HAVE_W32_SYSTEM
 static int
 any8bitchar (const char *string)
 {
@@ -473,7 +471,7 @@ any8bitchar (const char *string)
         return 1;
   return 0;
 }
-#endif /*HAVE_W32_SYSTEM*/
+#endif /*HAVE_DOSISH_SYSTEM*/
 
 
 
@@ -982,6 +980,7 @@ dotlock_create_w32 (dotlock_t h, const char *file_to_lock)
       my_set_errno (saveerrno);
       return NULL;
     }
+  UNLOCK_all_lockfiles ();
   return h;
 }
 #endif /*HAVE_DOSISH_SYSTEM*/
@@ -1501,7 +1500,7 @@ dotlock_take_w32 (dotlock_t h, long timeout)
         h->info_cb (h, h->info_cb_value, DOTLOCK_FILE_ERROR,
                     _("lock '%s' not made: %s\n"),
                     h->lockname, w32_strerror (w32err));
-      _set_errno (map_w32_to_errno (w32err));
+      my_set_errno (map_w32_to_errno (w32err));
       return -1;
     }
 
