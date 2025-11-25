@@ -110,8 +110,8 @@ enum dotlock_reasons
 
 /* Flags for dotlock_create.  */
 #define DOTLOCK_PREPARE_CREATE (1U << 5) /* Require dotlock_finish_create.  */
-#define DOTLOCK_LOCK_BY_PARENT (1U << 6) /* Used by dotlock util.  */
-#define DOTLOCK_LOCKED         (1U << 7) /* Used by dotlock util.  */
+#define DOTLOCK_LOCK_BY_PARENT (1U << 6) /* Used by dotlock_tool.  */
+#define DOTLOCK_LOCKED         (1U << 7) /* Used by dotlock_tool.  */
 
 void dotlock_disable (void);
 dotlock_t dotlock_create (const char *file_to_lock, unsigned int flags);

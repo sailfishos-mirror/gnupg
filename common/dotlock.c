@@ -159,7 +159,7 @@
    which is the core of the installed atexit handler.  In case your
    application wants to disable locking completely it may call
 
-     disable_locking ()
+     dotlock_disable ()
 
    before any locks are created.
 
@@ -374,12 +374,12 @@
 struct dotlock_handle
 {
   struct dotlock_handle *next;
-  char *lockname;            /* Name of the actual lockfile.          */
-  unsigned int locked:1;     /* Lock status.                          */
-  unsigned int disable:1;    /* If true, locking is disabled.         */
-  unsigned int use_o_excl:1; /* Use open (O_EXCL) for locking.        */
-  unsigned int by_parent:1;  /* Parent does the locking.              */
-  unsigned int no_write:1;   /* No write to the lockfile.             */
+  char *lockname;             /* Name of the actual lockfile.          */
+  unsigned int locked     :1; /* Lock status.                          */
+  unsigned int disable    :1; /* If true, locking is disabled.         */
+  unsigned int use_o_excl :1; /* Use open (O_EXCL) for locking.        */
+  unsigned int by_parent  :1; /* Parent does the locking.              */
+  unsigned int no_write   :1; /* No write to the lockfile.             */
 
   int extra_fd;              /* A place for the caller to store an FD.  */
 
@@ -1005,10 +1005,11 @@ dotlock_create_w32 (dotlock_t h, const char *file_to_lock)
    This can be used to set a callback between these calls.
 
    FLAGS may include DOTLOCK_LOCK_BY_PARENT bit, when it's the parent
-   process controlling the lock.  This is used by dotlock util.
+   process controlling the lock.  This is used by dotlock_tool in
+   gpgconf.
 
    FLAGS may include DOTLOCK_LOCKED bit, when it should not create the
-   lockfile, but to unlock.  This is used by dotlock util.
+   lockfile, but to unlock.  This is used by dotlock_tool in gpgconf.
 
    The function returns an new handle which needs to be released using
    destroy_dotlock but gets also released at the termination of the
