@@ -793,8 +793,6 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
     {
       log_error (_("error creating database '%s': %s\n"),
                  filename, gpg_strerror (err));
-      if (dotlock_is_locked (database_lock))
-        dotlock_release (database_lock);
       dotlock_destroy (database_lock);
       database_lock = NULL;
     }
