@@ -1548,7 +1548,7 @@ dotlock_take (dotlock_t h, long timeout)
 
   if ( h->locked )
     {
-      my_debug_1 ("Oops, '%s' is already locked\n", h->lockname);
+      my_info_1 ("Oops, '%s' is already locked\n", h->lockname);
       return 0;
     }
 
@@ -1659,10 +1659,13 @@ dotlock_release (dotlock_t h)
 
   if ( !h->locked )
     {
-      my_debug_1 ("Oops, '%s' is not locked\n", h->lockname);
-      if (h->info_cb)
-        h->info_cb (h, h->info_cb_value, DOTLOCK_NOT_LOCKED,
-                    "Oops, '%s' is not locked\n", h->lockname);
+      if (!never_lock)
+        {
+          my_info_1 ("Oops, '%s' is not locked\n", h->lockname);
+          if (h->info_cb)
+            h->info_cb (h, h->info_cb_value, DOTLOCK_NOT_LOCKED,
+                        "Oops, '%s' is not locked\n", h->lockname);
+        }
       return 0;
     }
 
