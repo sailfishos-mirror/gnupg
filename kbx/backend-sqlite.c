@@ -557,7 +557,15 @@ dblock_info_cb (dotlock_t h, void *opaque, enum dotlock_reasons reason,
           log_error ("sending status line failed: %s\n", gpg_strerror (err));
           rc = 1;  /* snprintf failed.  */
         }
+    }
+  else
+    {
+      va_start (arg_ptr, format);
+      log_logv (GPGRT_LOGLVL_INFO, format, arg_ptr);
+      va_end (arg_ptr);
 
+      if (reason == DOTLOCK_FATAL)
+        abort ();
     }
   return rc;
 }
@@ -664,7 +672,7 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
   /* To avoid races with other temporary instances of keyboxd trying
    * to create or update the database, we run the database with a lock
    * file held. */
-  database_lock = dotlock_create (filename, DOTLOCK_PREPARE_CREATE);
+  database_lock = dotlock_create_with (filename, 0, dblock_info_cb, ctrl);
   if (!database_lock)
     {
       err = gpg_error_from_syserror ();
@@ -672,8 +680,6 @@ create_or_open_database (ctrl_t ctrl, const char *filename)
         log_info ("can't allocate dotlock handle: %s\n", gpg_strerror (err));
       goto leave;
     }
-  dotlock_set_info_cb (database_lock, dblock_info_cb, ctrl);
-  database_lock = dotlock_finish_create (database_lock, filename);
   if (!database_lock)
     {
       err = gpg_error_from_syserror ();
