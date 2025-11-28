@@ -189,7 +189,7 @@ struct
 #define DBG_EXTPROG (opt.debug & DBG_EXTPROG_VALUE)
 
 /* Compatibility flags */
-/* None so far.  */
+#define COMPAT_OCSP_SHA256_CERTID   1
 
 
 /* A simple list of certificate references.  FIXME: Better use
