@@ -830,11 +830,10 @@ keydb_add_resource (const char *url, unsigned int flags)
                     if (!keybox_lock (kbxhd, 1, 0))
                       {
                         keybox_compress (kbxhd);
-                        keybox_release (kbxhd);
                         keybox_lock (kbxhd, 0, 0);
                       }
-                    else
-                      keybox_release (kbxhd);
+
+                    keybox_release (kbxhd);
                   }
 
                 used_resources++;
