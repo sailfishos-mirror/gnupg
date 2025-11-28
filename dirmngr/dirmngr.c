@@ -340,6 +340,7 @@ static struct debug_flags_s debug_flags [] =
 static struct compatibility_flags_s compatibility_flags [] =
   {
     { COMPAT_RESTRICT_HTTP_REDIR, "restrict-http-redir" },
+    { COMPAT_OCSP_SHA256_CERTID, "ocsp-sha256-certid" },
     { 0, NULL }
   };
 
@@ -487,9 +488,9 @@ my_strusage( int level )
 
 
 /* Callback from libksba to hash a provided buffer.  Our current
-   implementation does only allow SHA-1 for hashing. This may be
-   extended by mapping the name, testing for algorithm availability
-   and adjust the length checks accordingly. */
+ * implementation does only allow SHA-1 and SHA-256 for hashing. This
+ * may be extended by mapping the name, testing for algorithm
+ * availibility and adjust the length checks accordingly.  */
 static gpg_error_t
 my_ksba_hash_buffer (void *arg, const char *oid,
                      const void *buffer, size_t length, size_t resultsize,
@@ -497,12 +498,22 @@ my_ksba_hash_buffer (void *arg, const char *oid,
 {
   (void)arg;
 
-  if (oid && strcmp (oid, "1.3.14.3.2.26"))
+  if (!oid || !strcmp (oid, "1.3.14.3.2.26"))
+    {
+      if (resultsize < 20)
+        return gpg_error (GPG_ERR_BUFFER_TOO_SHORT);
+      gcry_md_hash_buffer (GCRY_MD_SHA1, result, buffer, length);
+      *resultlen = 20;
+    }
+  else if (!strcmp (oid, "2.16.840.1.101.3.4.2.1"))
+    {
+      if (resultsize < 32)
+        return gpg_error (GPG_ERR_BUFFER_TOO_SHORT);
+      gcry_md_hash_buffer (GCRY_MD_SHA256, result, buffer, length);
+      *resultlen = 32;
+    }
+  else
     return gpg_error (GPG_ERR_NOT_SUPPORTED);
-  if (resultsize < 20)
-    return gpg_error (GPG_ERR_BUFFER_TOO_SHORT);
-  gcry_md_hash_buffer (2, result, buffer, length);
-  *resultlen = 20;
   return 0;
 }
 

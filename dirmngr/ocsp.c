@@ -165,6 +165,10 @@ do_ocsp_request (ctrl_t ctrl, ksba_ocsp_t ocsp,
       return err;
     }
 
+  /* Tell Libksba to use SHA256 for hashing elements of the CERTID.  */
+  if ((opt.compat_flags & COMPAT_OCSP_SHA256_CERTID))
+    ksba_ocsp_set_nonce (ocsp, NULL, 32);
+
   {
     size_t n;
     unsigned char nonce[32];

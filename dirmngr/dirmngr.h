@@ -207,6 +207,10 @@ struct
  * https://dev.gnupg.org/T6477.  */
 #define COMPAT_RESTRICT_HTTP_REDIR   1
 
+/* There is a demand to use SHA-256 for hashing elements of the OCSP
+ * CertID.  Allow to enable this with a recent enough Libksba.  */
+#define COMPAT_OCSP_SHA256_CERTID   2
+
 
 /* A simple list of certificate references.  FIXME: Better use
    certlist_t also for references (Store NULL at .cert) */
