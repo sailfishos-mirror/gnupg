@@ -1,5 +1,15 @@
-Noteworthy changes in version 2.2.52 (unreleased)
+Noteworthy changes in version 2.2.52 (2025-12-01)
 -------------------------------------------------
+
+  * gpg: Fix crash during gpg startup.  This bug was introduced with
+    2.2.50 but showed up only on slower boxes.  [rG31fef13df1]
+
+  * gpgsm: Fix output of card serial number in colon listing.  [T7914]
+
+  * dirmngr: Add compatibility flag "ocsp-sha256-certid" for use with
+    a forthcoming version of LibKSBA.  [rG8fdf2ae9dd]
+
+  Release-info: https://dev.gnupg.org/T7959
 
 
 Noteworthy changes in version 2.2.51 (2025-10-28)
