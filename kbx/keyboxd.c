@@ -424,7 +424,7 @@ finalize_rereadable_options (void)
 
 
 static void
-thread_init_once (void)
+keyboxd_thread_init_once (void)
 {
   static int npth_initialized = 0;
 
@@ -447,7 +447,7 @@ thread_init_once (void)
 static void
 initialize_modules (void)
 {
-  thread_init_once ();
+  keyboxd_thread_init_once ();
 }
 
 
@@ -668,7 +668,7 @@ main (int argc, char **argv )
 
   if (debug_wait && pipe_server)
     {
-      thread_init_once ();
+      keyboxd_thread_init_once ();
       log_debug ("waiting for debugger - my pid is %u .....\n",
                  (unsigned int)getpid());
       gnupg_sleep (debug_wait);
