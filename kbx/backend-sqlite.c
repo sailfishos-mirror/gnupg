@@ -1721,7 +1721,7 @@ be_sqlite_store (ctrl_t ctrl, backend_handle_t backend_hd,
     }
   else
     {
-      err = _keybox_parse_openpgp (blob, bloblen, NULL, &info);
+      err = _keybox_parse_openpgp (blob, bloblen, 0, NULL, &info);
       if (err)
         {
           log_info ("error parsing OpenPGP blob: %s\n", gpg_strerror (err));

@@ -864,6 +864,33 @@ keydb_search (KEYDB_HANDLE hd, KEYDB_SEARCH_DESC *desc,
   err = kbx_client_data_cmd (hd->kbl->kcd, line, search_status_cb, hd);
   if (!err && !(err = kbx_client_data_wait (hd->kbl->kcd, &buffer, &len)))
     {
+      int any;
+      u32 kid[2];
+
+      for (any = i = 0; i < ndesc && !any; i++)
+        if (desc[i].skipfnc)
+          any = 1;
+
+      if (any)
+        {
+          err = kbx_get_first_opgp_keyid (buffer, len, kid);
+          if (err)
+            {
+              log_info ("error getting keyid for skipping callback: %s\n",
+                        gpg_strerror (err));
+              goto leave;
+            }
+          for (i = 0; i < ndesc; i++)
+            if (desc[i].skipfnc (desc[i].skipfncvalue, kid, hd->last_uid_no))
+              { /* Callback told us to skip this one.  */
+                if (DBG_KEYDB && hd->last_ubid_valid)
+                  log_printhex (hd->last_ubid, 20, "skipped UBID (%d,%d):",
+                                hd->last_uid_no, hd->last_pk_no);
+                snprintf (line, sizeof line, "NEXT");
+                goto do_search;  /* again */
+              }
+        }
+
       hd->kbl->search_result = iobuf_temp_with_content (buffer, len);
       xfree (buffer);
       if (DBG_KEYDB && hd->last_ubid_valid)

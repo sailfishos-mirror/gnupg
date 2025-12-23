@@ -275,7 +275,7 @@ be_ubid_from_blob (const void *blob, size_t bloblen,
     {
       struct _keybox_openpgp_info info;
 
-      err = _keybox_parse_openpgp (blob, bloblen, NULL, &info);
+      err = _keybox_parse_openpgp (blob, bloblen, 0, NULL, &info);
       if (err)
         {
           log_info ("error parsing OpenPGP blob: %s\n", gpg_strerror (err));

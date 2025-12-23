@@ -546,9 +546,11 @@ parse_key (const unsigned char *data, size_t datalen,
    keyblock IMAGE of length IMAGELEN.  Note that a caller does only
    need to release this INFO structure if the function returns
    success.  If NPARSED is not NULL the actual number of bytes parsed
-   will be stored at this address.  */
+   will be stored at this address.  If ONLY_PRIMARY is set the parsing
+   stops right after the primart key packet.  */
 gpg_error_t
 _keybox_parse_openpgp (const unsigned char *image, size_t imagelen,
+                       int only_primary,
                        size_t *nparsed, keybox_openpgp_info_t info)
 {
   gpg_error_t err = 0;
@@ -626,7 +628,7 @@ _keybox_parse_openpgp (const unsigned char *image, size_t imagelen,
       else if (pkttype == PKT_PUBLIC_KEY || pkttype == PKT_SECRET_KEY)
         {
           err = parse_key (data, datalen, &info->primary);
-          if (err)
+          if (err || only_primary)
             break;
         }
       else if( pkttype == PKT_PUBLIC_SUBKEY && datalen && *data == '#' )
@@ -728,4 +730,21 @@ _keybox_destroy_openpgp_info (keybox_openpgp_info_t info)
       u2 = u->next;
       xfree (u);
     }
+}
+
+
+gpg_error_t
+kbx_get_first_opgp_keyid (const void *buffer, size_t len, u32 *kid)
+{
+  struct _keybox_openpgp_info info;
+  gpg_error_t err;
+
+  err = _keybox_parse_openpgp (buffer, len, 1 /*only primary*/, NULL, &info);
+  if (err)
+    return err;
+
+  kid[0] = buf32_to_u32 (info.primary.keyid);
+  kid[1] = buf32_to_u32 (info.primary.keyid+4);
+  _keybox_destroy_openpgp_info (&info);
+  return 0;
 }

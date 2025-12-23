@@ -376,7 +376,7 @@ keybox_insert_keyblock (KEYBOX_HANDLE hd, const void *image, size_t imagelen)
      the write operation.  */
   _keybox_close_file (hd);
 
-  err = _keybox_parse_openpgp (image, imagelen, &nparsed, &info);
+  err = _keybox_parse_openpgp (image, imagelen, 0, &nparsed, &info);
   if (err)
     return err;
   assert (nparsed <= imagelen);
@@ -427,7 +427,7 @@ keybox_update_keyblock (KEYBOX_HANDLE hd, const void *image, size_t imagelen)
   _keybox_close_file (hd);
 
   /* Build a new blob.  */
-  err = _keybox_parse_openpgp (image, imagelen, &nparsed, &info);
+  err = _keybox_parse_openpgp (image, imagelen, 0, &nparsed, &info);
   if (err)
     return err;
   assert (nparsed <= imagelen);

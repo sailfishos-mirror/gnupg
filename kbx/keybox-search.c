@@ -589,7 +589,7 @@ blob_openpgp_has_grip (KEYBOXBLOB blob, const unsigned char *grip)
   if ((uint64_t)cert_off+(uint64_t)cert_len > (uint64_t)length)
     return 0; /* Too short.  */
 
-  if (_keybox_parse_openpgp (buffer + cert_off, cert_len, NULL, &info))
+  if (_keybox_parse_openpgp (buffer + cert_off, cert_len, 0, NULL, &info))
     return 0; /* Parse error.  */
 
   if (!memcmp (info.primary.grip, grip, 20))
