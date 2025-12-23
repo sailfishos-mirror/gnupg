@@ -332,7 +332,7 @@ main (int argc, char **argv)
   fputs ("\n@c Algorithm defaults\n\n", stdout);
 
   /* Fixme: Use a config.h macro here:  */
-  fputs ("@set GPGSYMENCALGO AES-128\n", stdout);
+  fputs ("@set GPGSYMENCALGO AES-256\n", stdout);
 
   fputs ("\n@c Macros\n\n", stdout);
 

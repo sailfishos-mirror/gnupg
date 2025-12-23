@@ -3194,7 +3194,7 @@ This option is obsolete; it is handled as an alias for @option{--pgp7}
 @item --pgp7
 @opindex pgp7
 Set up all options to be as PGP 7 compliant as possible. This allowed
-the ciphers IDEA, 3DES, CAST5,AES128, AES192, AES256, and TWOFISH.,
+the ciphers IDEA, 3DES, CAST5, AES128, AES192, AES256, and TWOFISH.,
 the hashes MD5, SHA1 and RIPEMD160, and the compression algorithms
 none and ZIP.  This option implies @option{--escape-from-lines} and
 disables @option{--throw-keyids},
