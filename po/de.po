@@ -7,9 +7,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg-2.4.1\n"
+"Project-Id-Version: gnupg-2.5.15\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-10-21 11:27+0200\n"
+"PO-Revision-Date: 2025-12-23 16:01+0100\n"
 "Last-Translator: Werner Koch <wk@gnupg.org>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -2760,7 +2760,7 @@ msgid "repair keys on import"
 msgstr "Schlüssel beim Import reparieren"
 
 msgid "update even unchanged keys"
-msgstr ""
+msgstr "Auch unveränderte Schlüssel importieren"
 
 msgid "do not import secret keys"
 msgstr "Geheime Schlüssel nicht importieren"
