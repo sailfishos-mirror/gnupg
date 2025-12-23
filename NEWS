@@ -3,7 +3,7 @@ Noteworthy changes in version 2.5.15 (unreleased)
 
   * gpg: Fix a validation bug when using keyboxd.  [T7983]
 
-  * keyboxd: Fix migration to new schema.  [T7892]
+  * keyboxd: Fix migration to new schema.  [T7892,rG81bb949755]
 
   * dirmngr: New compatibility flag "ocsp-sha256-certid" to support
     forthcoming libksba versions.  [rG674aa54242]
@@ -11,7 +11,7 @@ Noteworthy changes in version 2.5.15 (unreleased)
   * Use a synchronous spawning method for the daemon processes under
     Windows.  [T7716]
 
-  * Avoid the function name thread_init to fix a build problem on AIX.
+  * Avoid the function name thread_init to fix building on AIX.
     [T7958]
 
   * New translation to Georgian.

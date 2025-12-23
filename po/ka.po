@@ -505,6 +505,10 @@ msgid "a gpg-agent is already running - not starting a new one\n"
 msgstr "gpg-agent უკვე გაშვებულია - ახალი არ გაეშვება\n"
 
 #, c-format
+msgid "socket file removed - retrying binding\n"
+msgstr ""
+
+#, c-format
 msgid "error getting nonce for the socket\n"
 msgstr ""
 
@@ -1351,6 +1355,13 @@ msgstr "ნაძალადევია"
 msgid "Please try command \"%s\" if the listing does not look correct\n"
 msgstr ""
 
+#, c-format
+msgid ""
+"Please note that the factory settings of the PINs are\n"
+"   PIN = '%s'     Admin PIN = '%s'\n"
+"You should change them using the command --change-pin\n"
+msgstr ""
+
 msgid "Error: Only plain ASCII is currently allowed.\n"
 msgstr "შეცდომა: ამჟამად დაშვებულია, მხოლოდ, უბრალო ASCII.\n"
 
@@ -1500,13 +1511,6 @@ msgstr "შენიშვნა: ამ ბარათზე გასაღ�
 msgid "Replace existing keys? (y/N) "
 msgstr "ჩანაცვლდეს არსებული გასაღებები? (y/N) "
 
-#, c-format
-msgid ""
-"Please note that the factory settings of the PINs are\n"
-"   PIN = '%s'     Admin PIN = '%s'\n"
-"You should change them using the command --change-pin\n"
-msgstr ""
-
 msgid "Please select the type of key to generate:\n"
 msgstr "აირჩიეთ გასაღების ტიპი გენერაციისთვის:\n"
 
@@ -1623,8 +1627,9 @@ msgstr "ადმინის ბრძანებები დაშვებ�
 msgid "Invalid command  (try \"help\")\n"
 msgstr "არასწორი ბრძანება  (სცადეთ \"help\")\n"
 
-#, c-format
-msgid "modifiying the recipients is not possible: %s\n"
+#, fuzzy, c-format
+#| msgid "modifiying the recipients is not possible: %s\n"
+msgid "modifying the recipients is not possible: %s\n"
 msgstr "მიმღებების შეცვლა შეუძლებელია: %s\n"
 
 msgid "decryption failed"
@@ -1772,6 +1777,11 @@ msgstr "წაშლილი მიმღებების რაოდენ�
 #, c-format
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "პარამეტრს '%s' რეჟიმში %s ვერ გამოიყენებთ\n"
+
+#, fuzzy, c-format
+#| msgid "can't encrypt to '%s'\n"
+msgid "already encrypted to %08lX\n"
+msgstr "'%s'-მდე დაშიფვრა შეუძლებელია\n"
 
 #, c-format
 msgid "%s encrypted data\n"
@@ -1955,6 +1965,11 @@ msgstr "გასაღების სწრაფი ხელმოწერ�
 
 msgid "quickly sign a key locally"
 msgstr "გასაღების ლოკალურად სწრაფი ხელმოწერა"
+
+#, fuzzy
+#| msgid "quickly revoke a key signature"
+msgid "quickly sign a key with a trust signature"
+msgstr "გასაღების ხელმოწერის სწრაფი გაუქმება"
 
 msgid "quickly revoke a key signature"
 msgstr "გასაღების ხელმოწერის სწრაფი გაუქმება"
@@ -2235,6 +2250,11 @@ msgstr "პარამეტრების ჩვენება"
 
 msgid "show ownertrust"
 msgstr "მფლობელის ნდობის ჩვენება"
+
+#, fuzzy
+#| msgid "Unknown critical signature notation: "
+msgid "show trust signature information"
+msgstr "უცნობი კრიტიკული ხელმოწერის ნოტაცია: "
 
 #, c-format
 msgid "unknown TOFU policy '%s'\n"
@@ -2569,6 +2589,9 @@ msgstr ""
 msgid "|ALGO|reject signatures made with ALGO"
 msgstr ""
 
+msgid "|NAME|print the notation NAME to stdout"
+msgstr ""
+
 msgid "Usage: gpgv [options] [files] (-h for help)"
 msgstr "გამოყენება: gpgv [პარამეტრები] [ფაილები] (-h დახმარებისთვის)"
 
@@ -2627,6 +2650,14 @@ msgstr "GnuPG-ის გასაღების მარქაფის ფო
 
 msgid "repair keys on import"
 msgstr "გასაღებების შეკეთება შემოტანისას"
+
+msgid "update even unchanged keys"
+msgstr ""
+
+#, fuzzy
+#| msgid "list secret keys"
+msgid "do not import secret keys"
+msgstr "საიდუმლო გასაღებების სია"
 
 #, c-format
 msgid "skipping block of type %d\n"
@@ -2887,10 +2918,6 @@ msgstr "მომხმარებლის ID სწორი აღარა�
 #, c-format
 msgid "reason for revocation: "
 msgstr "გაუქმების მიზეზი: "
-
-#, c-format
-msgid "revocation comment: "
-msgstr "გაუქმების კომენტარი: "
 
 #, c-format
 msgid "key %s: no public key - can't apply revocation certificate\n"
@@ -3541,6 +3568,11 @@ msgstr "შესაბამისი მომხმარებლის ID-�
 msgid "Nothing to sign.\n"
 msgstr "ხელმოსაწერი არაფერია.\n"
 
+#, fuzzy, c-format
+#| msgid "revoking the key signature failed: %s\n"
+msgid "creating key signature failed: %s\n"
+msgstr "გასაღების ხელმოწერის გაუქმება ჩავარდა: %s\n"
+
 #, c-format
 msgid "Not signed by you.\n"
 msgstr "თქვენს მიერ არაა ხელმოწერილი.\n"
@@ -4040,6 +4072,11 @@ msgstr "  (%d) არსებული გასაღები%s\n"
 msgid "  (%d) Existing key from card%s\n"
 msgstr "  (%d) არსებული გასაღები ბარათიდან%s\n"
 
+#, fuzzy, c-format
+#| msgid "   (%d) ECC (sign and encrypt)%s\n"
+msgid "  (%d) ECC and Kyber%s\n"
+msgstr "   (%d) ECC (ხელმოწერა და დაშიფვრა)%s\n"
+
 #, c-format
 msgid "  (%d) Kyber (encrypt only)%s\n"
 msgstr "  (%d) Kyber (მხოლოდ დაშიფვრა)%s\n"
@@ -4083,6 +4120,11 @@ msgstr "მოთხოვნილი გასაღების ზომა�
 
 msgid "Please select which elliptic curve you want:\n"
 msgstr ""
+
+#, fuzzy, c-format
+#| msgid "Please select what kind of key you want:\n"
+msgid "Please select the %s variant you want:\n"
+msgstr "აირჩიეთ, რომელი ტიპის გასაღები გნებავთ:\n"
 
 msgid ""
 "Please specify how long the key should be valid.\n"
@@ -4279,6 +4321,12 @@ msgstr "ვერ შევქმენი მარქაფის ფაილ
 msgid "Note: backup of card key saved to '%s'\n"
 msgstr ""
 
+msgid ""
+"Warning: Although the key has been written to the card, a backup file was\n"
+"         not properly written to the disk.  You may want to repeat the\n"
+"         entire operation or just create a new encryption key on the card.\n"
+msgstr ""
+
 #, c-format
 msgid "writing public key to '%s'\n"
 msgstr "საჯარო გასაღები იწერება '%s'-ზე\n"
@@ -4379,6 +4427,10 @@ msgstr[1] "გაფრთხილება: გამოტოვებულ�
 msgid "Keyring"
 msgstr "ბრელოკი"
 
+#, c-format
+msgid "revocation comment: "
+msgstr "გაუქმების კომენტარი: "
+
 msgid "Revocable by: "
 msgstr "ვის შეუძლია გაუქმება: "
 
@@ -4450,6 +4502,9 @@ msgstr ""
 msgid "honor the preferred keyserver URL set on the key"
 msgstr ""
 
+msgid "update a key before sending it"
+msgstr ""
+
 msgid "disabled"
 msgstr "გამორთულია"
 
@@ -4463,6 +4518,11 @@ msgstr ""
 #, c-format
 msgid "\"%s\" not a key ID: skipping\n"
 msgstr "\"%s\" გასაღების ID არაა: გამოტოვება\n"
+
+#, fuzzy, c-format
+#| msgid "\"%s\" is not a fingerprint\n"
+msgid "\"%s\" not a fingerprint: skipping\n"
+msgstr "\"%s\" ანაბეჭდი არაა\n"
 
 #, c-format
 msgid "refreshing %d key from %s\n"
@@ -4489,6 +4549,10 @@ msgstr "გასაღების %s მოთხოვნა %s-დან\n"
 #, c-format
 msgid "no keyserver known\n"
 msgstr "ცნობილი გასაღებების სერვერის გარეშე\n"
+
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
 
 #, c-format
 msgid "skipped \"%s\": %s\n"
@@ -4807,6 +4871,11 @@ msgstr "შეუკუმშავი|არცერთი"
 #, c-format
 msgid "this message may not be usable by %s\n"
 msgstr ""
+
+#, fuzzy
+#| msgid "enable key"
+msgid "enabled"
+msgstr "გასაღების ჩართვა"
 
 #, c-format
 msgid "ambiguous option '%s'\n"
@@ -5258,6 +5327,10 @@ msgstr ""
 #, c-format
 msgid "okay, we are the anonymous recipient.\n"
 msgstr "კარგი, ჩვენ ანონიმური მიმღებები ვართ.\n"
+
+#, c-format
+msgid "WARNING: session key is not quantum-resistant\n"
+msgstr ""
 
 #, c-format
 msgid "old encoding of the DEK is not supported\n"
@@ -7167,10 +7240,6 @@ msgstr "შეცდომა - "
 #, c-format
 msgid "error writing to output: %s\n"
 msgstr "გამოტანაზე ჩაწერის შეცდომა: %s\n"
-
-#, c-format
-msgid "GPG_TTY has not been set - using maybe bogus default\n"
-msgstr ""
 
 #, c-format
 msgid "invalid formatted fingerprint in '%s', line %d\n"
