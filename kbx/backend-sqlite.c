@@ -1451,10 +1451,10 @@ be_sqlite_search (ctrl_t ctrl,
                          gpg_strerror (err));
               uid_no = 0;
             }
-          else if (n < 0)
-            uid_no = 0;
+          else if (n < 1)
+            uid_no = 0;  /* Also the reserved index for the X.509 issuer.  */
           else
-            uid_no = n + 1;
+            uid_no = n;
         }
       else
         uid_no = 0;
@@ -1471,9 +1471,9 @@ be_sqlite_search (ctrl_t ctrl,
               goto leave;
             }
           else if (n < 0)
-            pk_no = 0;
+            pk_no = 0;  /* (should not be seen.) */
           else
-            pk_no = n + 1;
+            pk_no = n;
         }
       else
         pk_no = 0;
