@@ -3,6 +3,8 @@ Noteworthy changes in version 2.5.15 (unreleased)
 
   * gpg: Fix a validation bug when using keyboxd.  [T7983]
 
+  * keyboxd: Fix migration to new schema.  [T7892]
+
   * dirmngr: New compatibility flag "ocsp-sha256-certid" to support
     forthcoming libksba versions.  [rG674aa54242]
 

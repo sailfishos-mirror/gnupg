@@ -601,7 +601,8 @@ migrate_from_v1_to_v2 (void)
   err = run_sql_statement (sql);
   if (err)
     goto leave;
-  err = run_sql_statement ("INSERT INTO fingerprint_new"
+  err = run_sql_statement ("INSERT"
+                           " INTO fingerprint_new(fpr,kid,keygrip,subkey,ubid)"
                            " SELECT * FROM fingerprint");
   if (err)
     goto leave;
