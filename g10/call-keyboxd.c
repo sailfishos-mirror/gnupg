@@ -654,7 +654,17 @@ search_status_cb (void *opaque, const char *line)
                   while (spacep (s))
                     s++;
                   if (*s)
-                    hd->last_pk_no = atoi (s);
+                    {
+                      hd->last_pk_no = atoi (s);
+                      /* Keyboxd returns 0 for invalid but also for
+                       * the primary key and 1 for the first subkey.
+                       * That does not match our use and thus we
+                       * increment it despite that this maps an
+                       * invalid index to the primary key.  */
+                      if (hd->last_pk_no >= 0)
+                        hd->last_pk_no++;
+                    }
+
                 }
             }
         }

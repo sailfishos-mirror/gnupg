@@ -1185,7 +1185,11 @@ keydb_pop_found_state (KEYDB_HANDLE hd)
 
 
 
-/* Parse the keyblock in IOBUF and return at R_KEYBLOCK.  */
+/* Parse the keyblock in IOBUF and return at R_KEYBLOCK.  PK_NO gives
+ * the index of the public (sub)key which matched the search criteria;
+ * the primary key is 1, the first subkey 2, 0 means unknown.  UID_NO
+ * is the same for user-ids as search criteria; 1 is the first
+ * user-id, 0 means unknown.  */
 gpg_error_t
 keydb_parse_keyblock (iobuf_t iobuf, int pk_no, int uid_no,
                       kbnode_t *r_keyblock)

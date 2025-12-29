@@ -4060,7 +4060,7 @@ finish_lookup (kbnode_t keyblock, unsigned int req_usage, int want_exact,
   if (!latest_key)
     {
       if (DBG_LOOKUP)
-	log_debug ("\tno suitable key found -  giving up\n");
+	log_debug ("\tno suitable key found - giving up\n");
       if (r_flags)
         *r_flags |= LOOKUP_NOT_SELECTED;
       return NULL; /* Not found.  */
