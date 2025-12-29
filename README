@@ -1,10 +1,10 @@
                        The GNU Privacy Guard
                       =======================
-                         Version 2.5 (devel)
+                           Version 2.5
 
           Copyright 1997-2019 Werner Koch
           Copyright 1998-2021 Free Software Foundation, Inc.
-          Copyright 2003-2024 g10 Code GmbH
+          Copyright 2003-2025 g10 Code GmbH
 
 
 * INTRODUCTION
@@ -25,8 +25,8 @@
   can be freely used, modified and distributed under the terms of the
   GNU General Public License.
 
-  Note that versions 2.5.x are maintained development versions leading
-  to the forthcoming new stable version 2.6.x.
+  Note that this is considered the stable version of GnuPG.
+
 
 * BUILD INSTRUCTIONS
 

@@ -1,4 +1,4 @@
-Noteworthy changes in version 2.5.15 (unreleased)
+Noteworthy changes in version 2.5.15 (2025-12-29)
 -------------------------------------------------
 
   * gpg: Fix a validation bug when using keyboxd.  [T7983]
