@@ -3,6 +3,9 @@ Noteworthy changes in version 2.5.15 (unreleased)
 
   * gpg: Fix a validation bug when using keyboxd.  [T7983]
 
+  * gpg: Deprecate the option --not-dash-escaped and ignore the
+    NotDashEscaped armor header.  [T7901]
+
   * keyboxd: Fix migration to new schema.  [T7892,rG81bb949755]
 
   * dirmngr: New compatibility flag "ocsp-sha256-certid" to support

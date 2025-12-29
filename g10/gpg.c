@@ -1065,6 +1065,7 @@ static struct compatibility_flags_s compatibility_flags [] =
     { COMPAT_COMPR_KEYS,   "compr-keys" },
     { COMPAT_NO_MANU,      "no-manu" },
     { COMPAT_SUGGEST_EMBEDDED_NAME, "suggest-embedded-name" },
+    { COMPAT_ALLOW_NOT_DASH_ESCAPED, "allow-not-dash-escaped" },
     { 0, NULL }
   };
 
@@ -3946,6 +3947,11 @@ main (int argc, char **argv)
     if (opt.use_keyboxd && nrings)
       log_info ("Note: Specified keyrings are ignored due to option \"%s\"\n",
                 "use-keyboxd");
+
+    if (opt.not_dash_escaped)
+      log_info (_("WARNING: \"%s\" is a deprecated option\n"),
+                "--not-dash-escaped");
+
 
     if (comopt.no_autostart)
       opt.autostart = 0;

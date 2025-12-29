@@ -510,7 +510,9 @@ parse_header_line( armor_filter_context_t *afx, byte *line, unsigned int len )
       {
 	if( (hashes=parse_hash_header( line )) )
 	  afx->hashes |= hashes;
-	else if( strlen(line) > 15 && !memcmp( line, "NotDashEscaped:", 15 ) )
+	else if ((opt.compat_flags & COMPAT_ALLOW_NOT_DASH_ESCAPED)
+                 && strlen (line) > 15
+                 && !memcmp( line, "NotDashEscaped:", 15 ) )
 	  afx->not_dash_escaped = 1;
 	else
 	  {

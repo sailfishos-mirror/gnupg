@@ -3608,16 +3608,6 @@ be tried.  @option{--no-throw-keyids} disables this option. This option
 is essentially the same as using @option{--hidden-recipient} for all
 recipients.
 
-@item --not-dash-escaped
-@opindex not-dash-escaped
-This option changes the behavior of cleartext signatures
-so that they can be used for patch files. You should not
-send such an armored file via email because all spaces
-and line endings are hashed too. You can not use this
-option for data which has 5 dashes at the beginning of a
-line, patch files don't have this. A special armor header
-line tells GnuPG about this cleartext signature option.
-
 @item --escape-from-lines
 @itemx --no-escape-from-lines
 @opindex escape-from-lines
@@ -4107,6 +4097,18 @@ This option is deprecated and has no more effect since version 2.3.9.
 
 @item --aead-algo @var{name}
 This option is deprecated and has no more effect since version 2.3.9.
+
+@item --not-dash-escaped
+@opindex not-dash-escaped
+This option is deprecated since version 2.5.15 and has actually been
+obsolete for many more years.  The verification code in gpg also
+ignores this special mode unless a compatibility flag has been used.
+This option was used to change the behavior of cleartext signatures so
+that they can be used for patch files. You should not send such an
+armored file via email because all spaces and line endings are hashed
+too. You can not use this option for data which has 5 dashes at the
+beginning of a line, patch files don't have this. A special armor
+header line tells GnuPG about this cleartext signature option.
 
 
 @end table

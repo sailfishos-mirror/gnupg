@@ -407,7 +407,7 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
 #define COMPAT_SUGGEST_EMBEDDED_NAME 16 /* Show the non-signed
                                          * embedded filename as
                                          * suggestion.  */
-
+#define COMPAT_ALLOW_NOT_DASH_ESCAPED 32 /* Handle NotDashEscaped header.  */
 
 
 /* Compliance test macros.  */
