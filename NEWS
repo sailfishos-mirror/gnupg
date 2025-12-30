@@ -1,5 +1,26 @@
-Noteworthy changes in version 2.4.9 (unreleased)
+Noteworthy changes in version 2.4.9 (2025-12-30)
 ------------------------------------------------
+
+  * gpg: Fix possible memory corruption in the armor parser.  [T7906]
+
+  * gpg: Avoid potential downgrade to SHA1 in 3rd party key
+    signatures.  [rGddb012be7f]
+
+  * gpg: Error out on unverified output for non-detached signatures.
+    [rG9d302f978b]
+
+  * gpg: Do not allow compressed key packets on import.  [T7014]
+
+  * scd: Fix a harmless read buffer over-read in a function used by
+    PKCS#15 cards.  [T7662]
+
+  * dirmngr: Do not require a keyserver for "gpg --fetch-key".
+    [T7693]
+
+  * agent: Fix ssh-agent's request_identities for skipped Brainpool
+    keys.  [rG6bf5696c85]
+
+  Release-info: https://dev.gnupg.org/T8001
 
 
 Noteworthy changes in version 2.4.8 (2025-05-14)

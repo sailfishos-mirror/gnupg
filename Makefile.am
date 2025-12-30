@@ -19,7 +19,7 @@
 ## Process this file with automake to produce Makefile.in
 
 # We want to also build the wixlib for use by GnuPG Desktop
-WITH_MSI=1
+WITH_MSI=
 
 # Location of the released tarball archives.  This is prefixed by
 # the variable RELEASE_ARCHIVE in ~/.gnupg-autogen.rc.  For example:
