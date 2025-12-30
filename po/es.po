@@ -4591,6 +4591,12 @@ msgstr "no se puede crear fichero de respaldo '%s': %s\n"
 msgid "Note: backup of card key saved to '%s'\n"
 msgstr "NOTA: copia de seguridad de la clave guardada en '%s'\n"
 
+msgid ""
+"Warning: Although the key has been written to the card, a backup file was\n"
+"         not properly written to the disk.  You may want to repeat the\n"
+"         entire operation or just create a new encryption key on the card.\n"
+msgstr ""
+
 #, c-format
 msgid "writing public key to '%s'\n"
 msgstr "escribiendo clave pública en '%s'\n"

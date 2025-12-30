@@ -4623,6 +4623,12 @@ msgstr "не вдалося створити файл резервної коп�
 msgid "Note: backup of card key saved to '%s'\n"
 msgstr "ЗАУВАЖЕННЯ: резервну копію ключа на картці збережено до «%s»\n"
 
+msgid ""
+"Warning: Although the key has been written to the card, a backup file was\n"
+"         not properly written to the disk.  You may want to repeat the\n"
+"         entire operation or just create a new encryption key on the card.\n"
+msgstr ""
+
 #, c-format
 msgid "writing public key to '%s'\n"
 msgstr "записуємо відкритий ключ до «%s»\n"

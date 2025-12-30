@@ -4547,6 +4547,12 @@ msgstr "impossible de créer le fichier de sauvegarde « %s » : %s\n"
 msgid "Note: backup of card key saved to '%s'\n"
 msgstr "Remarque : sauvegarde de la clef de la carte dans « %s »\n"
 
+msgid ""
+"Warning: Although the key has been written to the card, a backup file was\n"
+"         not properly written to the disk.  You may want to repeat the\n"
+"         entire operation or just create a new encryption key on the card.\n"
+msgstr ""
+
 #, c-format
 msgid "writing public key to '%s'\n"
 msgstr "écriture de la clef publique dans « %s »\n"
