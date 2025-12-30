@@ -1,5 +1,10 @@
-Noteworthy changes in version 2.5.16 (unreleased)
+Noteworthy changes in version 2.5.16 (2025-12-30)
 -------------------------------------------------
+
+  * gpg: Fix a regression in 2.5.15 which created new keys with just
+    the fallback preferences.  [T7909]
+
+  Release-info: https://dev.gnupg.org/T7995
 
 
 Noteworthy changes in version 2.5.15 (2025-12-29)
