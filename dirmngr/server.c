@@ -297,6 +297,21 @@ data_line_cookie_close (void *cookie)
 }
 
 
+
+/* Return the number of colons in S.  */
+static unsigned int
+count_colons (const char *s)
+{
+  unsigned int count = 0;
+
+  for ( ;*s; s++)
+    if (*s == ':')
+      count++;
+  return count;
+}
+
+
+
 /* Copy the % and + escaped string S into the buffer D and replace the
    escape sequences.  Note, that it is sufficient to allocate the
    target string D as long as the source string S, i.e.: strlen(s)+1.
@@ -2454,7 +2469,19 @@ cmd_keyserver (assuan_context_t ctx, char *line)
         }
 
       for (u=ctrl->server_local->keyservers; u; u = u->next)
-        dirmngr_status (ctrl, "KEYSERVER", u->uri, NULL);
+        {
+          dirmngr_status (ctrl, "KEYSERVER", u->uri, NULL);
+          /* Print a warning if an opaque URI looks like ldap.  A common
+           * misconfiguration is ldap.example.com::uid-foo:::starttls
+           *          instead of ldap:ldap.example.com::uid-foo:::starttls */
+          if (u->parsed_uri->opaque
+              && strncmp (u->uri, "ldap:", 5)
+              && strncmp (u->uri, "ldaps:", 6)
+              && count_colons (u->uri) > 3)
+            dirmngr_status (ctrl, "WARNING", "keyserver_config 0",
+                            "The \"ldap:\" prefix might be missing"
+                            " before the host name", NULL);
+        }
     }
   err = 0;
 
