@@ -4632,6 +4632,13 @@ also allows interaction with various GnuPG components.
 GPGME provides a C-API, and comes with bindings for C++, Qt, and
 Python.  Bindings for other languages are available.
 
+If for some reasons you cannot use GPGME, please make sure to use the
+@option{--status-fd} and @option{--with-colons} options to clearly
+obtain information from GnuPG rather than parsing stdout which is
+subject to change, localization, and is otherwise intermingled with
+status output.
+
+
 @node Ephemeral home directories
 @subsection Ephemeral home directories
 
