@@ -133,6 +133,7 @@ parse_export_options(char *str,unsigned int *options,int noisy)
        NULL},
       {"export-minimal",EXPORT_MINIMAL|EXPORT_CLEAN,NULL,
        N_("remove as much as possible from key during export")},
+      {"keep-expired-subkeys",EXPORT_KEEP_EXPIRED,NULL, NULL },
 
       {"export-dane", EXPORT_DANE_FORMAT, NULL, NULL },
 
@@ -2517,6 +2518,7 @@ do_export_stream (ctrl_t ctrl, iobuf_t out, strlist_t users, int secret,
           merge_keys_and_selfsig (ctrl, keyblock);
           clean_all_uids (ctrl, keyblock, opt.verbose, options, NULL, NULL);
           clean_all_subkeys (ctrl, keyblock, opt.verbose,
+                             (options&EXPORT_KEEP_EXPIRED)? KEY_CLEAN_INVALID :
                              (options&EXPORT_MINIMAL)? KEY_CLEAN_ALL
                              /**/                    : KEY_CLEAN_AUTHENCR,
                              NULL, NULL);
