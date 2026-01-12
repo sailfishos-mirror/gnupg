@@ -1675,111 +1675,145 @@ keydb_search (ctrl_t ctrl, KEYDB_HANDLE hd,
           goto leave;
         }
 
-      /* FIXME: Implement --multi */
-      switch (desc->mode)
+      for (i = 0; i < ndesc; i++)
+        if (desc->mode == KEYDB_SEARCH_MODE_FIRST)
+          {
+            /* If any description has mode FIRST, this item trumps all
+             * other descriptions.  */
+            snprintf (line, sizeof line, "SEARCH --x509");
+            goto do_search;
+          }
+
+      for (i=0 ; i < ndesc; i++)
         {
-        case KEYDB_SEARCH_MODE_EXACT:
-          snprintf (line, sizeof line, "SEARCH --x509 =%s", desc[0].u.name);
-          break;
+          int moretocome = (i + 1 < ndesc);
+          const char *more = moretocome? "--x509 --more" : "--x509";
 
-        case KEYDB_SEARCH_MODE_SUBSTR:
-          snprintf (line, sizeof line, "SEARCH --x509 *%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_MAIL:
-          snprintf (line, sizeof line, "SEARCH --x509 <%s",
-                    desc[0].u.name + (desc[0].u.name[0] == '<'));
-          break;
-
-        case KEYDB_SEARCH_MODE_MAILSUB:
-          snprintf (line, sizeof line, "SEARCH --x509 @%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_MAILEND:
-          snprintf (line, sizeof line, "SEARCH --x509 .%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_WORDS:
-          snprintf (line, sizeof line, "SEARCH --x509 +%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_SHORT_KID:
-          snprintf (line, sizeof line, "SEARCH --x509 0x%08lX",
-                    (ulong)desc->u.kid[1]);
-          break;
-
-        case KEYDB_SEARCH_MODE_LONG_KID:
-          snprintf (line, sizeof line, "SEARCH --x509 0x%08lX%08lX",
-                    (ulong)desc->u.kid[0], (ulong)desc->u.kid[1]);
-          break;
-
-        case KEYDB_SEARCH_MODE_FPR:
-          {
-            unsigned char hexfpr[MAX_FINGERPRINT_LEN * 2 + 1];
-            log_assert (desc[0].fprlen <= MAX_FINGERPRINT_LEN);
-            bin2hex (desc[0].u.fpr, desc[0].fprlen, hexfpr);
-            snprintf (line, sizeof line, "SEARCH --x509 0x%s", hexfpr);
-          }
-          break;
-
-        case KEYDB_SEARCH_MODE_ISSUER:
-          snprintf (line, sizeof line, "SEARCH --x509 #/%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_ISSUER_SN:
-          if (desc[0].snhex)
-            snprintf (line, sizeof line, "SEARCH --x509 #%.*s/%s",
-                      (int)desc[0].snlen, desc[0].sn, desc[0].u.name);
-          else
+          switch (desc->mode)
             {
-              char *hexsn = bin2hex (desc[0].sn, desc[0].snlen, NULL);
-              if (!hexsn)
+            case KEYDB_SEARCH_MODE_EXACT:
+              snprintf (line, sizeof line, "SEARCH %s =%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_SUBSTR:
+              snprintf (line, sizeof line, "SEARCH %s *%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_MAIL:
+              snprintf (line, sizeof line, "SEARCH %s <%s",
+                        more, desc[i].u.name + (desc[i].u.name[i] == '<'));
+              break;
+
+            case KEYDB_SEARCH_MODE_MAILSUB:
+              snprintf (line, sizeof line, "SEARCH %s @%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_MAILEND:
+              snprintf (line, sizeof line, "SEARCH %s .%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_WORDS:
+              snprintf (line, sizeof line, "SEARCH %s +%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_SHORT_KID:
+              snprintf (line, sizeof line, "SEARCH %s 0x%08lX", more,
+                        (ulong)desc[i].u.kid[1]);
+              break;
+
+            case KEYDB_SEARCH_MODE_LONG_KID:
+              snprintf (line, sizeof line, "SEARCH %s 0x%08lX%08lX", more,
+                        (ulong)desc[i].u.kid[0], (ulong)desc[i].u.kid[1]);
+              break;
+
+            case KEYDB_SEARCH_MODE_FPR:
+              {
+                unsigned char hexfpr[MAX_FINGERPRINT_LEN * 2 + 1];
+                log_assert (desc[i].fprlen <= MAX_FINGERPRINT_LEN);
+                bin2hex (desc[i].u.fpr, desc[i].fprlen, hexfpr);
+                snprintf (line, sizeof line, "SEARCH %s 0x%s", more, hexfpr);
+              }
+              break;
+
+            case KEYDB_SEARCH_MODE_ISSUER:
+              snprintf (line, sizeof line, "SEARCH %s #/%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_ISSUER_SN:
+              if (desc[i].snhex)
+                snprintf (line, sizeof line, "SEARCH %s #%.*s/%s", more,
+                          (int)desc[i].snlen, desc[i].sn, desc[i].u.name);
+              else
                 {
-                  err = gpg_error_from_syserror ();
-                  goto leave;
+                  char *hexsn = bin2hex (desc[i].sn, desc[i].snlen, NULL);
+                  if (!hexsn)
+                    {
+                      err = gpg_error_from_syserror ();
+                      goto leave;
+                    }
+                  snprintf (line, sizeof line, "SEARCH %s #%s/%s",
+                            more, hexsn, desc[i].u.name);
+                  xfree (hexsn);
                 }
-              snprintf (line, sizeof line, "SEARCH --x509 #%s/%s",
-                        hexsn, desc[0].u.name);
-              xfree (hexsn);
+              break;
+
+            case KEYDB_SEARCH_MODE_SN:
+              snprintf (line, sizeof line, "SEARCH %s #%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_SUBJECT:
+              snprintf (line, sizeof line, "SEARCH %s /%s",
+                        more, desc[i].u.name);
+              break;
+
+            case KEYDB_SEARCH_MODE_KEYGRIP:
+              {
+                unsigned char hexgrip[KEYGRIP_LEN * 2 + 1];
+                bin2hex (desc[i].u.grip, KEYGRIP_LEN, hexgrip);
+                snprintf (line, sizeof line, "SEARCH %s &%s", more, hexgrip);
+              }
+              break;
+
+            case KEYDB_SEARCH_MODE_UBID:
+              {
+                unsigned char hexubid[UBID_LEN * 2 + 1];
+                bin2hex (desc[i].u.ubid, UBID_LEN, hexubid);
+                snprintf (line, sizeof line, "SEARCH %s ^%s", more, hexubid);
+              }
+              break;
+
+            case KEYDB_SEARCH_MODE_NEXT:
+              log_debug ("%s: mode next - we should not get to here!\n",
+                         __func__);
+              snprintf (line, sizeof line, "NEXT --x509");
+              break;
+
+            case KEYDB_SEARCH_MODE_FIRST:
+              log_debug ("%s: mode first - we should not get to here!\n",
+                         __func__);
+              /*fallthru*/
+            default:
+              err = gpg_error (GPG_ERR_INV_ARG);
+              goto leave;
             }
-          break;
 
-        case KEYDB_SEARCH_MODE_SN:
-          snprintf (line, sizeof line, "SEARCH --x509 #%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_SUBJECT:
-          snprintf (line, sizeof line, "SEARCH --x509 /%s", desc[0].u.name);
-          break;
-
-        case KEYDB_SEARCH_MODE_KEYGRIP:
-          {
-            unsigned char hexgrip[KEYGRIP_LEN * 2 + 1];
-            bin2hex (desc[0].u.grip, KEYGRIP_LEN, hexgrip);
-            snprintf (line, sizeof line, "SEARCH --x509 &%s", hexgrip);
-          }
-          break;
-
-        case KEYDB_SEARCH_MODE_UBID:
-          {
-            unsigned char hexubid[UBID_LEN * 2 + 1];
-            bin2hex (desc[0].u.ubid, UBID_LEN, hexubid);
-            snprintf (line, sizeof line, "SEARCH --x509 ^%s", hexubid);
-          }
-          break;
-
-        case KEYDB_SEARCH_MODE_FIRST:
-          snprintf (line, sizeof line, "SEARCH --x509");
-          break;
-
-        case KEYDB_SEARCH_MODE_NEXT:
-          log_debug ("%s: mode next - we should not get to here!\n", __func__);
-          snprintf (line, sizeof line, "NEXT --x509");
-          break;
-
-        default:
-          err = gpg_error (GPG_ERR_INV_ARG);
-          goto leave;
+          if (moretocome)
+            {
+              /* To avoid silent truncation we error out on a too long line.  */
+              if (strlen (line) + 5 >= sizeof line)
+                err = gpg_error (GPG_ERR_ASS_LINE_TOO_LONG);
+              else
+                err = kbx_client_data_simple (hd->kbl->kcd, line);
+              if (err)
+                goto leave;
+            }
         }
 
     do_search:
