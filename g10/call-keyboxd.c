@@ -866,7 +866,6 @@ keydb_search (KEYDB_HANDLE hd, KEYDB_SEARCH_DESC *desc,
             goto leave;
         }
     }
-  while (ndesc);
 
 
  do_search:
