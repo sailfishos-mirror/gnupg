@@ -745,7 +745,7 @@ ecc_kem_decrypt (int is_pgp, ctrl_t ctrl, const char *desc_text,
   unsigned char *kek = NULL;
   size_t kek_len;
 
-  gcry_cipher_hd_t hd;
+  gcry_cipher_hd_t hd = NULL;
   unsigned char sessionkey[256];
   size_t sessionkey_len;
   gcry_buffer_t kdf_params = { 0, 0, 0, NULL };
@@ -841,10 +841,16 @@ ecc_kem_decrypt (int is_pgp, ctrl_t ctrl, const char *desc_text,
   err = gcry_cipher_setkey (hd, kek, kek_len);
   sessionkey_len = encrypted_sessionkey_len - 8 - !!is_pgp;
   if (!err)
-    err = gcry_cipher_decrypt (hd, sessionkey, sessionkey_len,
-                               encrypted_sessionkey + !!is_pgp,
-                               encrypted_sessionkey_len - !!is_pgp);
+    {
+      if (sessionkey_len > sizeof sessionkey)
+        err = gpg_error (GPG_ERR_TOO_LARGE);
+      else
+        err = gcry_cipher_decrypt (hd, sessionkey, sessionkey_len,
+                                   encrypted_sessionkey + !!is_pgp,
+                                   encrypted_sessionkey_len - !!is_pgp);
+    }
   gcry_cipher_close (hd);
+  hd = NULL;
 
   if (err)
     {
@@ -868,6 +874,7 @@ ecc_kem_decrypt (int is_pgp, ctrl_t ctrl, const char *desc_text,
   mpi_release (encrypted_sessionkey_mpi);
   gcry_free (kdf_params.data);
   gcry_sexp_release (s_skey);
+  gcry_cipher_close (hd);
   xfree (shadow_info);
   return err;
 }

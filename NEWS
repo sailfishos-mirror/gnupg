@@ -96,10 +96,10 @@ Noteworthy changes in version 2.5.13 (2025-10-22)
   * gpg: Take care about the prefix for cv25519 encryption.  [T7649]
 
   * gpg: Avoid potential downgrade to SHA1 in 3rd party key
-    signatures.  [rGdb9705ef59]
+    signatures.  [T7904,rGdb9705ef59]
 
   * gpg: Error out on unverified output for non-detached signatures.
-    [rG8abc320f2a]
+    [T7903,rG8abc320f2a]
 
   * gpgsm: Use KEM interface for en- and decryption.  [T7811,T7845]
 
