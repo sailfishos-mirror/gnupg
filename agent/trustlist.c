@@ -785,6 +785,7 @@ agent_marktrusted (ctrl_t ctrl, const char *name, const char *fpr, int flag)
      fingerprint of course.  */
   if (yes_i_trust)
     {
+      const char *correct, *wrong;
       desc = xtryasprintf
         (
          /* TRANSLATORS: This prompt is shown by the Pinentry and has
@@ -808,8 +809,15 @@ agent_marktrusted (ctrl_t ctrl, const char *name, const char *fpr, int flag)
 
       /* TRANSLATORS: "Correct" is the label of a button and intended
          to be hit if the fingerprint matches the one of the CA.  The
-         other button is "the default "Cancel" of the Pinentry. */
-      err = agent_get_confirmation (ctrl, desc, L_("Correct"), L_("Wrong"), 1);
+         other button is "the default "Cancel" of the Pinentry.  We
+         fix the English strings with hacks to avoid a string changes.  */
+      correct =  L_("Correct");
+      if (!strcmp (correct, "Correct"))
+        correct = "c_Orrect";
+      wrong =  L_("Wrong");
+      if (!strcmp (wrong, "Wrong"))
+        wrong = "_Wrong";
+      err = agent_get_confirmation (ctrl, desc, correct, wrong, 1);
       xfree (desc);
       if (gpg_err_code (err) == GPG_ERR_NOT_CONFIRMED)
         yes_i_trust = 0;
