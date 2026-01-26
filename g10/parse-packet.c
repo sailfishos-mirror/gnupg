@@ -2212,6 +2212,10 @@ parse_revkeys (PKT_signature * sig)
 }
 
 
+/* Note that the function returns -1 to indicate an EOF (which also
+ * indicates a broken packet in this case.  In most other cases
+ * GPG_ERR_INV_PACKET is returned and callers of parse_packet will
+ * usually skipt this packet then.  */
 int
 parse_signature (IOBUF inp, int pkttype, unsigned long pktlen,
 		 PKT_signature * sig)
@@ -2287,6 +2291,7 @@ parse_signature (IOBUF inp, int pkttype, unsigned long pktlen,
           if (list_mode)
             es_fprintf (listfp,
                         ":signature packet: [hashed data too long (%u)]\n", n);
+          rc = GPG_ERR_INV_PACKET;
 	  goto leave;
 	}
       if (n)
@@ -2318,6 +2323,7 @@ parse_signature (IOBUF inp, int pkttype, unsigned long pktlen,
             es_fprintf (listfp,
                         ":signature packet: [unhashed data too long (%u)]\n",
                         n);
+          rc = GPG_ERR_INV_PACKET;
 	  goto leave;
 	}
       if (n)
