@@ -951,10 +951,20 @@ tpm2_ecc_decrypt (ctrl_t ctrl, TSS_CONTEXT *tssc, TPM_HANDLE key,
   size_t len;
   int ret;
 
+#if defined(TPM2_MAX_ECC_KEY_BYTES) /* Intel stack */
+  if (ciphertext_len > 2*TPM2_MAX_ECC_KEY_BYTES + 1)
+    return GPG_ERR_TOO_LARGE;
+#elif defined(MAX_ECC_KEY_BYTES)    /* IBM stack */
+  if (ciphertext_len > 2*MAX_ECC_KEY_BYTES + 1)
+    return GPG_ERR_TOO_LARGE;
+#else
+# error TMP2 header are not correctly installed
+#endif
+
   /* This isn't really a decryption per se.  The ciphertext actually
    * contains an EC Point which we must multiply by the private key number.
    *
-   * The reason is to generate a diffe helman agreement on a shared
+   * The reason is to generate a diffie-hellman agreement on a shared
    * point.  This shared point is then used to generate the per
    * session encryption key.
    */
@@ -1009,6 +1019,16 @@ tpm2_rsa_decrypt (ctrl_t ctrl, TSS_CONTEXT *tssc, TPM_HANDLE key,
   PUBLIC_KEY_RSA_2B message;
   TPM_HANDLE ah;
   char *auth;
+
+#if defined(TPM2_MAX_RSA_KEY_BYTES)  /* Intel stack */
+  if (ciphertext_len > TPM2_MAX_RSA_KEY_BYTES)
+    return GPG_ERR_TOO_LARGE;
+#elif defined(MAX_RSA_KEY_BYTES)     /* IBM stack */
+  if (ciphertext_len > MAX_RSA_KEY_BYTES)
+    return GPG_ERR_TOO_LARGE;
+#else
+# error TMP2 header are not correctly installed
+#endif
 
   inScheme.scheme = TPM_ALG_RSAES;
   /*
