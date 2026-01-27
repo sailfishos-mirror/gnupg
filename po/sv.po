@@ -737,7 +737,8 @@ msgstr ""
 
 #. TRANSLATORS: "Correct" is the label of a button and intended
 #. to be hit if the fingerprint matches the one of the CA.  The
-#. other button is "the default "Cancel" of the Pinentry.
+#. other button is "the default "Cancel" of the Pinentry.  We
+#. fix the English strings with hacks to avoid a string changes.
 msgid "Correct"
 msgstr "Korrekt"
 
@@ -1529,7 +1530,6 @@ msgid "   (%d) RSA\n"
 msgstr "   (%d) RSA\n"
 
 #, c-format
-#| msgid "   (%d) DSA and Elgamal\n"
 msgid "   (%d) ECC\n"
 msgstr "   (%d) ECC\n"
 
@@ -2749,6 +2749,9 @@ msgstr "anta GnuPG-nyckelns säkerhetskopieringsformat"
 
 msgid "repair keys on import"
 msgstr "reparera nycklar vid import"
+
+msgid "update even unchanged keys"
+msgstr ""
 
 msgid "do not import secret keys"
 msgstr "importera inte hemliga nycklar"
@@ -4205,7 +4208,6 @@ msgid "   (%d) RSA and RSA%s\n"
 msgstr "   (%d) RSA och RSA%s\n"
 
 #, c-format
-#| msgid "   (%d) DSA and Elgamal\n"
 msgid "   (%d) DSA and Elgamal%s\n"
 msgstr "   (%d) DSA och Elgamal%s\n"
 
@@ -4965,7 +4967,6 @@ msgid "Signature made %s using %s key ID %s\n"
 msgstr "Signatur gjordes %s med %s nyckel-id %s\n"
 
 #, c-format
-#| msgid "                aka \"%s\""
 msgid "               issuer \"%s\"\n"
 msgstr "               utfärdare \"%s\"\n"
 
@@ -5221,7 +5222,6 @@ msgid "Please enter the passphrase to export the secret key with keygrip:"
 msgstr "Ange lösenfrasen för att exportera den hemliga nyckeln med keygrip:"
 
 #, c-format
-#| msgid "%u-bit %s key, ID %s, created %s"
 msgid ""
 "%s\n"
 "\"%.*s\"\n"
@@ -6182,7 +6182,6 @@ msgid "This key's user IDs:\n"
 msgstr "Användar-id:n för denna nyckel:\n"
 
 #, c-format
-#| msgid "validity: %s"
 msgid "policy: %s"
 msgstr "policy: %s"
 
@@ -6359,7 +6358,6 @@ msgid "Encrypted 0 messages."
 msgstr "Krypterade 0 meddelanden."
 
 #, c-format
-#| msgid "validity: %s"
 msgid "(policy: %s)"
 msgstr "(policy: %s)"
 
