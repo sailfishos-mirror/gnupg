@@ -1,6 +1,21 @@
-Noteworthy changes in version 2.5.17 (unreleased)
+Noteworthy changes in version 2.5.17 (2026-01-27)
 -------------------------------------------------
 
+  * agent: Fix stack buffer overflow when using gpgsm and KEM.  This
+    was introduced with 2.5.13; see the advisory.  [T8044]
+
+  * tpm: Fix possible buffer overflow in PKDECRYPT.  [T8045]
+
+  * gpg: Fix possible NULL-deref with overlong signature packets.
+    [T8049]
+
+  * gpg: New export-option "keep-expired-subkeys".  [T7990]
+
+  * gpgsm: Make multiple search patterns work with keyboxd.  [T8026]
+
+  * agent: Add accelerator keys for "Wrong" and "Correct".  [T8055]
+
+  * dirmngr: Help detection of bad keyserver configurations.  [T7730]
 
   Release-info: https://dev.gnupg.org/T7996
 
