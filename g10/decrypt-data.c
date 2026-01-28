@@ -638,7 +638,7 @@ static gpg_error_t
 aead_underflow (decode_filter_ctx_t dfx, iobuf_t a, byte *buf, size_t *ret_len)
 {
   const size_t size = *ret_len; /* The allocated size of BUF.  */
-  gpg_error_t err;
+  gpg_error_t err = 0;
   size_t totallen = 0; /* The number of bytes to return on success or EOF.  */
   size_t off = 0;      /* The offset into the buffer.  */
   size_t len;          /* The current number of bytes in BUF+OFF.  */
