@@ -193,10 +193,13 @@ keyserver_any_configured (ctrl_t ctrl)
 }
 
 int
-keyserver_import_keyid (u32 *keyid, void *dummy, unsigned int flags)
+keyserver_import_keyid (ctrl_t ctrl,
+                        u32 *keyid,struct keyserver_spec *keyserver,
+                        unsigned int flags)
 {
+  (void)ctrl;
   (void)keyid;
-  (void)dummy;
+  (void)keyserver;
   (void)flags;
   return -1;
 }
@@ -224,9 +227,14 @@ keyserver_import_fpr_ntds (ctrl_t ctrl,
 }
 
 int
-keyserver_import_cert (const char *name)
+keyserver_import_cert (ctrl_t ctrl, const char *name, int dane_mode,
+                       unsigned char **fpr,size_t *fpr_len)
 {
+  (void)ctrl;
   (void)name;
+  (void)dane_mode;
+  (void)fpr;
+  (void)fpr_len;
   return -1;
 }
 
@@ -242,15 +250,17 @@ keyserver_import_wkd (ctrl_t ctrl, const char *name, unsigned int flags,
   return GPG_ERR_BUG;
 }
 
-int
-keyserver_import_mbox (ctrl_t ctrl, const char *mbox, unsigned char **fpr,
-                       size_t *fprlen, struct keyserver_spec *keyserver)
+gpg_error_t
+keyserver_import_mbox (ctrl_t ctrl, const char *mbox,
+                       unsigned char **fpr, size_t *fprlen,
+                       struct keyserver_spec *keyserver, unsigned int flags)
 {
   (void)ctrl;
   (void)mbox;
   (void)fpr;
   (void)fprlen;
   (void)keyserver;
+  (void)flags;
   return -1;
 }
 
@@ -381,14 +391,11 @@ parse_preferred_keyserver(PKT_signature *sig)
   return NULL;
 }
 
-struct keyserver_spec *
-parse_keyserver_uri (const char *uri, int require_scheme,
-                     const char *configname, unsigned int configlineno)
+keyserver_spec_t
+parse_keyserver_uri (const char *string, int require_scheme)
 {
-  (void)uri;
+  (void)string;
   (void)require_scheme;
-  (void)configname;
-  (void)configlineno;
   return NULL;
 }
 
@@ -400,11 +407,14 @@ free_keyserver_spec (struct keyserver_spec *keyserver)
 
 /* Stubs to avoid linking to photoid.c */
 void
-show_photos (const struct user_attribute *attrs, int count, PKT_public_key *pk)
+show_photos (ctrl_t ctrl, const struct user_attribute *attrs, int count,
+             PKT_public_key *pk, PKT_user_id *uid)
 {
+  (void)ctrl;
   (void)attrs;
   (void)count;
   (void)pk;
+  (void)uid;
 }
 
 int
