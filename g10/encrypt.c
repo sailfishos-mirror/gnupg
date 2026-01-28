@@ -1114,7 +1114,7 @@ reencrypt_to_new_recipients (ctrl_t ctrl, int armor, const char *filename,
    * recipient.  We can't do that for wildcards, though.  */
   if (!ctrl->clear_recipients)
     {
-      for (el = sesenc_list; el; el = el->next, count++)
+      for (el = sesenc_list; el; el = el->next)
         {
           if (el->u_sym)
             continue;
