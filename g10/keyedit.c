@@ -3306,8 +3306,8 @@ keyedit_quick_revsig (ctrl_t ctrl, const char *username, const char *sigtorev,
   err = quick_find_keyblock (ctrl, username, 0, &kdbhd, &keyblock);
   if (err)
     goto leave;
-  log_assert (keyblock->pkt->pkttype == PKT_PUBLIC_KEY
-              || keyblock->pkt->pkttype == PKT_SECRET_KEY);
+  log_assert (keyblock && (keyblock->pkt->pkttype == PKT_PUBLIC_KEY
+              || keyblock->pkt->pkttype == PKT_SECRET_KEY));
   primarypk = keyblock->pkt->pkt.public_key;
   primarykid = pk_keyid (primarypk);
 
