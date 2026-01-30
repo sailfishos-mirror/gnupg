@@ -152,9 +152,20 @@ iso7816_select_application_ext (int slot, const char *aid, size_t aidlen,
                                 unsigned int flags,
                                 unsigned char **result, size_t *resultlen)
 {
+  int p2;
   int sw;
-  sw = apdu_send (slot, 0, 0x00, CMD_SELECT_FILE, 4,
-                  (flags&1)? 0:0x0c, aidlen, aid,
+
+  switch (flags)
+    {
+    case ISO7816_SELECT_FCI: p2 = 0x00; break;
+    case ISO7816_SELECT_FCP: p2 = 0x04; break;
+    case ISO7816_SELECT_NORESP:
+    default:
+      p2 = 0x0c;
+    }
+
+  sw = apdu_send (slot, 0, 0x00, CMD_SELECT_FILE, 4, p2,
+                  aidlen, aid,
                   result, resultlen);
   return map_sw (sw);
 }

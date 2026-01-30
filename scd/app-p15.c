@@ -6431,6 +6431,8 @@ app_select_p15 (app_t app)
 {
   int slot = app_get_slot (app);
   int rc;
+  const char *aid;
+  size_t aidlen;
   unsigned short def_home_df = 0;
   card_type_t card_type = CARD_TYPE_UNKNOWN;
   int direct = 0;
@@ -6438,14 +6440,17 @@ app_select_p15 (app_t app)
   unsigned char *fci = NULL;
   size_t fcilen;
 
-  rc = iso7816_select_application_ext (slot, pkcs15_aid, sizeof pkcs15_aid, 1,
-                                       &fci, &fcilen);
+  aid = pkcs15_aid;
+  aidlen = sizeof pkcs15_aid;
+  rc = iso7816_select_application_ext (slot, aid, aidlen,
+                                       ISO7816_SELECT_FCI, &fci, &fcilen);
   if (rc)
     {
       /* D-TRUST Card 4.x uses a different AID. */
-      rc = iso7816_select_application_ext (slot, pkcs15dtrust4_aid,
-                                           sizeof pkcs15dtrust4_aid, 1,
-                                           &fci, &fcilen);
+      aid = pkcs15dtrust4_aid;
+      aidlen = sizeof pkcs15dtrust4_aid;
+      rc = iso7816_select_application_ext (slot, aid, aidlen,
+                                           ISO7816_SELECT_FCI, &fci, &fcilen);
     }
   if (rc)
     { /* Not found: Try to locate it from 2F00.  We use direct path
@@ -6525,14 +6530,42 @@ app_select_p15 (app_t app)
           s = find_tlv (fci, fcilen, 0x83, &n);
           if (s && n == 2)
             def_home_df = buf16_to_ushort (s);
+          else if (fcilen)
+            {
+              log_printhex (fci, fcilen, "fci:");
+              log_info ("p15: select did not return the DF - querying FCP\n");
+            }
+        }
+
+      /* Set the home DF from the FCP returned by the select, when not already
+       * contained in the FCI. STARCOS 3.7 (at least the D-Trust Card 6.1/6.4
+       * requires to request FCP instead of FCI. */
+      if (!def_home_df)
+        {
+          const unsigned char *s;
+          size_t n;
+
+          xfree (fci);
+          fci = NULL;
+          fcilen = 0;
+          rc = iso7816_select_application_ext (slot, aid, aidlen,
+                                               ISO7816_SELECT_FCP,
+                                               &fci, &fcilen);
+          if (!rc && fci)
+            {
+              s = find_tlv (fci, fcilen, 0x83, &n);
+              if (s && n == 2)
+                def_home_df = buf16_to_ushort (s);
+            }
           else
             {
               if (fcilen)
-                log_printhex (fci, fcilen, "fci:");
+                log_printhex (fci, fcilen, "fcp:");
               log_info ("p15: select did not return the DF - using default\n");
               def_home_df = DEFAULT_HOME_DF;
             }
         }
+
       app->app_local->home_df = def_home_df;
 
       /* Store the card type.  FIXME: We might want to put this into

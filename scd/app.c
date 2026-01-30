@@ -791,8 +791,9 @@ app_new_register (int slot, ctrl_t ctrl, const char *name,
                       xfree (buf);
                       buf = NULL;
                       if (!iso7816_select_application_ext (slot,
-                                                       otp_aid, sizeof otp_aid,
-                                                       1, &buf, &buflen)
+                                                      otp_aid, sizeof otp_aid,
+                                                      ISO7816_SELECT_FCI,
+                                                      &buf, &buflen)
                           && buflen > 3)
                         card->cardversion = ((buf[0]<<16)|(buf[1]<<8)|buf[2]);
                     }

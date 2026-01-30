@@ -3684,8 +3684,8 @@ app_select_piv (app_t app)
   /* Note that we select using the AID without the 2 octet version
    * number.  This allows for better reporting of future specs.  We
    * need to use the use-zero-for-P2-flag.  */
-  err = iso7816_select_application_ext (slot, piv_aid, sizeof piv_aid, 0x0001,
-                                        &apt, &aptlen);
+  err = iso7816_select_application_ext (slot, piv_aid, sizeof piv_aid,
+                                        ISO7816_SELECT_FCI, &apt, &aptlen);
   if (err)
     goto leave;
 
