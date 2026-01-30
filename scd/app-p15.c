@@ -77,7 +77,8 @@ typedef enum
     CARD_TYPE_CARDOS_54,
     CARD_TYPE_AET,     /* A.E.T. Europe JCOP card.  */
     CARD_TYPE_BELPIC,  /* Belgian eID card specs. */
-    CARD_TYPE_STARCOS_32
+    CARD_TYPE_STARCOS_32,
+    CARD_TYPE_STARCOS_37
   }
 card_type_t;
 
@@ -90,6 +91,7 @@ typedef enum
     CARD_PRODUCT_RSCS,     /* Rohde&Schwarz Cybersecurity       */
     CARD_PRODUCT_DTRUST3,  /* D-Trust GmbH (bundesdruckerei.de) */
     CARD_PRODUCT_DTRUST4,
+    CARD_PRODUCT_DTRUST6,
     CARD_PRODUCT_GENUA,    /* GeNUA mbH                         */
     CARD_PRODUCT_NEXUS,    /* Technology Nexus                  */
     CARD_PRODUCT_CVISION   /* Cryptovision GmbH                 */
@@ -135,6 +137,9 @@ static struct
   { 25, X("\x3b\x9f\x96\x81\xb1\xfe\x45\x1f\x07\x00\x64\x05"
           "\x1e\xb2\x00\x31\xb0\x73\x96\x21\xdb\x05\x90\x00\x5c"),
     CARD_TYPE_STARCOS_32 },
+  { 21, X("\x3b\xda\x96\xff\x81\xb1\xfe\x45\x1f\x07\x80\x58"
+          "\x44\x54\x52\x20\x56\x31\x2e\x31\xe2"),
+    CARD_TYPE_STARCOS_37 },
   { 0 }
 };
 #undef X
@@ -144,7 +149,8 @@ static struct
 #define IS_CARDOS_5(a) ((a)->app_local->card_type == CARD_TYPE_CARDOS_50 \
                         || (a)->app_local->card_type == CARD_TYPE_CARDOS_53 \
                         || (a)->app_local->card_type == CARD_TYPE_CARDOS_54)
-#define IS_STARCOS_3(a) ((a)->app_local->card_type == CARD_TYPE_STARCOS_32)
+#define IS_STARCOS_3(a) ((a)->app_local->card_type == CARD_TYPE_STARCOS_32 \
+                         || (a)->app_local->card_type == CARD_TYPE_STARCOS_37)
 
 
 /* The default PKCS-15 home DF */
@@ -560,6 +566,7 @@ cardtype2str (card_type_t cardtype)
     case CARD_TYPE_BELPIC:    return "Belgian eID";
     case CARD_TYPE_AET:       return "AET";
     case CARD_TYPE_STARCOS_32:return "STARCOS 3.2";
+    case CARD_TYPE_STARCOS_37:return "STARCOS 3.7";
     }
   return "";
 }
@@ -573,6 +580,7 @@ cardproduct2str (card_product_t cardproduct)
     case CARD_PRODUCT_RSCS:    return "R&S";
     case CARD_PRODUCT_DTRUST3: return "D-Trust 3";
     case CARD_PRODUCT_DTRUST4: return "D-Trust 4.1/4.4";
+    case CARD_PRODUCT_DTRUST6: return "D-Trust 6.1/6.4";
     case CARD_PRODUCT_GENUA:   return "GeNUA";
     case CARD_PRODUCT_NEXUS:   return "Nexus";
     case CARD_PRODUCT_CVISION: return "Cryptovison";
@@ -872,13 +880,11 @@ select_ef_by_path (app_t app, const unsigned short *path, size_t pathlen)
 }
 
 
-#if 0 /* Currently not used.  */
 static gpg_error_t
 select_df_by_path (app_t app, const unsigned short *path, size_t pathlen)
 {
   return select_by_path (app, path, pathlen, 1);
 }
-#endif
 
 
 /* Parse a cert Id string (or a key Id string) and return the binary
@@ -3921,6 +3927,37 @@ read_p15_info (app_t app)
     {
       app->app_local->card_product = CARD_PRODUCT_DTRUST4;
     }
+  if (!app->app_local->card_product
+      && app->app_local->token_label
+      && !strncmp (app->app_local->token_label, "D-TRUST Card 6.", 15)
+      && app->app_local->card_type == CARD_TYPE_STARCOS_37)
+    {
+      aodf_object_t aodf;
+
+      app->app_local->card_product = CARD_PRODUCT_DTRUST6;
+
+      for (prkdf = app->app_local->private_key_info; prkdf; prkdf = prkdf->next)
+        {
+          /* The card supports only OAEP and ECIES decryption, which are not
+           * supported by GnuPG right now. Thus we mask the respectiv usage
+           * flags. */
+          prkdf->usageflags.decrypt = 0;
+          prkdf->usageflags.unwrap = 0;
+          prkdf->usageflags.derive = 0;
+        }
+
+      for (aodf = app->app_local->auth_object_info; aodf; aodf = aodf->next)
+        if (aodf->auth_type == AUTH_TYPE_PIN
+            && aodf->pin_reference_valid
+            && aodf->label != NULL
+            && !strcmp(aodf->label, "Authentication-PIN"))
+          {
+            /* D-Trust encoded the wrong PIN reference in EF.AOD so we have to
+             * workaround it. */
+            aodf->pin_reference = 0x82;
+            break;
+          }
+    }
 
 
   /* Now print the info about the PrKDF.  */
@@ -5130,6 +5167,16 @@ prepare_verify_pin (app_t app, const char *keyref,
         log_error ("p15: error selecting PKCS#15 AID for key %s: %s\n",
                    keyref, gpg_strerror (err));
     }
+  else if (prkdf && app->app_local->card_product == CARD_PRODUCT_DTRUST6)
+    {
+      /* The card operating system does not support selecting the application
+       * by direct path selection. We need to select all file ids as a
+       * directory file. */
+      err = select_df_by_path (app, prkdf->path, prkdf->pathlen);
+      if (err)
+        log_error ("p15: error selecting directory file for key %s: %s\n",
+                   keyref, gpg_strerror (err));
+    }
   else if (prkdf)
     {
       /* Standard case: Select the key file.  Note that this may
@@ -5731,7 +5778,8 @@ do_sign (app_t app, ctrl_t ctrl, const char *keyidstr, int hashalgo,
         }
       if (app->app_local->card_type == CARD_TYPE_BELPIC
           || app->app_local->card_product == CARD_PRODUCT_NEXUS
-          || app->app_local->card_product == CARD_PRODUCT_DTRUST4)
+          || app->app_local->card_product == CARD_PRODUCT_DTRUST4
+          || app->app_local->card_product == CARD_PRODUCT_DTRUST6)
         {
           /* The default for these cards is to use a plain hash.  We
            * assume that due to the used certificate the correct hash
@@ -5858,6 +5906,50 @@ do_sign (app_t app, ctrl_t ctrl, const char *keyidstr, int hashalgo,
             err = iso7816_manage_security_env (app_get_slot (app),
                                                0xf3, 0x25, NULL, 0);
         }
+    }
+  else if (app->app_local->card_product == CARD_PRODUCT_DTRUST6)
+    {
+      unsigned char mse[10];
+
+      i = 0;
+      err = 0;
+
+      /* D-Trust-Card uses 3 byte long (negative) key reference IDs */
+      mse[i++] = 0x84; /* Key reference. */
+      mse[i++] = 3;
+      mse[i++] = (prkdf->key_reference >> 16) & 0xff;
+      mse[i++] = (prkdf->key_reference >>  8) & 0xff;
+      mse[i++] =  prkdf->key_reference        & 0xff;
+
+      if (prkdf->is_ecc)
+        {
+          mse[i++] = 0x89;
+          mse[i++] = 2;
+          mse[i++] = 0x13;
+          mse[i++] = 0x35;
+        }
+      else
+        {
+          mse[i++] = 0x89; /* Algorithm reference (BCD encoded).  */
+          mse[i++] = 3;
+          mse[i++] = 0x13; /* RSA PKCS#1 (standard) (1 3 2 3).  */
+          mse[i++] = 0x23;
+          switch (hashalgo)
+            {
+            case GCRY_MD_SHA1:   mse[i++] = 0x10; break;
+            case GCRY_MD_RMD160: mse[i++] = 0x20; break;
+            case GCRY_MD_SHA256: mse[i++] = 0x30; break;
+            case GCRY_MD_SHA384: mse[i++] = 0x40; break;
+            case GCRY_MD_SHA512: mse[i++] = 0x50; break;
+            case GCRY_MD_SHA224: mse[i++] = 0x60; break;
+            default: err = gpg_error (GPG_ERR_DIGEST_ALGO); break;
+            }
+        }
+
+      log_assert (i <= DIM(mse));
+      if (!err)
+        err = iso7816_manage_security_env (app_get_slot (app), 0x41, 0xB6,
+                                               mse, i);
     }
   else if (app->app_local->card_product == CARD_PRODUCT_CVISION)
     {
