@@ -1192,8 +1192,12 @@ show_version_gnupg (estream_t fp, const char *prefix)
   size_t line_len = 0;
   ssize_t length;
 
-  es_fprintf (fp, "%s%sGnuPG %s (%s)\n%s%s\n", prefix, *prefix?"":"* ",
-              gpgrt_strusage (13), BUILD_COMMITID, prefix, gpgrt_strusage (17));
+  p = gnupg_myproc_self ();
+  es_fprintf (fp, "%s%sGnuPG %s (%s)\n%s%s\n%s%s\n", prefix, *prefix?"":"* ",
+              gpgrt_strusage (13), BUILD_COMMITID,
+              prefix, gpgrt_strusage (17),
+              prefix, p);
+  xfree (p);
 
   /* Show the GnuPG VS-Desktop version in --show-configs mode  */
   if (prefix && *prefix)

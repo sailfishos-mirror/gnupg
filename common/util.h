@@ -247,6 +247,7 @@ extern int windows_semihosted_by_wine;
 const char *standard_homedir (void);
 void gnupg_set_homedir (const char *newdir);
 void gnupg_maybe_make_homedir (const char *fname, int quiet);
+char *gnupg_myproc_self (void);
 const char *gnupg_homedir (void);
 int gnupg_default_homedir_p (void);
 const char *gnupg_registry_dir (void);

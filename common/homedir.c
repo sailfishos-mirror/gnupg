@@ -788,28 +788,43 @@ check_portable_app (const char *dir)
 
 
 #ifdef HAVE_W32_SYSTEM
+/* Return the filename of this process.  Caller must release the
+ * returned buffer.  On error an empty string is returned.  */
+static char *
+w32_myproc_self (void)
+{
+  char *p;
+  int rc;
+  wchar_t wdir [MAX_PATH+5];
+  char *dir;
+
+  dir = xmalloc (MAX_PATH+5);
+  rc = GetModuleFileNameW (NULL, wdir, MAX_PATH);
+  if (rc && WideCharToMultiByte (CP_UTF8, 0, wdir, -1, dir, MAX_PATH-4,
+                                 NULL, NULL) < 0)
+    rc = 0;
+  if (!rc)
+    {
+      log_debug ("GetModuleFileName failed: %s\n", w32_strerror (-1));
+      *dir = 0;
+    }
+  return dir;
+}
+
+
 /* Determine the root directory of the gnupg installation on Windows.  */
 static const char *
 w32_rootdir (void)
 {
   static int got_dir;
-  static char dir[MAX_PATH+5];
+  static char *dir;
 
   if (!got_dir)
     {
       char *p;
-      int rc;
-      wchar_t wdir [MAX_PATH+5];
 
-      rc = GetModuleFileNameW (NULL, wdir, MAX_PATH);
-      if (rc && WideCharToMultiByte (CP_UTF8, 0, wdir, -1, dir, MAX_PATH-4,
-                                     NULL, NULL) < 0)
-        rc = 0;
-      if (!rc)
-        {
-          log_debug ("GetModuleFileName failed: %s\n", w32_strerror (-1));
-          *dir = 0;
-        }
+      dir = w32_myproc_self ();
+      gpgrt_annotate_leaked_object (dir);
       got_dir = 1;
       p = strrchr (dir, DIRSEP_C);
       if (p)
@@ -843,6 +858,59 @@ w32_rootdir (void)
 
 
 #ifndef HAVE_W32_SYSTEM /* Unix */
+/* Return the filename of this process.  If WITH_FALLBACK is set the
+ * GNUPG_BUILD_ROOT envvar is considered in the error case.  Caller
+ * must release the returned buffer.  On error an empty string is
+ * returned.  */
+static char *
+unix_myproc_self (int with_fallback)
+{
+  char *buffer;
+  size_t bufsize = 256-1;
+  int nread;
+  gpg_error_t err;
+  const char *name;
+
+  for (;;)
+    {
+      buffer = xmalloc (bufsize+1);
+      nread = readlink (MYPROC_SELF_EXE, buffer, bufsize);
+      if (nread < 0)
+        {
+          err = gpg_error_from_syserror ();
+          buffer[0] = 0;
+          if (with_fallback
+              && (name = getenv ("GNUPG_BUILD_ROOT")) && *name == '/')
+            {
+              /* Try a fallback for systems w/o a supported /proc
+               * file system if we are running a regression test.  */
+              log_info ("error reading symlink '%s': %s\n",
+                        MYPROC_SELF_EXE, gpg_strerror (err));
+              xfree  (buffer);
+              buffer = xstrconcat (name, "/bin/gpgconf", NULL);
+              log_info ("trying fallback '%s'\n", buffer);
+            }
+          break;
+        }
+      else if (nread < bufsize)
+        {
+          buffer[nread] = 0;
+          break;  /* Got it.  */
+        }
+      else if (bufsize >= 4095)
+        {
+          buffer[0] = 0;
+          log_info ("error reading symlink '%s': %s\n",
+                    MYPROC_SELF_EXE, "value too large");
+          break;
+        }
+      xfree (buffer);
+      bufsize += 256;
+    }
+  return buffer;
+}
+
+
 /* Determine the root directory of the gnupg installation on Unix.
  * The standard case is that this function returns NULL so that the
  * root directory as configured at build time is used.  However, it
@@ -862,46 +930,8 @@ unix_rootdir (enum wantdir_values wantdir)
     {
       char *p;
       char *buffer;
-      size_t bufsize = 256-1;
-      int nread;
-      gpg_error_t err;
-      const char *name;
 
-      for (;;)
-        {
-          buffer = xmalloc (bufsize+1);
-          nread = readlink (MYPROC_SELF_EXE, buffer, bufsize);
-          if (nread < 0)
-            {
-              err = gpg_error_from_syserror ();
-              buffer[0] = 0;
-              if ((name = getenv ("GNUPG_BUILD_ROOT")) && *name == '/')
-                {
-                  /* Try a fallback for systems w/o a supported /proc
-                   * file system if we are running a regression test.  */
-                  log_info ("error reading symlink '%s': %s\n",
-                            MYPROC_SELF_EXE, gpg_strerror (err));
-                  xfree  (buffer);
-                  buffer = xstrconcat (name, "/bin/gpgconf", NULL);
-                  log_info ("trying fallback '%s'\n", buffer);
-                }
-              break;
-            }
-          else if (nread < bufsize)
-            {
-              buffer[nread] = 0;
-              break;  /* Got it.  */
-            }
-          else if (bufsize >= 4095)
-            {
-              buffer[0] = 0;
-              log_info ("error reading symlink '%s': %s\n",
-                        MYPROC_SELF_EXE, "value too large");
-              break;
-            }
-          xfree (buffer);
-          bufsize += 256;
-        }
+      buffer = unix_myproc_self (1/* with_fallback */);
       if (!*buffer)
         {
           xfree (buffer);
@@ -1077,6 +1107,27 @@ gnupg_maybe_make_homedir (const char *fname, int quiet)
         }
     }
 }
+
+
+/* Return the file name of this process.  On error NULL is returns.
+ * The caller must free the return value.  */
+char *
+gnupg_myproc_self (void)
+{
+  char *result;
+#ifdef HAVE_W32_SYSTEM
+  result = w32_myproc_self ();
+#else
+  result = unix_myproc_self (0);
+#endif
+  if (!*result)
+    {
+      xfree (result);
+      result= NULL;
+    }
+ return result;
+}
+
 
 
 /* Return the homedir.  The returned string is valid until another
