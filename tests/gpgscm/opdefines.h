@@ -201,5 +201,6 @@ _OP_DEF(OP_GET_CLOSURE,         "get-closure-code",               1,  1,       T
 _OP_DEF(OP_CLOSUREP,            "closure?",                       1,  1,       TST_NONE                          )
 _OP_DEF(OP_MACROP,              "macro?",                         1,  1,       TST_NONE                          )
 _OP_DEF(OP_VM_HISTORY,          "*vm-history*",                   0,  0,       TST_NONE                          )
+_OP_DEF(OP_LONG_TIME_T,         "*long-time-t?*",                 0,  0,       TST_NONE                           )
 
 #undef _OP_DEF

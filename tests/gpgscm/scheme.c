@@ -5329,6 +5329,8 @@ Eval_Cycle(scheme *sc, enum scheme_opcodes op) {
           s_retbool(is_macro(car(sc->args)));
      CASE(OP_VM_HISTORY):          /* *vm-history* */
           s_return(sc, history_flatten(sc));
+     CASE(OP_LONG_TIME_T):
+          s_retbool (sizeof (time_t) > 4 || ((time_t)(-2) > 0));
      default:
           snprintf(sc->strbuff,STRBUFFSIZE,"%d: illegal operator", op);
           Error_0(sc,sc->strbuff);
