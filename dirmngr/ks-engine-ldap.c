@@ -2192,19 +2192,29 @@ ks_ldap_search (ctrl_t ctrl, parsed_uri_t uri, const char *pattern,
 		    if (!ascii_strcasecmp (certid[0], vals[0]))
 		      {
 			char **uidvals;
+                        int i;
 
+                        /* For backward compatibility we always print
+                         * one uid line even if there is no value.
+                         * That is probably a bug introduced with
+                         * 2.1.3 along with the regression to only
+                         * print the first user id.  */
 			es_fprintf (fp, "uid:");
 
 			uidvals = ldap_get_values (ldap_conn,
 						   uids, "pgpuserid");
-			if (uidvals)
+			for (i=0; uidvals && uidvals[i]; i++)
 			  {
 			    /* Need to percent escape any colons */
-                            char *quoted = try_percent_escape (uidvals[0],
+                            char *quoted = try_percent_escape (uidvals[i],
                                                                NULL);
                             if (quoted)
-                              es_fputs (quoted, fp);
-			    xfree (quoted);
+                              {
+                                if (i)
+                                  es_fprintf (fp, "\nuid:");
+                                es_fputs (quoted, fp);
+                                xfree (quoted);
+                              }
 			  }
                         my_ldap_value_free (uidvals);
 
