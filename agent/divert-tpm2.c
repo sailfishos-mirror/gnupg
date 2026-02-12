@@ -138,6 +138,15 @@ divert_tpm2_pkdecrypt (ctrl_t ctrl,
       if (!smatch (&s, n, "a"))
         return gpg_error (GPG_ERR_UNKNOWN_SEXP);
       n = snext (&s);
+      /* NOTE: gpg-agent protocol uses signed integer for RSA (%m in
+       * MPI), where 0x00 is added when the MSB is 1.  TPM2 uses
+       * unsigned integer.  We need to remove this 0x00, or else
+       * it may result GPG_ERR_TOO_LARGE in tpm2daemon.  */
+      if (!*s && (n&1))
+        {
+          s++;
+          n--;
+        }
     }
   else if (smatch (&s, n, "ecdh"))
     {
