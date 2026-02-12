@@ -23,6 +23,7 @@ Options:
         [--desc=STRING]   Include STRING as description (default=$desc)
         [--url=STRING]    Include STRING as URL (default=$url)
         [--stamp]         Use a stamp file to avoid double signing
+                          This also keeps the signing log on success.
         [--dry-run]       Do not actually run osslsigncode
                           (same as GPG_AUTHCODE_SIGN_MODE=disable)
         [--template]      Print a template for ~/.gnupg-autogenrc
@@ -194,6 +195,10 @@ cleanup()
         echo >&2 "Cleaning up: Removing ${outname}.tmp"
         rm -f "${outname}.tmp"
     fi
+    if [ -n "$outname" ] && [ -f "${outname}.tmp.log" ]; then
+        echo >&2 "Cleaning up: Removing ${outname}.tmp.log"
+        rm -f "${outname}.tmp.log"
+    fi
 }
 
 # Trap common signals and exit to run the cleanup
@@ -206,7 +211,7 @@ for v in AUTHENTICODE_SIGNHOST AUTHENTICODE_TOOL AUTHENTICODE_TSURL \
                   |sed -e 's,\\,\\\\,g'| sed -e 's,^",'\', -e 's,"$,'\',)
 done
 
-
+# Check whether it has already been signed
 if [ "$stamp" = yes ]; then
     if [ "$outname.asig-done" -nt "$outname" ]; then
         echo >&2 "$PGM: file is '$outname' is already signed"
@@ -214,7 +219,12 @@ if [ "$stamp" = yes ]; then
     fi
 fi
 
+# Initial wait time for the next try (needs to be larger than 2).
 waittime=2
+
+# Delete a stale log file.
+[ -f "$outname.tmp.log" ] && rm "$outname.tmp.log"
+
 if [ -n "$dryrun" ]; then
 
     echo >&2 "$PGM: would sign: '$inname' to '$outname'"
@@ -268,7 +278,6 @@ elif [ "$AUTHENTICODE_KEY" = card ]; then
       waittime=$(( $waittime * 2 ))
     done
     [ -f "$inname.tmp.dll" ] && rm "$inname.tmp.dll"
-    rm "$outname.tmp.log"
     cp "$outname.tmp" "$outname"
     rm "$outname.tmp"
 
@@ -302,8 +311,16 @@ else
 fi
 
 if [ -z "$dryrun" ]; then
-  [ "$stamp" = yes ] && touch "$outname.asig-done"
-  echo >&2 "$PGM: signed file is '$outname'"
+    if [ "$stamp" = yes ]; then
+        if [ -f "$outname.tmp.log" ]; then
+            echo >&2 "$PGM: using log as stamp file '$outname.asig-done'"
+            mv "$outname.tmp.log" "$outname.asig-done"
+        else
+            echo >&2 "$PGM: creating stamp file '$outname.asig-done'"
+            touch "$outname.asig-done"
+        fi
+    fi
+    echo >&2 "$PGM: signed file is '$outname'"
 fi
 
 # eof
