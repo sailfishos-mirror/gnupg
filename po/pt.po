@@ -77,9 +77,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.4.8\n"
+"Project-Id-Version: gnupg 2.5.17\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-11-05 21:10+0000\n"
+"PO-Revision-Date: 2026-02-16 22:43+0000\n"
 "Last-Translator: Daniel Cerqueira <dan.git@brilhante.top>\n"
 "Language-Team: pt <dan.git@brilhante.top>\n"
 "Language: pt\n"
@@ -592,10 +592,9 @@ msgstr "tentando roubar o socket de executar %s\n"
 msgid "a gpg-agent is already running - not starting a new one\n"
 msgstr "um gpg-agent já está em execução - não iniciando um novo\n"
 
-#, fuzzy, c-format
-#| msgid "key %s: removed multiple subkey binding\n"
+#, c-format
 msgid "socket file removed - retrying binding\n"
-msgstr "chave %s: vinculação de várias subchaves removida\n"
+msgstr "ficheiro socket removido - re-tentando vinculação\n"
 
 #, c-format
 msgid "error getting nonce for the socket\n"
@@ -829,10 +828,9 @@ msgstr "Alterar frase-secreta"
 msgid "I'll change it later"
 msgstr "Vou alterá-la mais tarde"
 
-#, fuzzy, c-format
-#| msgid "receiving line failed: %s\n"
+#, c-format
 msgid "Unprotecting key failed: %s\n"
-msgstr "falha ao receber linha: %s\n"
+msgstr "Falhou ao desproteger a chave: %s\n"
 
 msgid "Please insert the card with serial number"
 msgstr "Insira o cartão com o número de série"
@@ -1740,15 +1738,12 @@ msgstr "Comandos de Admin não são permitidos\n"
 msgid "Invalid command  (try \"help\")\n"
 msgstr "Comando inválido (tente \"help\")\n"
 
-#, fuzzy, c-format
-#| msgid "key operation not possible: %s\n"
+#, c-format
 msgid "modifying the recipients is not possible: %s\n"
-msgstr "operação de chave não é possível: %s\n"
+msgstr "modificando destinatários não é possível: %s\n"
 
-#, fuzzy
-#| msgid "decryption failed: %s\n"
 msgid "decryption failed"
-msgstr "decifração falhou: %s\n"
+msgstr "decifração falhou"
 
 #, c-format
 msgid "--output doesn't work for this command\n"
@@ -1890,19 +1885,17 @@ msgstr ""
 "AVISO: forçar o algoritmo de compressão %s (%d) viola as preferências do "
 "destinatário\n"
 
-#, fuzzy, c-format
-#| msgid "Number of recipients"
+#, c-format
 msgid "number of removed recipients: %u\n"
-msgstr "Número de destinatários"
+msgstr "número de destinatários removidos: %u\n"
 
 #, c-format
 msgid "option '%s' may not be used in %s mode\n"
 msgstr "a opção '%s' não pode ser usada no modo %s\n"
 
-#, fuzzy, c-format
-#| msgid "can't encrypt to '%s'\n"
+#, c-format
 msgid "already encrypted to %08lX\n"
-msgstr "não é possível cifrar para '%s'\n"
+msgstr "já está cifrado para %08lX\n"
 
 #, c-format
 msgid "%s encrypted data\n"
@@ -2088,10 +2081,8 @@ msgstr "assinar rapidamente uma chave"
 msgid "quickly sign a key locally"
 msgstr "assinar rapidamente uma chave localmente"
 
-#, fuzzy
-#| msgid "sign selected user IDs with a trust signature"
 msgid "quickly sign a key with a trust signature"
-msgstr "assinar IDs de utilizador selecionadas com uma assinatura da confiança"
+msgstr "assinar uma chave rapidamente com uma assinatura da confiança"
 
 msgid "quickly revoke a key signature"
 msgstr "revogar rapidamente uma assinatura de chave"
@@ -2391,10 +2382,8 @@ msgstr "mostrar preferências"
 msgid "show ownertrust"
 msgstr "mostrar a ownertrust"
 
-#, fuzzy
-#| msgid "Unknown critical signature notation: "
 msgid "show trust signature information"
-msgstr "Notação de assinatura crítica desconhecida: "
+msgstr "mostrar informação de assinatura da confiança"
 
 #, c-format
 msgid "unknown TOFU policy '%s'\n"
@@ -2733,7 +2722,7 @@ msgid "|ALGO|reject signatures made with ALGO"
 msgstr "|ALGO|rejeitar assinaturas feitas com ALGO"
 
 msgid "|NAME|print the notation NAME to stdout"
-msgstr ""
+msgstr "|NAME|mostrar a notação NAME em stdout"
 
 msgid "Usage: gpgv [options] [files] (-h for help)"
 msgstr "Uso: gpgv [opções] [ficheiros] (-h para ajuda)"
@@ -2795,12 +2784,10 @@ msgid "repair keys on import"
 msgstr "reparar chaves ao importar"
 
 msgid "update even unchanged keys"
-msgstr ""
+msgstr "atualizar até mesmo chaves não modificadas"
 
-#, fuzzy
-#| msgid "list secret keys"
 msgid "do not import secret keys"
-msgstr "listar as chaves secretas"
+msgstr "não importar as chaves secretas"
 
 #, c-format
 msgid "skipping block of type %d\n"
@@ -3767,10 +3754,9 @@ msgstr "Não há IDs de utilizador correspondentes."
 msgid "Nothing to sign.\n"
 msgstr "Nada a assinar.\n"
 
-#, fuzzy, c-format
-#| msgid "revoking the key signature failed: %s\n"
+#, c-format
 msgid "creating key signature failed: %s\n"
-msgstr "falha ao revogar a assinatura da chave: %s\n"
+msgstr "falha ao criar a assinatura da chave: %s\n"
 
 #, c-format
 msgid "Not signed by you.\n"
@@ -4291,15 +4277,13 @@ msgstr "  (%d) Chave existente%s\n"
 msgid "  (%d) Existing key from card%s\n"
 msgstr "  (%d) Chave do cartão existente%s\n"
 
-#, fuzzy, c-format
-#| msgid "   (%d) ECC (sign and encrypt)%s\n"
+#, c-format
 msgid "  (%d) ECC and Kyber%s\n"
-msgstr "   (%d) ECC (de assinar e cifrar)%s\n"
+msgstr "  (%d) ECC e Kyber%s\n"
 
-#, fuzzy, c-format
-#| msgid "  (%d) ECC (encrypt only)%s\n"
+#, c-format
 msgid "  (%d) Kyber (encrypt only)%s\n"
-msgstr "  (%d) ECC (apenas de cifrar)%s\n"
+msgstr "  (%d) Kyber (apenas de cifrar)%s\n"
 
 msgid "Enter the keygrip: "
 msgstr "Introduzir o keygrip: "
@@ -4341,10 +4325,9 @@ msgstr "O tamanho de chave pedido é %u bits\n"
 msgid "Please select which elliptic curve you want:\n"
 msgstr "Selecione qual a curva elíptica que você deseja:\n"
 
-#, fuzzy, c-format
-#| msgid "Please select what kind of key you want:\n"
+#, c-format
 msgid "Please select the %s variant you want:\n"
-msgstr "Selecione o tipo de chave desejado:\n"
+msgstr "Selecione a variação de %s desejada:\n"
 
 msgid ""
 "Please specify how long the key should be valid.\n"
@@ -4694,10 +4677,9 @@ msgstr "comentário da revogação: "
 msgid "Revocable by: "
 msgstr "Revocável por: "
 
-#, fuzzy, c-format
-#| msgid "error writing to '%s': %s\n"
+#, c-format
 msgid "error writing to stdout: %s\n"
-msgstr "erro ao escrever em '%s': %s\n"
+msgstr "erro ao escrever em stdout: %s\n"
 
 msgid "Primary key fingerprint:"
 msgstr "Impressão digital da chave principal:"
@@ -4766,7 +4748,7 @@ msgid "honor the preferred keyserver URL set on the key"
 msgstr "honrar a URL do servidor de chaves preferencial definida na chave"
 
 msgid "update a key before sending it"
-msgstr ""
+msgstr "atualizar uma chave antes de a enviar"
 
 msgid "disabled"
 msgstr "desabilitado"
@@ -4782,10 +4764,9 @@ msgstr "protocolo de servidor de chaves inválido (nós %d!=handler %d)\n"
 msgid "\"%s\" not a key ID: skipping\n"
 msgstr "\"%s\" não é uma ID de chave: ignorando\n"
 
-#, fuzzy, c-format
-#| msgid "\"%s\" is not a fingerprint\n"
+#, c-format
 msgid "\"%s\" not a fingerprint: skipping\n"
-msgstr "\"%s\" não é uma impressão digital\n"
+msgstr "\"%s\" não é uma impressão digital: ignorando\n"
 
 #, c-format
 msgid "refreshing %d key from %s\n"
@@ -4815,7 +4796,7 @@ msgstr "nenhum servidor de chaves conhecido\n"
 
 #, c-format
 msgid "upload skipped due to non-LDAP keyserver\n"
-msgstr ""
+msgstr "upload ignorado devido a servidor de chaves não-LDAP\n"
 
 #, c-format
 msgid "skipped \"%s\": %s\n"
@@ -4871,7 +4852,7 @@ msgstr "cifrado com chave %s, ID %s\n"
 
 #, c-format
 msgid "WARNING: key is not quantum-resistant\n"
-msgstr ""
+msgstr "AVISO: a chave não é resistente-a-quântica\n"
 
 #, c-format
 msgid "WARNING: multiple plaintexts seen\n"
@@ -5143,10 +5124,8 @@ msgstr "descomprimido|nenhum"
 msgid "this message may not be usable by %s\n"
 msgstr "esta mensagem poderá não ser utilizável pelo %s\n"
 
-#, fuzzy
-#| msgid "enable key"
 msgid "enabled"
-msgstr "habilitar chave"
+msgstr "habilitado"
 
 #, c-format
 msgid "ambiguous option '%s'\n"
@@ -5639,10 +5618,9 @@ msgstr "a chave usada não está marcada para uso de cifração.\n"
 msgid "okay, we are the anonymous recipient.\n"
 msgstr "ok, nós somos o destinatário anónimo.\n"
 
-#, fuzzy, c-format
-#| msgid "WARNING: signing subkey %s is not cross-certified\n"
+#, c-format
 msgid "WARNING: session key is not quantum-resistant\n"
-msgstr "AVISO: a subchave de assinatura %s não é cruzadamente certificada\n"
+msgstr "AVISO: chave de sessão não é resistente-a-quântica\n"
 
 #, c-format
 msgid "old encoding of the DEK is not supported\n"
@@ -7415,10 +7393,8 @@ msgstr " (opcional; terminar com uma linha vazia):\n"
 msgid "Enter URIs"
 msgstr "Introduzir URIs"
 
-#, fuzzy
-#| msgid "Enter the notation: "
 msgid "Enter extensions"
-msgstr "Introduzir a notação: "
+msgstr "Introduzir extensões"
 
 msgid "Create self-signed certificate? (y/N) "
 msgstr "Criar certificado auto-assinado? (s/N) "
@@ -7656,10 +7632,9 @@ msgstr "erro ao armazenar flags: %s\n"
 msgid "Error - "
 msgstr "Erro - "
 
-#, fuzzy, c-format
-#| msgid "error writing to pipe: %s\n"
+#, c-format
 msgid "error writing to output: %s\n"
-msgstr "erro ao escrever no pipe: %s\n"
+msgstr "erro ao escrever na saída: %s\n"
 
 #, c-format
 msgid "invalid formatted fingerprint in '%s', line %d\n"
