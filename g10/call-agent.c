@@ -3290,13 +3290,14 @@ confirm_status_cb (void *opaque, const char *line)
    message.  If FORCE is true the agent is advised not to ask for
    confirmation. */
 gpg_error_t
-agent_delete_key (ctrl_t ctrl, const char *hexkeygrip, const char *desc,
+agent_delete_key (ctrl_t ctrl, const char *keygrip, const char *desc,
                   int force)
 {
   gpg_error_t err;
   char line[ASSUAN_LINELENGTH];
   struct default_inq_parm_s dfltparm;
   struct confirm_parm_s confirm_parm;
+  const char *keygrip2 = NULL;
 
   memset (&confirm_parm, 0, sizeof confirm_parm);
   memset (&dfltparm, 0, sizeof dfltparm);
@@ -3308,8 +3309,21 @@ agent_delete_key (ctrl_t ctrl, const char *hexkeygrip, const char *desc,
     return err;
   dfltparm.ctx = agent_ctx;
 
-  if (!hexkeygrip || strlen (hexkeygrip) != 40)
+  if (!keygrip)
     return gpg_error (GPG_ERR_INV_VALUE);
+
+  /* Parse the keygrip in case of a composite key.  */
+  keygrip2 = strchr (keygrip, ',');
+  if (!keygrip2)
+    keygrip2 = keygrip + strlen (keygrip);
+  if (keygrip2 - keygrip != 40)
+    return gpg_error (GPG_ERR_INV_VALUE);
+  if (*keygrip2)
+    {
+      keygrip2++;
+      if (strlen (keygrip2) != 40)
+        return gpg_error (GPG_ERR_INV_VALUE);
+    }
 
   if (desc)
     {
@@ -3320,12 +3334,19 @@ agent_delete_key (ctrl_t ctrl, const char *hexkeygrip, const char *desc,
         return err;
     }
 
-  /* FIXME: Shall we add support to DELETE_KEY for composite keys?  */
-  snprintf (line, DIM(line), "DELETE_KEY%s %s",
-            force? " --force":"", hexkeygrip);
+  snprintf (line, DIM(line), "DELETE_KEY%s %.40s",
+            force? " --force":"", keygrip);
   err = assuan_transact (agent_ctx, line, NULL, NULL,
                          default_inq_cb, &dfltparm,
                          confirm_status_cb, &confirm_parm);
+  if (!err && *keygrip2)
+    {
+      snprintf (line, DIM(line), "DELETE_KEY%s %.40s",
+                force? " --force":"", keygrip2);
+      err = assuan_transact (agent_ctx, line, NULL, NULL,
+                             default_inq_cb, &dfltparm,
+                             confirm_status_cb, &confirm_parm);
+    }
   xfree (confirm_parm.desc);
   xfree (confirm_parm.ok);
   xfree (confirm_parm.notok);
