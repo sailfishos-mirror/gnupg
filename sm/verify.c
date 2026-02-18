@@ -657,6 +657,7 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
         /* Handle the --assert-signer option.  */
         check_assert_signer_list (ctrl, fpr);
         xfree (fpr);
+        /* Print the status line.  */
         gpgsm_status (ctrl, STATUS_VALIDSIG, buf);
         xfree (buf);
       }
@@ -713,6 +714,10 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
           log_error ("get_user_data(is_qualified) failed: %s\n",
                      gpg_strerror (rc));
       }
+
+      /* Handle the --assert-validsig option.  */
+      if (opt.assert_validsig)
+        assert_validsig_true = 1;
 
       gpgsm_status (ctrl, STATUS_TRUST_FULLY,
                     (verifyflags & VALIDATE_FLAG_STEED)?

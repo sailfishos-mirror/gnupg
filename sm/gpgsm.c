@@ -220,6 +220,8 @@ enum cmd_and_opt_values {
   oAlwaysTrust,
   oNoAutostart,
   oAssertSigner,
+  oAssertValidsig,
+  oAssertKeyusage,
   oNoQESNote,
 
   oNoop
@@ -316,7 +318,6 @@ static gpgrt_opt_t opts[] = {
                 N_("|FILE|take policy information from FILE")),
   ARGPARSE_s_s (oCompliance, "compliance",   "@"),
   ARGPARSE_p_u (oMinRSALength, "min-rsa-length", "@"),
-  ARGPARSE_s_s (oAssertSigner, "assert-signer", "@"),
   ARGPARSE_s_n (oNoCommonCertsImport, "no-common-certs-import", "@"),
   ARGPARSE_s_s (oIgnoreCertExtension, "ignore-cert-extension", "@"),
   ARGPARSE_s_s (oIgnoreCertWithOID, "ignore-cert-with-oid", "@"),
@@ -439,6 +440,9 @@ static gpgrt_opt_t opts[] = {
   ARGPARSE_s_i (oPassphraseFD,    "passphrase-fd", "@"),
   ARGPARSE_s_s (oPinentryMode,    "pinentry-mode", "@"),
   ARGPARSE_s_n (oNoProtection,    "no-protection", "@"),
+  ARGPARSE_s_s (oAssertSigner,   "assert-signer", "@"),
+  ARGPARSE_s_n (oAssertValidsig, "assert-validsig", "@"),
+  ARGPARSE_s_s (oAssertKeyusage, "assert-keyusage", "@"),
 
 
   ARGPARSE_header (NULL, N_("Other options")),
@@ -512,8 +516,11 @@ static struct compatibility_flags_s compatibility_flags [] =
 /* Global variable to keep an error count. */
 int gpgsm_errors_seen = 0;
 /* If opt.assert_signer_list is used and this variable is not true
- * gpg will be forced to return EXIT_FAILURE.  */
+ * gpgsm will be forced to return EXIT_FAILURE.  */
 int assert_signer_true = 0;
+/* If opt.assert_validsig is used and this variable is not true
+ * gpgsm will be forced to return EXIT_FAILURE.  */
+int assert_validsig_true = 0;
 
 /* It is possible that we are currentlu running under setuid permissions */
 static int maybe_setuid = 1;
@@ -1541,6 +1548,14 @@ main ( int argc, char **argv)
           add_to_strlist (&opt.assert_signer_list, pargs.r.ret_str);
           break;
 
+        case oAssertValidsig:
+          opt.assert_validsig = 1;
+          break;
+
+        case oAssertKeyusage:
+          add_to_strlist (&opt.assert_keyusage, pargs.r.ret_str);
+          break;
+
         case oNoQESNote: opt.no_qes_note = 1; break;
 
         case oNoop: break;
@@ -2362,6 +2377,8 @@ gpgsm_exit (int rc)
   else if (gpgsm_errors_seen)
     rc = 1;
   else if (opt.assert_signer_list && !assert_signer_true)
+    rc = 1;
+  else if (opt.assert_validsig && !assert_validsig_true)
     rc = 1;
 
   /* If we had an error but not printed an error message, do it now.

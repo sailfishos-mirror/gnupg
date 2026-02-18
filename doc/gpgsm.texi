@@ -749,6 +749,13 @@ guaranteed to return with an exit code of 0 if and only if a signature
 has been encountered, is valid, and the key matches one of the
 fingerprints given by this option.
 
+@item --assert-validsig
+@opindex assert-validsig
+This option checks whether at least one fully valid and trusted
+signature was detected.  Using this option avoids the need to parse
+the status output for the presense of the VALIDSIG and TRUST_FULLY
+lines.
+
 @item --always-trust
 @opindex always-trust
 Force encryption to the specified certificates without any validation

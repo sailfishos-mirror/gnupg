@@ -188,6 +188,14 @@ struct
    * modified to uppercase if they represent a fingerrint */
   strlist_t assert_signer_list;
 
+  /* Enable the --assert-validsig option.  */
+  int assert_validsig;
+
+  /* FIXME: Not yet defined.  The idea is to have a list of OIDs which
+   * must be asserted.  A flag is required to demand that only the
+   * listed usage is set.  */
+  strlist_t assert_keyusage;
+
   /* Compatibility flags (COMPAT_FLAG_xxxx).  */
   unsigned int compat_flags;
 } opt;
@@ -353,6 +361,7 @@ struct rootca_flags_s
 /*-- gpgsm.c --*/
 extern int gpgsm_errors_seen;
 extern int assert_signer_true;
+extern int assert_validsig_true;
 
 void gpgsm_exit (int rc);
 void gpgsm_init_default_ctrl (struct server_control_s *ctrl);
