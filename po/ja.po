@@ -5,13 +5,13 @@
 # Yoshihiro Kajiki <kajiki@ylug.org>, 1999.
 # Takashi P.KATOH, 2002.
 # NIIBE Yutaka <gniibe@fsij.org>, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-# 2020, 2021, 2022, 2023, 2024, 2025.
+# 2020, 2021, 2022, 2023, 2024, 2025, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.5.12\n"
+"Project-Id-Version: gnupg 2.5.17\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2025-11-18 16:53+0900\n"
+"PO-Revision-Date: 2026-02-19 10:25+0900\n"
 "Last-Translator: NIIBE Yutaka <gniibe@fsij.org>\n"
 "Language-Team: none\n"
 "Language: ja\n"
@@ -2686,7 +2686,7 @@ msgid "repair keys on import"
 msgstr "インポートの際、鍵を修復する"
 
 msgid "update even unchanged keys"
-msgstr ""
+msgstr "変わっていない鍵も更新する"
 
 msgid "do not import secret keys"
 msgstr "秘密鍵をインポートしない"
