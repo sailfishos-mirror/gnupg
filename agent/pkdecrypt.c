@@ -210,7 +210,7 @@ ecc_extract_pk_from_key (const struct gnupg_ecc_params *ecc,
     }
 
   if (DBG_CRYPTO)
-    log_printhex (ecc_pk, ecc->pubkey_len, "ECC   pubkey:");
+    log_printhex (ecc_pk, ecc->point_len, "ECC   pubkey:");
 
  leave:
   mpi_release (ecc_pk_mpi);
