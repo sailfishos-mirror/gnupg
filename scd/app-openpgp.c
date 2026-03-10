@@ -3515,7 +3515,19 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
                   prompt = promptbuf;
                 }
               else
-                prompt = _("||Please enter the PIN");
+                {
+                  int remaining;
+
+                  remaining = get_remaining_tries (app, 0);
+                  if (remaining == -1)
+                    return gpg_error (GPG_ERR_CARD);
+                  if (!remaining)
+                    {
+                      log_info (_("card is permanently locked!\n"));
+                      return gpg_error (GPG_ERR_PIN_BLOCKED);
+                    }
+                  prompt = _("||Please enter the PIN");
+                }
               rc = pincb (pincb_arg, prompt, &oldpinvalue);
               xfree (promptbuf);
               promptbuf = NULL;
