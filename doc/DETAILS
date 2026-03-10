@@ -1802,7 +1802,7 @@ Description of some debug flags:
 ** Used notations
 
   - manu :: LibrePGP/rfc4880bis defined standard notation used by
-            GnuPG and other implementaions to convey additional
+            GnuPG and other implementations to convey additional
             information about the implementation used to create
             a key or signature.  This is a list of comma delimited
             values with these defined fields:
@@ -1842,7 +1842,8 @@ Description of some debug flags:
 
             This notation shall be human readable.  It is defined in
             away to minimize its size but to be easily viewable by
-            standard software.
+            standard software.  Note that gpg shows this option only
+            when using "--list-options show-hidden-notations".
 
   - rem@gnupg.org :: Used by Kleopatra to implement the tag feature.
                      These tags are used to mark keys for easier

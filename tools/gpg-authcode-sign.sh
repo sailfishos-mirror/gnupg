@@ -10,7 +10,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-VERSION=2026-02-24
+VERSION=2026-02-26
 PGM=gpg-authcode-sign.sh
 
 set -e
@@ -19,15 +19,17 @@ usage()
 {
     cat <<EOF
 Usage: $PGM [OPTIONS]  FILE_TO_SIGN  SIGNED_FILE
+       $PGM [OPTIONS] --in-place FILE_TO_SIGN
 Options:
-        [--desc=STRING]   Include STRING as description (default=$desc)
-        [--url=STRING]    Include STRING as URL (default=$url)
-        [--stamp]         Use a stamp file to avoid double signing
-                          This also keeps the signing log on success.
-        [--dry-run]       Do not actually run osslsigncode
-                          (same as GPG_AUTHCODE_SIGN_MODE=disable)
-        [--template]      Print a template for ~/.gnupg-autogenrc
-        [--version]       Print version and exit
+        --desc=STRING   Include STRING as description (default=$desc)
+        --url=STRING    Include STRING as URL (default=$url)
+        --stamp         Use a stamp file to avoid double signing
+                        This also keeps the signing log on success.
+        --in-place,-i   Sign in-place
+        --dry-run,-n    Do not actually run osslsigncode
+                        (same as GPG_AUTHCODE_SIGN_MODE=disable)
+        --template      Print a template for ~/.gnupg-autogenrc
+        --version       Print version and exit
 EOF
     exit $1
 }
@@ -99,6 +101,7 @@ EOF
 
 autogenrc="$HOME/.gnupg-autogen.rc"
 dryrun=
+inplace=
 stamp=
 buildtype=
 # Set defaults according to our build system.
@@ -148,6 +151,9 @@ while [ $# -gt 0 ]; do
 	--dry-run|-n)
 	    dryrun=yes
 	    ;;
+	--in-place|-i)
+	    inplace=yes
+	    ;;
 	--stamp)
 	    stamp=yes
 	    ;;
@@ -172,12 +178,20 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-if [ $# -ne 2 ]; then
-    usage 1 1>&2
+if [ "$inplace" = yes ]; then
+  if [ $# -ne 1 ]; then
+      usage 1 1>&2
+  fi
+  inname="$1"
+  outname="$1"
+else
+  if [ $# -ne 2 ]; then
+      usage 1 1>&2
+  fi
+  inname="$1"
+  outname="$2"
 fi
-inname="$1"
-outname="$2"
-shift
+
 
 if [ ! -f $autogenrc ]; then
     echo >&2 "$PGM: error: '$autogenrc' missing"
