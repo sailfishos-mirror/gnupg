@@ -3673,6 +3673,9 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
       wipe_and_free (result1, resultlen1);
       wipe_and_free (result2, resultlen2);
       wipe_and_free (buffer, bufferlen);
+
+      if (gpg_err_code (rc) == GPG_ERR_BAD_PIN)
+        rc = gpg_error (GPG_ERR_BAD_RESET_CODE);
     }
   else if (set_resetcode)
     {
