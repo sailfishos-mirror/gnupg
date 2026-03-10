@@ -2744,6 +2744,11 @@ verify_a_chv (app_t app, ctrl_t ctrl,
   remaining = get_remaining_tries (app, 0);
   if (remaining == -1)
     return gpg_error (GPG_ERR_CARD);
+  if (!remaining)
+    {
+      log_info (_("card is permanently locked!\n"));
+      return gpg_error (GPG_ERR_PIN_BLOCKED);
+    }
 
   if (chvno == 2 && app->app_local->flags.def_chv2)
     {
