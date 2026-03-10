@@ -825,6 +825,14 @@ parse_bag_encrypted_data (struct p12_parse_ctx_s *ctx, tlv_parser_t tlv)
         }
       iter = intval;
 
+      /* Get the optional keyLength (we don't use it) */
+      if (tlv_next (tlv))
+        goto bailout;
+      if (!tlv_expect_integer (tlv, &intval))
+        parmlen -= tlv_parser_tag_length (tlv, 1);
+      else
+        tlv_parser_set_pending (tlv); /* Not an int - skip the next tlv_next */
+
       if (parmlen > 2)  /* There is the optional prf.  */
         {
           if (tlv_next (tlv))
@@ -1352,6 +1360,14 @@ parse_shrouded_key_bag (struct p12_parse_ctx_s *ctx, tlv_parser_t tlv)
           goto bailout;
         }
       iter = intval;
+
+      /* Get the optional keyLength (we don't use it) */
+      if (tlv_next (tlv))
+        goto bailout;
+      if (!tlv_expect_integer (tlv, &intval))
+        parmlen -= tlv_parser_tag_length (tlv, 1);
+      else
+        tlv_parser_set_pending (tlv); /* Not an int - skip the next tlv_next */
 
       if (parmlen > 2)  /* There is the optional prf.  */
         {
