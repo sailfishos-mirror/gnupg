@@ -1,5 +1,15 @@
-Noteworthy changes in version 2.2.53 (unreleased)
+Noteworthy changes in version 2.2.53 (2026-03-12)
 -------------------------------------------------
+
+  * gpg: Autoload designated revoker key and ADSK when needed.  [T7133]
+
+  * gpg: New options --auto-key-upload and --no-auto-key-upload.
+    [T7333,rG30ef06a56a]
+
+  * gpgsm: Skip the optional PKCS#12 PBES2 keyLength parameter to
+    allow the import of newer German Telekom keys.  [rG12bbfe3854]
+
+  * dirmngr: New LDAP keyserver flag "upload".  [T7866]
 
   Release-info: https://dev.gnupg.org/T7960
 
