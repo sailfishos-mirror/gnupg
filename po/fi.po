@@ -4902,6 +4902,10 @@ msgstr "pyydetään avainta %08lX kohteesta %s\n"
 msgid "no keyserver known\n"
 msgstr "virheelliset vientivalitsimet\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "ohitetaan \"%s\": %s\n"

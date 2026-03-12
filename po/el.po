@@ -4917,6 +4917,10 @@ msgstr "αίτηση κλειδιού %08lX από το %s\n"
 msgid "no keyserver known\n"
 msgstr "μη έγκυρες επιλογές εξαγωγής\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "παραλείφθηκε `%s': %s\n"

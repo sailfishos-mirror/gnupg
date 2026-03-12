@@ -4709,6 +4709,10 @@ msgid "no keyserver known\n"
 msgstr "brak znanego serwera kluczy\n"
 
 #, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
+#, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "pominięty ,,%s'': %s\n"
 

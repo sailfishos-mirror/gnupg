@@ -5094,6 +5094,10 @@ msgid "no keyserver known\n"
 msgstr "ingen nyckelserveråtgärd!\n"
 
 #, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
+#, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "hoppade över \"%s\": %s\n"
 

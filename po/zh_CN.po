@@ -4524,6 +4524,10 @@ msgid "no keyserver known\n"
 msgstr "无已知的公钥服务器\n"
 
 #, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
+#, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "已跳过 “%s”： %s\n"
 

@@ -5021,6 +5021,10 @@ msgstr "s'està sol·licitant la clau %08lX de %s\n"
 msgid "no keyserver known\n"
 msgstr "error de servidor de claus"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "es descarta «%s»: %s\n"

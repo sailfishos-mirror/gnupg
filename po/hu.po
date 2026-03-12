@@ -4877,6 +4877,10 @@ msgstr "Lekérem a %08lX kulcsot a %s kulcsszerverről.\n"
 msgid "no keyserver known\n"
 msgstr "Érvénytelen export opciók!\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "Kihagytam \"%s\"-t: %s.\n"

@@ -4870,6 +4870,10 @@ msgstr "küsin võtit %08lX võtmeserverist %s\n"
 msgid "no keyserver known\n"
 msgstr "vigased ekspordi võtmed\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "`%s' jätsin vahele: %s\n"

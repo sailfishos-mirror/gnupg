@@ -4899,6 +4899,10 @@ msgstr "požadujem kľúč %08lX z %s\n"
 msgid "no keyserver known\n"
 msgstr "neplatný parameter pre export\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "preskočený `%s': %s\n"

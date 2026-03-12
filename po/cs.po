@@ -4708,6 +4708,10 @@ msgid "no keyserver known\n"
 msgstr "není znám žádný server s klíči\n"
 
 #, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
+#, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "přeskočen „%s“: %s\n"
 

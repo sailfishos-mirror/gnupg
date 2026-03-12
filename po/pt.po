@@ -4886,6 +4886,10 @@ msgstr "a pedir a chave %08lX de %s\n"
 msgid "no keyserver known\n"
 msgstr "opções de exportação inválidas\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "ignorado `%s': %s\n"

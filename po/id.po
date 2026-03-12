@@ -4885,6 +4885,10 @@ msgstr "meminta kunci %08lX dari %s\n"
 msgid "no keyserver known\n"
 msgstr "opsi ekspor tidak valid\n"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "melewati `%s': %s\n"

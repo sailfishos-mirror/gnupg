@@ -5040,6 +5040,10 @@ msgid "no keyserver known\n"
 msgstr "bir anahtar sunucusu eylemi yok!\n"
 
 #, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
+#, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "\"%s\" atlandı: %s\n"
 

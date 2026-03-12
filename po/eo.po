@@ -4878,6 +4878,10 @@ msgstr "petas la ŝlosilon %08lX de HKP-ŝlosilservilo %s ...\n"
 msgid "no keyserver known\n"
 msgstr "nevalida ŝlosilaro"
 
+#, c-format
+msgid "upload skipped due to non-LDAP keyserver\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "skipped \"%s\": %s\n"
 msgstr "ignoris '%s': %s\n"
