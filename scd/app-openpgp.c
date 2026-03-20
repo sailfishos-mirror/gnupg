@@ -1497,7 +1497,7 @@ get_disp_name (app_t app)
 /* Return the number of remaining tries for the standard or the admin
  * pw.  Returns -1 on card error.  */
 static int
-get_remaining_tries (app_t app, int adminpw)
+get_remaining_tries (app_t app, int chvno)
 {
   void *relptr;
   unsigned char *value;
@@ -1511,7 +1511,7 @@ get_remaining_tries (app_t app, int adminpw)
       xfree (relptr);
       return -1;
     }
-  remaining = value[adminpw? 6 : 4];
+  remaining = value[(chvno == 3)? 6 : ((chvno == 2)? 5: 1)];
   xfree (relptr);
   return remaining;
 }
@@ -2496,7 +2496,7 @@ get_prompt_info (app_t app, int chvno, unsigned long sigcount, int remaining)
     return NULL;
 
   disp_name = get_disp_name (app);
-  if (chvno == 1)
+  if (chvno == 1 && sigcount)
     {
       /* TRANSLATORS: Put a \x1f right before a colon.  This can be
        * used by pinentry to nicely align the names and values.  Keep
@@ -2712,6 +2712,46 @@ pin_from_cache (app_t app, ctrl_t ctrl, int chvno, char **r_pin)
 }
 
 
+/* Build the prompt to enter the User PIN.  The prompt depends on the
+ * current state of the card.  If R_REMAINING is not NULL the
+ * remaining tries are stored there.  */
+static gpg_error_t
+build_enter_pin_prompt (app_t app, int chvno, const char *firstline,
+                        unsigned long sigcount,
+                        char **r_prompt, int *r_remaining)
+{
+  int remaining;
+  char *prompt;
+  char *infoblock;
+
+  *r_prompt = NULL;
+  if (r_remaining)
+    *r_remaining = 0;
+
+  remaining = get_remaining_tries (app, chvno);
+  if (remaining == -1)
+    return gpg_error (GPG_ERR_CARD);
+  if (!remaining)
+    {
+      log_info (_("card is permanently locked!\n"));
+      return gpg_error (GPG_ERR_PIN_BLOCKED);
+    }
+
+  infoblock = get_prompt_info (app, chvno, sigcount,
+                               remaining < 3? remaining : -1);
+
+  prompt = strconcat (firstline, "%0A%0A", infoblock, NULL);
+  xfree (infoblock);
+  if (!prompt)
+    return gpg_error_from_syserror ();
+
+  *r_prompt = prompt;
+  if (r_remaining)
+    *r_remaining = remaining;
+  return 0;
+}
+
+
 /* Verify a CHV either using the pinentry or if possible by
    using a pinpad.  PINCB and PINCB_ARG describe the usual callback
    for the pinentry.  CHVNO must be either 1 or 2. SIGCOUNT is only
@@ -2729,26 +2769,23 @@ verify_a_chv (app_t app, ctrl_t ctrl,
               char **r_pinvalue, size_t *r_pinlen)
 {
   int rc = 0;
-  char *prompt_buffer = NULL;
-  const char *prompt;
+  char *prompt;
   pininfo_t pininfo;
   int minlen = 6;
   int remaining;
   char *pin = NULL;
+  const char *firstline = _("||Please unlock the card");
 
   log_assert (chvno == 1 || chvno == 2);
 
   *r_pinvalue = NULL;
   *r_pinlen = 0;
 
-  remaining = get_remaining_tries (app, 0);
-  if (remaining == -1)
-    return gpg_error (GPG_ERR_CARD);
-  if (!remaining)
-    {
-      log_info (_("card is permanently locked!\n"));
-      return gpg_error (GPG_ERR_PIN_BLOCKED);
-    }
+  rc = build_enter_pin_prompt (app,
+                               1, /* Use 1, even if CHVNO==2.  */
+                               firstline, sigcount, &prompt, &remaining);
+  if (rc)
+    return rc;
 
   if (chvno == 2 && app->app_local->flags.def_chv2)
     {
@@ -2773,20 +2810,6 @@ verify_a_chv (app_t app, ctrl_t ctrl,
   pininfo.fixedlen = -1;
   pininfo.minlen = minlen;
 
-  {
-    const char *firstline = _("||Please unlock the card");
-    char *infoblock = get_prompt_info (app, chvno, sigcount,
-                                       remaining < 3? remaining : -1);
-
-    prompt_buffer = strconcat (firstline, "%0A%0A", infoblock, NULL);
-    if (prompt_buffer)
-      prompt = prompt_buffer;
-    else
-      prompt = firstline;  /* ENOMEM fallback.  */
-
-    xfree (infoblock);
-  }
-
   if (!opt.disable_pinpad
       && !iso7816_check_pinpad (app_get_slot (app), ISO7816_VERIFY, &pininfo)
       && !check_pinpad_request (app, &pininfo, 0))
@@ -2797,9 +2820,8 @@ verify_a_chv (app_t app, ctrl_t ctrl,
        * Note that the pincb appends a text to the prompt telling the
        * user to use the pinpad. */
       rc = pincb (pincb_arg, prompt, NULL);
+      xfree (prompt);
       prompt = NULL;
-      xfree (prompt_buffer);
-      prompt_buffer = NULL;
       if (rc)
         {
           log_info (_("PIN callback returned error: %s\n"),
@@ -2821,9 +2843,8 @@ verify_a_chv (app_t app, ctrl_t ctrl,
         rc = 0;
       else
         rc = pincb (pincb_arg, prompt, &pin);
+      xfree (prompt);
       prompt = NULL;
-      xfree (prompt_buffer);
-      prompt_buffer = NULL;
       if (rc)
         {
           log_info (_("PIN callback returned error: %s\n"),
@@ -2924,43 +2945,13 @@ verify_chv2 (app_t app, ctrl_t ctrl,
 static gpg_error_t
 build_enter_admin_pin_prompt (app_t app, char **r_prompt, int *r_remaining)
 {
-  int remaining;
-  char *prompt;
-  char *infoblock;
+  gpg_error_t rc;
+  /* TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+     start of the string.  */
+  const char *firstline = _("|A|Please enter the Admin PIN");
 
-  *r_prompt = NULL;
-  if (r_remaining)
-    *r_remaining = 0;
-
-  remaining = get_remaining_tries (app, 1);
-  if (remaining == -1)
-    return gpg_error (GPG_ERR_CARD);
-  if (!remaining)
-    {
-      log_info (_("card is permanently locked!\n"));
-      return gpg_error (GPG_ERR_PIN_BLOCKED);
-    }
-
-  log_info (ngettext("%d Admin PIN attempt remaining before card"
-                     " is permanently locked\n",
-                     "%d Admin PIN attempts remaining before card"
-                     " is permanently locked\n",
-                     remaining), remaining);
-
-  infoblock = get_prompt_info (app, 3, 0, remaining < 3? remaining : -1);
-
-  /* TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-     the start of the string.  Use %0A (single percent) for a linefeed.  */
-  prompt = strconcat (_("|A|Please enter the Admin PIN"),
-                      "%0A%0A", infoblock, NULL);
-  xfree (infoblock);
-  if (!prompt)
-    return gpg_error_from_syserror ();
-
-  *r_prompt = prompt;
-  if (r_remaining)
-    *r_remaining = remaining;
-  return 0;
+  rc = build_enter_pin_prompt (app, 3, firstline, 0, r_prompt, r_remaining);
+  return rc;
 }
 
 
@@ -3415,6 +3406,7 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
   pininfo_t pininfo;
   int use_pinpad = 0;
   int minlen = 6;
+  char *prompt = NULL;
 
   if (digitp (chvnostr))
     chvno = atoi (chvnostr);
@@ -3503,34 +3495,25 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
         {
           if (!use_pinpad)
             {
-              char *promptbuf = NULL;
-              const char *prompt;
-
               if (chvno == 3)
                 {
                   minlen = 8;
-                  rc = build_enter_admin_pin_prompt (app, &promptbuf, NULL);
+                  rc = build_enter_admin_pin_prompt (app, &prompt, NULL);
                   if (rc)
                     goto leave;
-                  prompt = promptbuf;
                 }
               else
                 {
-                  int remaining;
+                  const char *firstline = _("||Please enter the PIN");
 
-                  remaining = get_remaining_tries (app, 0);
-                  if (remaining == -1)
-                    return gpg_error (GPG_ERR_CARD);
-                  if (!remaining)
-                    {
-                      log_info (_("card is permanently locked!\n"));
-                      return gpg_error (GPG_ERR_PIN_BLOCKED);
-                    }
-                  prompt = _("||Please enter the PIN");
+                  rc = build_enter_pin_prompt (app, chvno, firstline, 0,
+                                               &prompt, NULL);
+                  if (rc)
+                    goto leave;
                 }
               rc = pincb (pincb_arg, prompt, &oldpinvalue);
-              xfree (promptbuf);
-              promptbuf = NULL;
+              xfree (prompt);
+              prompt = NULL;
               if (rc)
                 {
                   log_info (_("PIN callback returned error: %s\n"),
@@ -3551,33 +3534,26 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
         {
           /* There is no PW2 for v2 cards.  We use this condition to
              allow a PW reset using the Reset Code.  */
-          void *relptr;
-          unsigned char *value;
-          size_t valuelen;
-          int remaining;
+          const char *firstline
+            = _("|R|Please enter the Reset Code for the card");
 
           use_pinpad = 0;
           minlen = 8;
-          relptr = get_one_do (app, 0x00C4, &value, &valuelen, NULL);
-          if (!relptr || valuelen < 7)
-            {
-              log_error (_("error retrieving CHV status from card\n"));
-              xfree (relptr);
-              rc = gpg_error (GPG_ERR_CARD);
-              goto leave;
-            }
-          remaining = value[5];
-          xfree (relptr);
-          if (!remaining)
+
+          rc = build_enter_pin_prompt (app, chvno, firstline, 0,
+                                       &prompt, NULL);
+          if (gpg_err_code (rc) == GPG_ERR_PIN_BLOCKED)
             {
               log_error (_("Reset Code not or not anymore available\n"));
               rc = gpg_error (GPG_ERR_NO_RESET_CODE);
               goto leave;
             }
+          else if (rc)
+            goto leave;
 
-          rc = pincb (pincb_arg,
-                      _("|R|Please enter the Reset Code for the card"),
-                      &resetcode);
+          rc = pincb (pincb_arg, prompt, &resetcode);
+          xfree (prompt);
+          prompt = NULL;
           if (rc)
             {
               log_info (_("PIN callback returned error: %s\n"),
@@ -3743,10 +3719,21 @@ do_change_pin (app_t app, ctrl_t ctrl,  const char *chvnostr,
 
       if (use_pinpad)
         {
-          rc = pincb (pincb_arg,
-                      chvno == 3 ?
-                      _("||Please enter the Admin PIN and New Admin PIN") :
-                      _("||Please enter the PIN and New PIN"), NULL);
+          const char *firstline;
+
+          if (chvno == 3)
+            firstline = _("||Please enter the Admin PIN and New Admin PIN");
+          else
+            firstline = _("||Please enter the PIN and New PIN");
+
+          rc = build_enter_pin_prompt (app, chvno, firstline, 0,
+                                       &prompt, NULL);
+          if (rc)
+            goto leave;
+
+          rc = pincb (pincb_arg, prompt, NULL);
+          xfree (prompt);
+          prompt = NULL;
           if (rc)
             {
               log_info (_("PIN callback returned error: %s\n"),
@@ -6135,22 +6122,12 @@ do_check_pin (app_t app, ctrl_t ctrl, const char *keyidstr,
 
   if (admin_pin)
     {
-      void *relptr;
-      unsigned char *value;
-      size_t valuelen;
       int count;
 
-      relptr = get_one_do (app, 0x00C4, &value, &valuelen, NULL);
-      if (!relptr || valuelen < 7)
-        {
-          log_error (_("error retrieving CHV status from card\n"));
-          xfree (relptr);
-          return gpg_error (GPG_ERR_CARD);
-        }
-      count = value[6];
-      xfree (relptr);
-
-      if (!count)
+      count = get_remaining_tries (app, 3);
+      if (count == -1)
+        return gpg_error (GPG_ERR_CARD);
+      else if (!count)
         {
           log_info (_("card is permanently locked!\n"));
           return gpg_error (GPG_ERR_PIN_BLOCKED);
