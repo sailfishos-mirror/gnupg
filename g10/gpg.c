@@ -320,6 +320,7 @@ enum cmd_and_opt_values
     oNoShowPhotos,
     oPhotoViewer,
     oForceOCB,
+    oUseOCBSym,
     oS2KMode,
     oS2KDigest,
     oS2KCipher,
@@ -894,6 +895,7 @@ static gpgrt_opt_t opts[] = {
   ARGPARSE_s_i (oS2KCount, "s2k-count", "@"),
   ARGPARSE_s_n (oForceOCB, "force-ocb", "@"),
   ARGPARSE_s_n (oForceOCB, "force-aead", "@"),  /*(old name)*/
+  ARGPARSE_s_n (oUseOCBSym, "use-ocb-sym", "@"),
   ARGPARSE_s_n (oRequireCrossCert, "require-backsigs", "@"),
   ARGPARSE_s_n (oRequireCrossCert, "require-cross-certification", "@"),
   ARGPARSE_s_n (oNoRequireCrossCert, "no-require-backsigs", "@"),
@@ -3198,6 +3200,7 @@ main (int argc, char **argv)
 	  case oPhotoViewer: opt.photo_viewer = pargs.r.ret_str; break;
 
 	  case oForceOCB: opt.force_ocb = 1; break;
+          case oUseOCBSym: opt.use_ocb_sym = 1; break;
 
           case oDisableSignerUID: opt.flags.disable_signer_uid = 1; break;
           case oIncludeKeyBlock:  opt.flags.include_key_block = 1; break;

@@ -72,14 +72,15 @@ show_encrypted_for_user_info (ctrl_t ctrl, unsigned int pubkey_usage,
 }
 
 
-/****************
+/*
  * Encrypt FILENAME with only the symmetric cipher.  Take input from
- * stdin if FILENAME is NULL.  If --force-ocb is used we use an SKESK.
+ * stdin if FILENAME is NULL.  If --force-ocb or --use-ocb-sym is used
+ * we use an SKESK.
  */
 int
 encrypt_symmetric (const char *filename)
 {
-  return encrypt_simple( filename, 1, opt.force_ocb);
+  return encrypt_simple (filename, 1, opt.force_ocb || opt.use_ocb_sym);
 }
 
 
@@ -392,8 +393,9 @@ use_aead (pk_list_t pk_list, int algo)
 
   can_use = openpgp_cipher_get_algo_blklen (algo) == 16;
 
-  /* With --force-aead we want OCB.  */
-  if (opt.force_ocb)
+  /* With --force-aead we want OCB. We also use OCB in symmetric mode
+   * with --use-ocb-sym which is detected by an empty PK_LIST. */
+  if (opt.force_ocb || (!pk_list && opt.use_ocb_sym))
     {
       if (!can_use)
         {

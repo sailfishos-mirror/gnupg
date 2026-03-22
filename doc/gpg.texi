@@ -188,6 +188,7 @@ passphrase).  @command{@gpgname} caches the passphrase used for
 symmetric encryption so that a decrypt operation may not require that
 the user needs to enter the passphrase.  The option
 @option{--no-symkey-cache} can be used to disable this feature.
+See also the option @option{--use-ocb-sym}.
 
 @item --store
 @opindex store
@@ -2612,7 +2613,7 @@ stop by the OS limits. Defaults to 0, which means "no limit".
 
 @item --chunk-size @var{n}
 @opindex chunk-size
-The AEAD encryption mode encrypts the data in chunks so that a
+The OCB encryption mode encrypts the data in chunks so that a
 receiving side can check for transmission errors or tampering at the
 end of each chunk and does not need to delay this until all data has
 been received.  The used chunk size is 2^@var{n} byte.  The lowest
@@ -3031,23 +3032,32 @@ done with @code{--with-colons}.
 
 @table @gnupgtabopt
 
+@item --use-ocb-sym
+@opindex use-ocb-sym
+Use the OCB mode for symmetric-only encryption.  The default is to use
+the legacy CFB+MDC mode.  OCB is a modern and faster way to do
+authenticated encryption than the old CFB+MDC method.  OCB mode
+decryption is supproted since GnuPG version 2.2.21 released
+2020-07-09.
+
 @item --force-ocb
 @itemx --force-aead
 @opindex force-ocb
 @opindex force-aead
-Force the use of AEAD encryption over MDC encryption.  AEAD is a
-modern and faster way to do authenticated encryption than the old MDC
-method.  @option{--force-aead} is an alias and deprecated.  See also
-option @option{--chunk-size}.
+Force the use of the OCB mode over CFB+MDC mode.  OCB is a modern and
+faster way to do authenticated encryption than the old MDC method.
+The default is to determine the to be used mode from the recipients
+key preferences.  @option{--force-aead} is an alias and deprecated.
+See also option @option{--chunk-size}.
 
 @item --force-mdc
 @itemx --disable-mdc
 @opindex force-mdc
 @opindex disable-mdc
 These options are obsolete and have no effect since GnuPG 2.2.8.  The
-MDC is always used unless the keys indicate that an AEAD algorithm can
-be used in which case AEAD is used.  But note: If the creation of a
-legacy non-MDC message is exceptionally required, the option
+CFB+MDC is always used unless the keys indicate that the OCB mode can
+be used in which case OCB is used.  But note: If the creation of a
+legacy plain-CFB message is exceptionally required, the option
 @option{--rfc2440} allows for this.
 
 @item --disable-signer-uid
