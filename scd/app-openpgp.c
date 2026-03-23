@@ -2737,6 +2737,15 @@ build_enter_pin_prompt (app_t app, int chvno, const char *firstline,
       return gpg_error (GPG_ERR_PIN_BLOCKED);
     }
 
+  if (chvno == 3)
+    {
+      log_info (ngettext("%d Admin PIN attempt remaining before card"
+                         " is permanently locked\n",
+                         "%d Admin PIN attempts remaining before card"
+                         " is permanently locked\n",
+                         remaining), remaining);
+    }
+
   infoblock = get_prompt_info (app, chvno, sigcount,
                                remaining < 3? remaining : -1);
 
