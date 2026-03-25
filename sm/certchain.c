@@ -2013,7 +2013,7 @@ do_validate_chain (ctrl_t ctrl, ksba_cert_t cert, ksba_isotime_t checktime_arg,
               rc = find_up (ctrl, kh, subject_cert, issuer, 1);
               if (!rc)
                 {
-                  ksba_cert_t tmp_cert;
+                  ksba_cert_t tmp_cert = NULL;
 
                   rc = keydb_get_cert (kh, &tmp_cert);
                   if (rc || !compare_certs (issuer_cert, tmp_cert))
