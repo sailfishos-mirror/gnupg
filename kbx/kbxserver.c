@@ -665,6 +665,24 @@ cmd_delete (assuan_context_t ctx, char *line)
 }
 
 
+static const char hlp_setephemeral[] =
+  "SETEPHEMERAL [--clear]\n"
+  "\n"
+  "Set ephemeral mode or clear the mode.\n";
+static gpg_error_t
+cmd_setephemeral (assuan_context_t ctx, char *line)
+{
+  ctrl_t ctrl = assuan_get_pointer (ctx);
+  gpg_error_t err = 0;
+  int opt_clear = has_option (line, "--clear");
+
+  if (opt_clear)
+    ctrl->ephemeral = 0;
+  else
+    ctrl->ephemeral = 1;
+
+  return leave_cmd (ctx, err);
+}
 
 static const char hlp_transaction[] =
   "TRANSACTION [begin|commit|rollback]\n"
@@ -858,15 +876,16 @@ register_commands (assuan_context_t ctx)
     assuan_handler_t handler;
     const char * const help;
   } table[] = {
-    { "SEARCH",     cmd_search,     hlp_search },
-    { "NEXT",       cmd_next,       hlp_next   },
-    { "STORE",      cmd_store,      hlp_store  },
-    { "DELETE",     cmd_delete,     hlp_delete  },
-    { "TRANSACTION",cmd_transaction,hlp_transaction },
-    { "GETINFO",    cmd_getinfo,    hlp_getinfo },
-    { "OUTPUT",     NULL,           hlp_output },
-    { "KILLKEYBOXD",cmd_killkeyboxd,hlp_killkeyboxd },
-    { "RELOADKEYBOXD",cmd_reloadkeyboxd,hlp_reloadkeyboxd },
+    { "SEARCH",        cmd_search,        hlp_search },
+    { "NEXT",          cmd_next,          hlp_next   },
+    { "STORE",         cmd_store,         hlp_store  },
+    { "DELETE",        cmd_delete,        hlp_delete  },
+    { "TRANSACTION",   cmd_transaction,   hlp_transaction },
+    { "SETEPHEMERAL",  cmd_setephemeral,  hlp_setephemeral },
+    { "GETINFO",       cmd_getinfo,       hlp_getinfo },
+    { "OUTPUT",        NULL,              hlp_output },
+    { "KILLKEYBOXD",   cmd_killkeyboxd,   hlp_killkeyboxd },
+    { "RELOADKEYBOXD", cmd_reloadkeyboxd, hlp_reloadkeyboxd },
     { NULL, NULL }
   };
   int i, j, rc;
