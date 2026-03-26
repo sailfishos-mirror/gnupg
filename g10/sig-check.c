@@ -719,20 +719,19 @@ cache_sig_result ( PKT_signature *sig, int result )
  * revocation key designated in a revkey subpacket, but the revocation
  * key itself isn't present.
  *
- * XXX: This code will need to be modified if gpg ever becomes
- * multi-threaded.  Note that this guarantees that a designated
- * revocation sig will never be considered valid unless it is actually
- * valid, as well as being issued by a revocation key in a valid
- * direct signature.  Note also that this is written so that a revoked
- * revoker can still issue revocations: i.e. If A revokes B, but A is
- * revoked, B is still revoked.  I'm not completely convinced this is
- * the proper behavior, but it matches how PGP does it. -dms */
-int
+ * Note that this guarantees that a designated revocation sig will
+ * never be considered valid unless it is actually valid, as well as
+ * being issued by a revocation key in a valid direct signature.  Note
+ * also that this is written so that a revoked revoker can still issue
+ * revocations: i.e. If A revokes B, but A is revoked, B is still
+ * revoked.  I'm not completely convinced this is the proper behavior,
+ * but it matches how PGP does it. -dms
+ */
+gpg_error_t
 check_revocation_keys (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig)
 {
-  static int busy;  /* fixme: We should move this to CTRL.  */
   int i;
-  int rc = GPG_ERR_GENERAL;
+  gpg_error_t err = gpg_error (GPG_ERR_GENERAL);
 
   log_assert (IS_KEY_REV(sig));
   log_assert ((sig->keyid[0]!=pk->keyid[0]) || (sig->keyid[0]!=pk->keyid[1]));
@@ -761,16 +760,16 @@ check_revocation_keys (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig)
    * signed by B to revoke A.  Since this is the only place where this
    * type of recursion can occur, we simply cause this function to
    * fail if it is entered recursively.  */
-  if (busy)
+  if (ctrl->in_check_revocation_keys)
     {
       /* Return an error (i.e. not revoked), but mark the pk as
          uncacheable as we don't really know its revocation status
          until it is checked directly.  */
       pk->flags.dont_cache = 1;
-      return rc;
+      return err;
     }
 
-  busy = 1;
+  ctrl->in_check_revocation_keys = 1;
 
   /*  es_printf("looking at %08lX with a sig from %08lX\n",(ulong)pk->keyid[1],
       (ulong)sig->keyid[1]); */
@@ -797,17 +796,17 @@ check_revocation_keys (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig)
           hash_public_key (md, pk);
           /* Note: check_signature only checks that the signature
            * is good.  It does not fail if the key is revoked.  */
-          rc = check_signature (ctrl, sig, md, NULL, 0, NULL,
-                                NULL, NULL, NULL, NULL, NULL);
-          cache_sig_result (sig, rc);
+          err = check_signature (ctrl, sig, md, NULL, 0, NULL,
+                                 NULL, NULL, NULL, NULL, NULL);
+          cache_sig_result (sig, err);
           gcry_md_close (md);
           break;  /* Fixme: We did not check RC.  */
         }
     }
 
-  busy = 0;
+  ctrl->in_check_revocation_keys = 0;
 
-  return rc;
+  return err;
 }
 
 

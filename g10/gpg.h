@@ -132,6 +132,9 @@ struct server_control_s
 
   /* Temporary used to pass the last read byte up the call chain.  */
   int last_read_ctb;
+
+  /* Variables to control recursion.  */
+  unsigned int in_check_revocation_keys:1;
 };
 
 

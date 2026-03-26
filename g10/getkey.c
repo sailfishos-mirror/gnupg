@@ -2801,7 +2801,8 @@ sig_to_revoke_info (PKT_signature * sig, struct revoke_info *rinfo)
  * change that information) and copy its contents into the
  * PKT_public_key.
  *
- * Note that R_REVOKED may be set to 0, 1 or 2.
+ * Note that R_REVOKED may be set to 0 (not revoked), 1 (self-revoked)
+ * or 2 (desig-revoked).
  *
  * This function fills in the following fields in the primary key's
  * keyblock:
@@ -3653,8 +3654,10 @@ merge_selfsigs (ctrl_t ctrl, kbnode_t keyblock)
 	      || k->pkt->pkttype == PKT_PUBLIC_SUBKEY)
 	    {
 	      PKT_public_key *pk = k->pkt->pkt.public_key;
+
 	      if (!main_pk->flags.valid)
 		pk->flags.valid = 0;
+
 	      if (revoked && !pk->flags.revoked)
 		{
                   /* Copy RINFO reason part only the first time
@@ -3671,6 +3674,7 @@ merge_selfsigs (ctrl_t ctrl, kbnode_t keyblock)
                       rinfo.reason_comment_len = 0;
                     }
 		}
+
 	      if (main_pk->has_expired)
 		{
 		  pk->has_expired = main_pk->has_expired;

@@ -273,7 +273,8 @@ void sig_check_dump_stats (void);
 /* SIG is a revocation signature.  Check if any of PK's designated
    revokers generated it.  If so, return 0.  Note: this function
    (correctly) doesn't care if the designated revoker is revoked.  */
-int check_revocation_keys (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig);
+gpg_error_t check_revocation_keys (ctrl_t ctrl,
+                                   PKT_public_key *pk, PKT_signature *sig);
 /* Check that the backsig BACKSIG from the subkey SUB_PK to its
    primary key MAIN_PK is valid.  */
 int check_backsig(PKT_public_key *main_pk,PKT_public_key *sub_pk,
