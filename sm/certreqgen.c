@@ -858,7 +858,7 @@ create_request (ctrl_t ctrl,
   sigkeylen = sigkey? gcry_sexp_canon_len (sigkey, 0, NULL, NULL) : 0;
 
   publicpkalgo = get_pk_algo_from_canon_sexp (public, publiclen);
-  sigkeypkalgo = sigkey? get_pk_algo_from_canon_sexp (public, publiclen) : 0;
+  sigkeypkalgo = sigkey? get_pk_algo_from_canon_sexp (sigkey, sigkeylen) : 0;
 
   if (publicpkalgo == GCRY_PK_EDDSA)
     {
