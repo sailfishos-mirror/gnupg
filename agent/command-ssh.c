@@ -1481,7 +1481,7 @@ ssh_signature_encoder_rsa (ssh_key_type_spec_t *spec,
       err = gcry_mpi_print (GCRYMPI_FMT_USG, data, spec->keysize, &data_n, s);
       if (data_n < spec->keysize)
         {
-          memmove (data, data+spec->keysize-data_n, data_n);
+          memmove (data+spec->keysize-data_n, data, data_n);
           memset (data, 0, spec->keysize-data_n);
           data_n = spec->keysize;
         }
