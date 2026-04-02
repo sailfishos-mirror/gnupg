@@ -984,11 +984,17 @@ gpgsm_sign (ctrl_t ctrl, certlist_t signerlist,
    * try to convince some MUAs to use 3DES and not the crippled
    * RC2. Our list is:
    *
+   *   aes256-GCM
+   *   aes128-GCM
    *   aes256-CBC
    *   aes128-CBC
    *   des-EDE3-CBC
    */
-  err = ksba_cms_add_smime_capability (cms, "2.16.840.1.101.3.4.1.42", NULL,0);
+  err = ksba_cms_add_smime_capability (cms, "2.16.840.1.101.3.4.1.46", NULL,0);
+  if (!err)
+    err = ksba_cms_add_smime_capability (cms, "2.16.840.1.101.3.4.1.6", NULL,0);
+  if (!err)
+    err = ksba_cms_add_smime_capability (cms, "2.16.840.1.101.3.4.1.42",NULL,0);
   if (!err)
     err = ksba_cms_add_smime_capability (cms, "2.16.840.1.101.3.4.1.2", NULL,0);
   if (!err)
