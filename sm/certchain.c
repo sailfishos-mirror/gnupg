@@ -2228,7 +2228,7 @@ do_validate_chain (ctrl_t ctrl, ksba_cert_t cert, ksba_isotime_t checktime_arg,
           err = ksba_cert_set_user_data (ci->cert, "is_de_vs", buf, 1);
           if (err)
             {
-              log_error ("set_user_data(is_der_vs) failed: %s\n",
+              log_error ("set_user_data(is_de_vs) failed: %s\n",
                          gpg_strerror (err));
               if (!rc)
                 rc = err;
