@@ -1095,7 +1095,7 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
               goto leave;
             }
 
-          /* For CMS, CO_DE_VS demands CBC mode.  */
+          /* For CMS, CO_DE_VS demands CBC or GCM mode - check it.  */
           dfparm.is_de_vs = gnupg_cipher_is_compliant (CO_DE_VS, algo, mode);
 
           audit_log_i (ctrl->audit, AUDIT_DATA_CIPHER_ALGO, algo);
