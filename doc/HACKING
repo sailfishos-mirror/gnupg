@@ -233,6 +233,10 @@ Note that such a comment will be removed if the git commit option
   - Signed-off-by :: Name or mail address of the developer.
   - Backported-from-master :: Value is the commit id of the original patch.
   - Ported-from-stable :: Value is the commit id of the original patch.
+  - Cherry-picked-from :: Value is the commit id optionally followed
+                          by a comment indicating the branch.  This is
+                          similar to the "git cherry-pick -x" way.
+
 
 ** Sending patches
 Submitting patches, and subsequent discussions around them,

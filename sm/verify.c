@@ -299,6 +299,7 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
       char *pkcurve = NULL;
       char *pkfpr = NULL;
       unsigned int pkalgoflags, verifyflags;
+      char chain_is_de_vs = 0;
 
       rc = ksba_cms_get_issuer_serial (cms, signer, &issuer, &serial);
       if (!signer && gpg_err_code (rc) == GPG_ERR_NO_DATA)
@@ -524,21 +525,6 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
                       gnupg_compliance_option_string (opt.compliance));
           }
 
-      /* Check compliance with CO_DE_VS.  */
-      if (gnupg_pk_is_compliant (CO_DE_VS, pkalgo, pkalgoflags,
-                                 NULL, nbits, pkcurve)
-          && gnupg_gcrypt_is_compliant (CO_DE_VS)
-          && gnupg_digest_is_compliant (CO_DE_VS, sigval_hash_algo))
-        gpgsm_status (ctrl, STATUS_VERIFICATION_COMPLIANCE_MODE,
-                      gnupg_status_compliance_flag (CO_DE_VS));
-      else if (opt.require_compliance
-               && opt.compliance == CO_DE_VS)
-        {
-          log_error (_("operation forced to fail due to"
-                       " unfulfilled compliance rules\n"));
-          gpgsm_errors_seen = 1;
-        }
-
       /* Now we can check the signature.  */
       if (msgdigest)
         { /* Signed attributes are available. */
@@ -628,6 +614,63 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
                                  *sigtime? sigtime : "19700101T000000",
                                  keyexptime, 0,
                                  NULL, 0, &verifyflags);
+
+      audit_log_ok (ctrl->audit, AUDIT_CHAIN_STATUS, rc);
+      if (rc) /* of validate_chain */
+        {
+          log_error ("invalid certification chain: %s\n", gpg_strerror (rc));
+          if (gpg_err_code (rc) == GPG_ERR_BAD_CERT_CHAIN
+              || gpg_err_code (rc) == GPG_ERR_BAD_CERT
+              || gpg_err_code (rc) == GPG_ERR_BAD_CA_CERT
+              || gpg_err_code (rc) == GPG_ERR_CERT_REVOKED)
+            gpgsm_status_with_err_code (ctrl, STATUS_TRUST_NEVER, NULL,
+                                        gpg_err_code (rc));
+          else
+            gpgsm_status_with_err_code (ctrl, STATUS_TRUST_UNDEFINED, NULL,
+                                        gpg_err_code (rc));
+          audit_log_s (ctrl->audit, AUDIT_SIG_STATUS, "bad");
+          goto next_signer;
+        }
+
+      /* Check compliance with CO_DE_VS. */
+      {
+        size_t buflen;
+        char buf[1];
+
+        if (!ksba_cert_get_user_data (cert, "is_de_vs",
+                                      &buf, sizeof (buf),
+                                      &buflen) && buflen)
+          {
+            if (buf[0])
+              chain_is_de_vs = 1;
+            else
+              chain_is_de_vs = 0;
+          }
+        else if (opt.require_compliance
+                 && opt.compliance == CO_DE_VS)
+          {
+            log_error ("get_user_data(is_de_vs) failed.\n");
+            gpgsm_errors_seen = 1;
+            goto next_signer;
+          }
+      }
+
+      if (chain_is_de_vs
+          && gnupg_pk_is_compliant (CO_DE_VS, pkalgo, pkalgoflags,
+                                 NULL, nbits, pkcurve)
+          && gnupg_gcrypt_is_compliant (CO_DE_VS)
+          && gnupg_digest_is_compliant (CO_DE_VS, sigval_hash_algo))
+        gpgsm_status (ctrl, STATUS_VERIFICATION_COMPLIANCE_MODE,
+                      gnupg_status_compliance_flag (CO_DE_VS));
+      else if (opt.require_compliance
+               && opt.compliance == CO_DE_VS)
+        {
+          log_error (_("operation forced to fail due to"
+                       " unfulfilled compliance rules\n"));
+          gpgsm_errors_seen = 1;
+          goto next_signer;
+        }
+
       {
         char *fpr, *buf, *tstr;
 
@@ -661,23 +704,6 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
         gpgsm_status (ctrl, STATUS_VALIDSIG, buf);
         xfree (buf);
       }
-
-      audit_log_ok (ctrl->audit, AUDIT_CHAIN_STATUS, rc);
-      if (rc) /* of validate_chain */
-        {
-          log_error ("invalid certification chain: %s\n", gpg_strerror (rc));
-          if (gpg_err_code (rc) == GPG_ERR_BAD_CERT_CHAIN
-              || gpg_err_code (rc) == GPG_ERR_BAD_CERT
-              || gpg_err_code (rc) == GPG_ERR_BAD_CA_CERT
-              || gpg_err_code (rc) == GPG_ERR_CERT_REVOKED)
-            gpgsm_status_with_err_code (ctrl, STATUS_TRUST_NEVER, NULL,
-                                        gpg_err_code (rc));
-          else
-            gpgsm_status_with_err_code (ctrl, STATUS_TRUST_UNDEFINED, NULL,
-                                        gpg_err_code (rc));
-          audit_log_s (ctrl->audit, AUDIT_SIG_STATUS, "bad");
-          goto next_signer;
-        }
 
       audit_log_s (ctrl->audit, AUDIT_SIG_STATUS, "good");
 

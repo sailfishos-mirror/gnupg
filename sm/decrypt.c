@@ -1249,7 +1249,6 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                     (dfparm.is_de_vs
                      && gnupg_pk_is_compliant (CO_DE_VS, pk_algo, 0,
                                                NULL, nbits, curve));
-
                 oops:
                   if (rc)
                     {
@@ -1257,9 +1256,6 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                        * don't have.  */
                       dfparm.is_de_vs = 0;
                     }
-                  xfree (issuer);
-                  xfree (serial);
-                  ksba_cert_release (cert);
                 }
 
               if ((!hexkeygrip || !pk_algo) && !maybe_pwri)
@@ -1295,6 +1291,54 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                          decrypt_gcm_filter : decrypt_filter,
                          &dfparm);
 
+                      /* Check the cert chain for CO_DE_VS compliance. */
+                      {
+                        ksba_isotime_t sigtime, keyexptime;
+                        unsigned int verifyflags;
+                        size_t buflen;
+                        char buf[1];
+
+                        rc = gpgsm_validate_chain (ctrl, cert,
+                                                   *sigtime? sigtime :
+                                                   "19700101T000000",
+                                                   keyexptime, 0,
+                                                   NULL, 0, &verifyflags);
+                        audit_log_ok (ctrl->audit, AUDIT_CHAIN_STATUS, rc);
+                        if (rc)
+                          {
+                            log_error ("invalid certification chain: %s\n",
+                                       gpg_strerror (rc));
+                            if (gpg_err_code (rc) == GPG_ERR_BAD_CERT_CHAIN
+                                || gpg_err_code (rc) == GPG_ERR_BAD_CERT
+                                || gpg_err_code (rc) == GPG_ERR_BAD_CA_CERT
+                                || gpg_err_code (rc) == GPG_ERR_CERT_REVOKED)
+                              gpgsm_status_with_err_code (ctrl,
+                                                          STATUS_TRUST_NEVER,
+                                                          NULL,
+                                                          gpg_err_code (rc));
+                            else
+                              gpgsm_status_with_err_code (ctrl,
+                                                          STATUS_TRUST_UNDEFINED,
+                                                          NULL,
+                                                          gpg_err_code (rc));
+                          }
+                        else if (!ksba_cert_get_user_data (cert, "is_de_vs",
+                                                           &buf, sizeof (buf),
+                                                           &buflen) && buflen)
+                          {
+                            if (buf[0])
+                              ;
+                            else
+                              dfparm.is_de_vs = 0;
+                          }
+                        else if (opt.require_compliance
+                                 && opt.compliance == CO_DE_VS)
+                          {
+                            log_error ("get_user_data(is_de_vs) failed.\n");
+                            gpgsm_errors_seen = 1;
+                          }
+                      }
+
                       if (dfparm.is_de_vs
                           && gnupg_gcrypt_is_compliant (CO_DE_VS))
                         gpgsm_status (ctrl, STATUS_DECRYPTION_COMPLIANCE_MODE,
@@ -1309,6 +1353,9 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                     }
                   audit_log_ok (ctrl->audit, AUDIT_RECP_RESULT, rc);
                 }
+              xfree (issuer);
+              xfree (serial);
+              ksba_cert_release (cert);
               xfree (pkalgostr);
               xfree (pkfpr);
               xfree (hexkeygrip);
