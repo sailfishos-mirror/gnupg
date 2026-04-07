@@ -1612,6 +1612,15 @@ keyserver_get (ctrl_t ctrl, KEYDB_SEARCH_DESC *desc, int ndesc,
                                  override_keyserver, flags, r_fpr, r_fprlen);
       if (!err)
         any_good = 1;
+      if (gpg_err_code (err) == GPG_ERR_NO_DATA)
+        {
+          /* That error is returned by dirmngr from its own loop.  We
+           * clear the error if more descriptions are available so
+           * that the next chunk gets retrieved.  In the other case
+           * the error will cause the termination of the loop.  */
+          if (ndesc_used < ndesc)
+            err = 0;
+        }
       if (err || ndesc_used >= ndesc)
         break; /* Error or all processed.  */
       /* Prepare for the next chunk.  */
