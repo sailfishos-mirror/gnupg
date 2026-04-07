@@ -40,6 +40,11 @@
 #include "dirmngr-status.h"
 #include "http.h"     /* (parsed_uri_t) */
 
+
+/* The maximum length of a binary digest.  */
+#define MAX_DIGEST_LEN 64     /* Fits for SHA-512 */
+
+
 /* This objects keeps information about a particular LDAP server and
    is used as item of a single linked list of servers. */
 struct ldap_server_s

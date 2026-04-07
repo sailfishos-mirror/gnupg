@@ -379,6 +379,26 @@ percentplus_line_to_strlist (char *line, strlist_t *r_list)
 }
 
 
+/* Parse a hex string.  Return an Assuan error code or 0 on success and the
+   length of the parsed string in LEN. */
+static gpg_error_t
+parse_hexstring (assuan_context_t ctx, const char *string, size_t *len)
+{
+  const char *p;
+  size_t n;
+
+  /* parse the hash value */
+  for (p=string, n=0; hexdigitp (p); p++, n++)
+    ;
+  if (*p != ' ' && *p != '\t' && *p)
+    return set_error (GPG_ERR_ASS_PARAMETER, "invalid hexstring");
+  if ((n&1))
+    return set_error (GPG_ERR_ASS_PARAMETER, "odd number of digits");
+  *len = n;
+  return 0;
+}
+
+
 /* This function returns true if a Tor server is running.  The status
  * is cached for the current connection.  */
 static int
@@ -2905,6 +2925,110 @@ cmd_ad_query (assuan_context_t ctx, char *line)
 
 
 
+static const char hlp_timestamp[] =
+  "TIMESTAMP [--hash=<name>] <hexstring>\n"
+  "TIMESTAMP --set-url <url-of-tsa>\n"
+  "\n"
+  "If --hash is not used the algorithm is deduced from the length\n"
+  "of <hexstring>";
+static gpg_error_t
+cmd_timestamp (assuan_context_t ctx, char *line)
+{
+  gpg_error_t err;
+  ctrl_t ctrl = assuan_get_pointer (ctx);
+  int algo;
+  int opt_set_url;
+  size_t n;
+
+
+  /* Parse the optional hash algorithm.  */
+  if (has_option_name (line, "--hash"))
+    {
+      if (has_option (line, "--hash=sha256"))
+        algo = GCRY_MD_SHA256;
+      else if (has_option (line, "--hash=sha384"))
+        algo = GCRY_MD_SHA384;
+      else if (has_option (line, "--hash=sha512"))
+        algo = GCRY_MD_SHA512;
+      else
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER, "invalid hash algorithm");
+          goto leave;
+        }
+    }
+  else
+    algo = 0;
+
+  if ((opt_set_url = has_option (line, "--set-url")))
+    {
+      if (algo)  /* Option may not be used along with --hash.  */
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER, "invalid option syntax");
+          goto leave;
+        }
+    }
+
+  line = skip_options (line);
+
+  if (opt_set_url)
+    {
+      (void)ctrl;
+
+      /* Change the default TSA URL for this session. */
+      err = gpg_error (GPG_ERR_NOT_IMPLEMENTED);
+    }
+  else
+    {
+      /* Parse the hash value. */
+      n = 0;
+      err = parse_hexstring (ctx, line, &n);
+      if (err)
+        goto leave;
+      n /= 2;
+
+      /* Do some checking.  Note that the --hash option is not very
+       * useful and only here in case we ever add SHA3 algos.  */
+      if (n == 32 && n != 48 && n != 64)
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER, "unsupported length of hash");
+          goto leave;
+        }
+
+      if (n > MAX_DIGEST_LEN)
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER, "hash value to long");
+          goto leave;
+        }
+
+      if (algo)
+        ;
+      else if (n == 32)
+        algo = GCRY_MD_SHA256;
+      else if (n == 48)
+        algo = GCRY_MD_SHA384;
+      else if (n == 64)
+        algo = GCRY_MD_SHA384;
+
+      if (!((algo == GCRY_MD_SHA256 && n == 32)
+            || (algo == GCRY_MD_SHA384 && n == 48)
+            || (algo == GCRY_MD_SHA512 && n == 64)))
+        {
+          err = set_error (GPG_ERR_ASS_PARAMETER,
+                           "hash algo does not match data length");
+          goto leave;
+        }
+
+      /* Call the time stamping services.  */
+      err = gpg_error (GPG_ERR_NOT_IMPLEMENTED);
+         /* dirmngr_get_timestamp (ctrl, algo, buf, n); */
+    }
+
+ leave:
+  return leave_cmd (ctx, err);
+}
+
+
+
 static const char hlp_loadswdb[] =
   "LOADSWDB [--force]\n"
   "\n"
@@ -3137,6 +3261,7 @@ register_commands (assuan_context_t ctx)
     { "KS_DEL",     cmd_ks_del,     hlp_ks_del },
     { "AD_QUERY",   cmd_ad_query,   hlp_ad_query },
     { "GETINFO",    cmd_getinfo,    hlp_getinfo },
+    { "TIMESTAMP",  cmd_timestamp,  hlp_timestamp },
     { "LOADSWDB",   cmd_loadswdb,   hlp_loadswdb },
     { "KILLDIRMNGR",cmd_killdirmngr,hlp_killdirmngr },
     { "RELOADDIRMNGR",cmd_reloaddirmngr,hlp_reloaddirmngr },
