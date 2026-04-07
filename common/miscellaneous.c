@@ -124,6 +124,22 @@ gnupg_cipher_algo_name (int algo)
 }
 
 
+/* Return a string for the cipher MODE.  For unknown modes "?" is
+ * returned.  */
+const char *
+gnupg_cipher_mode_name (int mode)
+{
+  switch (mode)
+    {
+    case GCRY_CIPHER_MODE_CBC: return "CBC";
+    case GCRY_CIPHER_MODE_GCM: return "GCM";
+    case GCRY_CIPHER_MODE_OCB: return "OCB";
+    case GCRY_CIPHER_MODE_EAX: return "EAX";
+    default: return "?";
+    }
+}
+
+
 void
 obsolete_option (const char *configname, unsigned int configlineno,
                  const char *name)

@@ -656,25 +656,30 @@ to get the ``real'' name.
 @subsection How to change how the CMS is created
 
 @table @gnupgtabopt
-@item --include-certs @var{n}
-@opindex include-certs
-Using @var{n} of -2 includes all certificate except for the root cert,
--1 includes all certs, 0 does not include any certs, 1 includes only the
-signers cert and all other positive values include up to @var{n}
-certificates starting with the signer cert.  The default is -2.
-
 @item --cipher-algo @var{oid}
 @opindex cipher-algo
-Use the cipher algorithm with the ASN.1 object identifier @var{oid} for
-encryption.  For convenience the strings @code{3DES}, @code{AES} and
-@code{AES256} may be used instead of their OIDs.  The default is
-@code{AES} (2.16.840.1.101.3.4.1.2).
+Use the cipher algorithm with the ASN.1 object identifier @var{oid}
+for encryption. The OID must be specified in dotted notation.  For
+convenience the names @code{3DES}, @code{AES}, @code{AES256}, and some
+others are allowed instead of an explicit OID.  To specify the
+encryption mode either the respective OID can be used or the mode is
+appended after a dash to the name.  Currently supported modes are
+@code{CBC} and @code{GCM} with the former being implicitly appended.
+The current default algorithm is @code{AES256-CBC}
+(2.16.840.1.101.3.4.1.42).
 
 @item --digest-algo @code{name}
 Use @code{name} as the message digest algorithm.  Usually this
 algorithm is deduced from the respective signing certificate.  This
 option forces the use of the given algorithm and may lead to severe
 interoperability problems.
+
+@item --include-certs @var{n}
+@opindex include-certs
+Using @var{n} of -2 includes all certificate except for the root cert,
+-1 includes all certs, 0 does not include any certs, 1 includes only the
+signers cert and all other positive values include up to @var{n}
+certificates starting with the signer cert.  The default is -2.
 
 @end table
 

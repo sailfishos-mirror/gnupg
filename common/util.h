@@ -382,6 +382,9 @@ char *xtryasprintf (const char *fmt, ...) GPGRT_ATTR_PRINTF(1,2);
 /* Replacement for gcry_cipher_algo_name.  */
 const char *gnupg_cipher_algo_name (int algo);
 
+/* Return a string for the cipher MODE.  */
+const char *gnupg_cipher_mode_name (int mode);
+
 void obsolete_option (const char *configname, unsigned int configlineno,
                       const char *name);
 

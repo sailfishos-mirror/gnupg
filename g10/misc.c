@@ -659,8 +659,8 @@ openpgp_aead_algo_name (aead_algo_t algo)
   switch (algo)
     {
     case AEAD_ALGO_NONE:  break;
-    case AEAD_ALGO_EAX:   return "EAX";
-    case AEAD_ALGO_OCB:   return "OCB";
+    case AEAD_ALGO_EAX:   return gnupg_cipher_mode_name (GCRY_CIPHER_MODE_EAX);
+    case AEAD_ALGO_OCB:   return gnupg_cipher_mode_name (GCRY_CIPHER_MODE_OCB);
     }
 
   return "?";

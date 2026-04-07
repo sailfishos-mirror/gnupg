@@ -760,6 +760,7 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
 
   audit_log_s (ctrl->audit, AUDIT_SESSION_KEY, dek->algoid);
 
+  log_debug ("FIXME: We may need to switch to GCM\n");
   compliant = gnupg_cipher_is_compliant (CO_DE_VS, dek->algo,
                                          GCRY_CIPHER_MODE_CBC);
 

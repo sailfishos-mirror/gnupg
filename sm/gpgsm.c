@@ -552,7 +552,7 @@ static int default_validation_model;
 static unsigned int parent_cache_stats;
 
 /* The default cipher algo.  */
-#define DEFAULT_CIPHER_ALGO "AES256"
+#define DEFAULT_CIPHER_ALGO "AES256-CBC"
 
 
 static char *build_list (const char *text,
@@ -1712,36 +1712,29 @@ main ( int argc, char **argv)
       gpgsm_exit (2);
     }
 
+
   /* Must do this after dropping setuid, because the mapping functions
      may try to load an module and we may have disabled an algorithm.
      We remap the commonly used algorithms to the OIDs for
      convenience.  We need to work with the OIDs because they are used
-     to check whether the encryption mode is actually available. */
-  if (!strcmp (opt.def_cipher_algoid, "3DES") )
-    opt.def_cipher_algoid = "1.2.840.113549.3.7";
-  else if (!strcmp (opt.def_cipher_algoid, "AES")
-           || !strcmp (opt.def_cipher_algoid, "AES128"))
-    opt.def_cipher_algoid = "2.16.840.1.101.3.4.1.2";
-  else if (!strcmp (opt.def_cipher_algoid, "AES192") )
-    opt.def_cipher_algoid = "2.16.840.1.101.3.4.1.22";
-  else if (!strcmp (opt.def_cipher_algoid, "AES256") )
-    opt.def_cipher_algoid = "2.16.840.1.101.3.4.1.42";
-  else if (!strcmp (opt.def_cipher_algoid, "SERPENT")
-           || !strcmp (opt.def_cipher_algoid, "SERPENT128") )
-    opt.def_cipher_algoid = "1.3.6.1.4.1.11591.13.2.2";
-  else if (!strcmp (opt.def_cipher_algoid, "SERPENT192") )
-    opt.def_cipher_algoid = "1.3.6.1.4.1.11591.13.2.22";
-  else if (!strcmp (opt.def_cipher_algoid, "SERPENT256") )
-    opt.def_cipher_algoid = "1.3.6.1.4.1.11591.13.2.42";
-  else if (!strcmp (opt.def_cipher_algoid, "SEED") )
-    opt.def_cipher_algoid = "1.2.410.200004.1.4";
-  else if (!strcmp (opt.def_cipher_algoid, "CAMELLIA")
-           || !strcmp (opt.def_cipher_algoid, "CAMELLIA128") )
-    opt.def_cipher_algoid = "1.2.392.200011.61.1.1.1.2";
-  else if (!strcmp (opt.def_cipher_algoid, "CAMELLIA192") )
-    opt.def_cipher_algoid = "1.2.392.200011.61.1.1.1.3";
-  else if (!strcmp (opt.def_cipher_algoid, "CAMELLIA256") )
-    opt.def_cipher_algoid = "1.2.392.200011.61.1.1.1.4";
+     to check whether the encryption mode is actually available and
+     they also convey the cipher mode. */
+  {
+    const char *mappedoid;
+
+    mappedoid = gpgsm_map_cipher_name_to_oid (opt.def_cipher_algoid);
+    if (!mappedoid)
+      {
+        log_info (_("given cipher algorithm '%s' is unknown - using '%s'\n"),
+                  opt.def_cipher_algoid, DEFAULT_CIPHER_ALGO);
+        opt.def_cipher_algoid
+          = gpgsm_map_cipher_name_to_oid (DEFAULT_CIPHER_ALGO);
+        log_assert (opt.def_cipher_algoid);
+      }
+    else
+      opt.def_cipher_algoid = mappedoid;
+  }
+
 
   if (cmd != aGPGConfList)
     {

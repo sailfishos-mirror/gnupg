@@ -752,7 +752,7 @@ proc_type_encrypt (audit_ctx_t ctx)
   log_item_t loopitem, item;
   int recp_no, idx;
   char numbuf[35];
-  int algo;
+  int algo, mode;
   char *name;
 
   item = find_log_item (ctx, AUDIT_ENCRYPTION_DONE, 0);
@@ -768,8 +768,14 @@ proc_type_encrypt (audit_ctx_t ctx)
   if (item)
     {
       algo = gcry_cipher_map_name (item->string);
+      mode = gcry_cipher_mode_from_oid (item->string);
       if (algo)
-        writeout_rem (ctx, _("algorithm: %s"), gnupg_cipher_algo_name (algo));
+        {
+          char *tmp = xstrconcat (gnupg_cipher_algo_name (algo), "-",
+                                  gnupg_cipher_mode_name (mode), NULL);
+          writeout_rem (ctx, _("algorithm: %s"), tmp);
+          xfree (tmp);
+        }
       else if (item->string && !strcmp (item->string, "1.2.840.113549.3.2"))
         writeout_rem (ctx, _("unsupported algorithm: %s"), "RC2");
       else if (item->string)

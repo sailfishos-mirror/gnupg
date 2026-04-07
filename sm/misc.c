@@ -338,3 +338,58 @@ gpgsm_get_hash_algo_from_sigval (gcry_sexp_t sigval_arg,
 
   return hashalgo;
 }
+
+
+/* Map OIDSTR to an OID.  Returns NULL is OIDSTR is not looking like
+ * an OID or if a string which has no known mapping to an OID.  */
+const char *
+gpgsm_map_cipher_name_to_oid (const char *oidstr)
+{
+  static struct {
+    const char *oidstr;
+    const char *name;
+    const char *altname;
+  } oidtbl[] =
+    {
+      { "2.16.840.1.101.3.4.1.2",    "AES",    "AES-CBC"  },
+      { "2.16.840.1.101.3.4.1.2",    "AES128", "AES128-CBC" },
+      { "2.16.840.1.101.3.4.1.22",   "AES192", "AES192-CBC" },
+      { "2.16.840.1.101.3.4.1.42",   "AES256", "AES256-CBC" },
+      { "2.16.840.1.101.3.4.1.6",    "AES-GCM"    },
+      { "2.16.840.1.101.3.4.1.6",    "AES128-GCM" },
+      { "2.16.840.1.101.3.4.1.26",   "AES192-GCM" },
+      { "2.16.840.1.101.3.4.1.46",   "AES256-GCM" },
+      { "1.2.392.200011.61.1.1.1.2", "CAMELLIA",    "CAMELLIA-CBC" },
+      { "1.2.392.200011.61.1.1.1.2", "CAMELLIA128", "CAMELLIA128-CBC" },
+      { "1.2.392.200011.61.1.1.1.3", "CAMELLIA192", "CAMELLIA192-CBC" },
+      { "1.2.392.200011.61.1.1.1.4", "CAMELLIA256", "CAMELLIA256-CBC" },
+      { "1.2.410.200004.1.4",        "SEED", "SEED-CBC" },
+      { "1.3.6.1.4.1.11591.13.2.2",  "SERPENT",    "SERPENT-CBC" },
+      { "1.3.6.1.4.1.11591.13.2.2",  "SERPENT128", "SERPENT128-CBC" },
+      { "1.3.6.1.4.1.11591.13.2.22", "SERPENT192", "SERPENT192-CBC" },
+      { "1.3.6.1.4.1.11591.13.2.42", "SERPENT256", "SERPENT256-CBC" },
+      { "1.2.840.113549.3.7",        "3DES",  "3DES-CBC" }
+    };
+  int idx;
+  const char *s;
+
+  if (!oidstr || !*oidstr)
+    return NULL;
+
+  /* Do a simple syntax check to see whether it looks like an OID.
+   * Note that checking just the first char for a digit is not
+   * sufficent due to the algo name "3DES".  */
+  for (s=oidstr; *s; s++)
+    if (*s != '.' && !digitp (s))
+      break;
+  if (!*s)
+    return oidstr;   /* Looks like an OID - return as-is.  */
+
+  for (idx=0; idx < DIM (oidtbl); idx++)
+    if (!ascii_strcasecmp (oidtbl[idx].name, oidstr)
+        || (oidtbl[idx].altname
+            && !ascii_strcasecmp (oidtbl[idx].altname, oidstr)))
+      return oidtbl[idx].oidstr;
+
+  return NULL;
+}

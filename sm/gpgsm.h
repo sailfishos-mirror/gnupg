@@ -597,6 +597,7 @@ gpg_error_t transform_sigval (const unsigned char *sigval, size_t sigvallen,
 gcry_sexp_t gpgsm_ksba_cms_get_sig_val (ksba_cms_t cms, int idx);
 int gpgsm_get_hash_algo_from_sigval (gcry_sexp_t sigval,
                                      unsigned int *r_pkalgo_flags);
+const char *gpgsm_map_cipher_name_to_oid (const char *oidstr);
 
 
 
