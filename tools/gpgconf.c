@@ -1182,6 +1182,69 @@ get_revision_from_blurb (const char *blurb, int *r_len)
 }
 
 
+#ifdef HAVE_W32_SYSTEM
+/* Return a string describing the current integrity level of the process.  */
+static const char *
+w32_get_integrity_level (void)
+{
+  HANDLE token;
+  DWORD elevation;
+  DWORD wordsize;
+  PTOKEN_MANDATORY_LABEL integrity_label = NULL;
+  size_t integrity_label_size;
+  DWORD integrity_level;
+
+  if (!OpenProcessToken (GetCurrentProcess(), TOKEN_QUERY, &token))
+    return "[error getting token]";
+
+  wordsize = sizeof (wordsize);
+  if (!token || token == INVALID_HANDLE_VALUE
+      || !GetTokenInformation (token, TokenElevation, &elevation,
+                               sizeof (TokenElevation), &wordsize))
+    {
+      CloseHandle (token);
+      return "[error getting token info]";
+    }
+
+  /* Get the required size */
+  if (GetTokenInformation (token, TokenIntegrityLevel, NULL, 0, &wordsize)
+      || GetLastError () != ERROR_INSUFFICIENT_BUFFER)
+    {
+      CloseHandle (token);
+      return "[error getting size of integrity label]";
+    }
+  integrity_label_size = wordsize;
+  integrity_label = xcalloc (1, integrity_label_size);
+
+  if (!GetTokenInformation (token, TokenIntegrityLevel,
+                            integrity_label, integrity_label_size, &wordsize))
+    {
+      xfree (integrity_label);
+      CloseHandle (token);
+      return "[error getting integrity label]";
+    }
+
+  /* Get the last integrity level */
+  integrity_level = *GetSidSubAuthority (integrity_label->Label.Sid,
+     (DWORD)(UCHAR)(*GetSidSubAuthorityCount(integrity_label->Label.Sid) - 1));
+
+  xfree (integrity_label);
+  CloseHandle (token);
+
+  if (integrity_level >= SECURITY_MANDATORY_SYSTEM_RID)
+    return "System";
+  else if (integrity_level >= SECURITY_MANDATORY_HIGH_RID)
+    return "High";
+  else if (integrity_level >= SECURITY_MANDATORY_MEDIUM_RID)
+    return "Medium";
+  else if (integrity_level >= SECURITY_MANDATORY_LOW_RID)
+    return "Low";
+  else
+    return "Below low";
+}
+#endif /*HAVE_W32_SYSTEM*/
+
+
 static void
 show_version_gnupg (estream_t fp, const char *prefix)
 {
@@ -1199,8 +1262,8 @@ show_version_gnupg (estream_t fp, const char *prefix)
               prefix, p);
   xfree (p);
 
-  /* Show the GnuPG VS-Desktop version in --show-configs mode  */
-  if (prefix && *prefix)
+  /* Always show the GnuPG VS-Desktop version.  */
+  if (prefix)
     {
       fname = make_filename (gnupg_bindir (), NULL);
       n = strlen (fname);
@@ -1268,6 +1331,14 @@ show_version_gnupg (estream_t fp, const char *prefix)
                 osvi.szCSDVersion,
                 *osvi.szCSDVersion? ")":""
                 );
+    es_fprintf (fp, "%sIntegrity: %s\n", prefix, w32_get_integrity_level ());
+    es_fprintf (fp, "%sCodepages:", prefix);
+    if (GetConsoleCP () != GetConsoleOutputCP ())
+      es_fprintf (fp, " %u/%u", GetConsoleCP (), GetConsoleOutputCP ());
+    else
+      es_fprintf (fp, " %u", GetConsoleCP ());
+    es_fprintf (fp, " %u", GetACP ());
+    es_fprintf (fp, " %u\n", GetOEMCP ());
   }
 #endif /*HAVE_W32_SYSTEM*/
 }
@@ -1773,15 +1844,6 @@ show_configs (estream_t outfp)
   show_version_gnupg (outfp, "  ");
   es_fprintf (outfp, "  Libgcrypt %s\n", gcry_check_version (NULL));
   es_fprintf (outfp, "  GpgRT %s\n", gpg_error_check_version (NULL));
-#ifdef HAVE_W32_SYSTEM
-  es_fprintf (outfp, "  Codepages:");
-  if (GetConsoleCP () != GetConsoleOutputCP ())
-    es_fprintf (outfp, " %u/%u", GetConsoleCP (), GetConsoleOutputCP ());
-  else
-    es_fprintf (outfp, " %u", GetConsoleCP ());
-  es_fprintf (outfp, " %u", GetACP ());
-  es_fprintf (outfp, " %u\n", GetOEMCP ());
-#endif
   es_fprintf (outfp, "\n\n");
 
   es_fprintf (outfp, "** Directories\n");
