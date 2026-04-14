@@ -157,6 +157,20 @@ ks_http_fetch (ctrl_t ctrl, const char *url, unsigned int flags,
                                  err, errhostname,
                                  "Hostname does not match the certificate");
         }
+      else if (gpg_err_code (err) == GPG_ERR_UNKNOWN_HOST)
+        {
+          const char *errhostname;
+          http_release_parsed_uri (helpuri);
+          if (http_parse_uri (&helpuri, url, 0))
+            errhostname = url; /* On parse error we use the full URL. */
+          else
+            errhostname = helpuri->host? helpuri->host : "?";
+
+          dirmngr_status_printf (ctrl, "WARNING",
+                                 "http_open_error %u"
+                                 " cannot connect to %s",
+                                 err, errhostname);
+        }
       goto leave;
     }
 

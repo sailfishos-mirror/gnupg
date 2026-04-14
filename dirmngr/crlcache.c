@@ -2755,6 +2755,10 @@ crl_cache_reload_crl (ctrl_t ctrl, ksba_cert_t cert)
               log_error (_("crl_fetch via DP failed: %s\n"),
                          gpg_strerror (err));
               last_err = err;
+              dirmngr_status_printf (ctrl, "WARNING",
+                                     "crl_fetch_error %u"
+                                     " fetching CRL via crlDP %s failed",
+                                     err, distpoint_uri);
               continue; /* with the next name. */
             }
 
@@ -2766,6 +2770,10 @@ crl_cache_reload_crl (ctrl_t ctrl, ksba_cert_t cert)
               log_error (_("crl_cache_insert via DP failed: %s\n"),
                          gpg_strerror (err));
               last_err = err;
+              dirmngr_status_printf (ctrl, "WARNING",
+                                     "crl_cache_insert_error %u"
+                                     " insert CRL via crlDP %s failed",
+                                     err, distpoint_uri);
               continue; /* with the next name. */
             }
           goto leave; /* Ready - we got the CRL. */

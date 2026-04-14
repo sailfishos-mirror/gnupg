@@ -1278,6 +1278,9 @@ is_cert_still_valid (ctrl_t ctrl, int chain_model, int lm, estream_t fp,
           audit_log_ok (ctrl->audit, AUDIT_CRL_CHECK, gpg_error (GPG_ERR_TRUE));
           return 0;
         }
+      else if (err)
+          log_error ("ksba_cert_get_crl_dist_point failed: %s\n",
+                     gpg_strerror(err));
     }
 
   err = gpgsm_dirmngr_isvalid (ctrl,

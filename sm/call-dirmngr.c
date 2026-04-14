@@ -449,6 +449,18 @@ warning_and_note_printer (const char *line)
       || (s2 = has_leading_keyword (s, "no_ldap_due_to_tor"))
       || (s2 = has_leading_keyword (s, "no_ocsp_due_to_tor")))
     warn = _("Tor might be in use - network access is limited");
+  else if ((s2 = has_leading_keyword (s, "http_redirect")))
+    warn = _("unacceptable HTTP redirect from server");
+  else if ((s2 = has_leading_keyword (s, "http_redirect_cleanup")))
+    warn = _("unacceptable HTTP redirect from server was cleaned up");
+  else if ((s2 = has_leading_keyword (s, "tls_cert_error")))
+    warn = _("server uses an invalid certificate");
+  else if ((s2 = has_leading_keyword (s, "http_open_error")))
+    warn = "http connection failed";
+  else if ((s2 = has_leading_keyword (s, "crl_fetch_error")))
+    warn = "fetching CRL failed";
+  else if ((s2 = has_leading_keyword (s, "crl_cache_insert_error")))
+    warn = "inserting CRL into cache failed";
   else
     warn = NULL;
 
