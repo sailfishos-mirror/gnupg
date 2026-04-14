@@ -427,6 +427,7 @@ char *gpgsm_format_keydesc (ksba_cert_t cert);
 
 
 /*-- certcheck.c --*/
+int gpgsm_pss_hash_algo_from_cert (ksba_cert_t cert);
 int gpgsm_check_cert_sig (ksba_cert_t issuer_cert, ksba_cert_t cert);
 int gpgsm_check_cms_signature (ksba_cert_t cert, gcry_sexp_t sigval,
                                gcry_md_hd_t md,
