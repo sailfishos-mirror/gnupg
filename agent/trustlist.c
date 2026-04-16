@@ -1,6 +1,7 @@
 /* trustlist.c - Maintain the list of trusted keys
- * Copyright (C) 2002, 2004, 2006, 2007, 2009,
+ * Copyright (C) 2002, 2004, 2006-2007, 2009,
  *               2012 Free Software Foundation, Inc.
+ * Copyright (C) 2003-2012, 2015-2017, 2022-2026 g10 Code GmbH
  *
  * This file is part of GnuPG.
  *
@@ -16,6 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <https://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #include <config.h>
@@ -149,20 +151,25 @@ make_sys_trustlist_name (void)
 
 
 static gpg_error_t
-read_one_trustfile (const char *fname, int systrust,
+read_one_trustfile (ctrl_t ctrl,
+                    const char *fname, int systrust,
                     trustitem_t **addr_of_table,
                     size_t *addr_of_tablesize,
                     int *addr_of_tableidx)
 {
   gpg_error_t err = 0;
   estream_t fp;
-  int n, c;
-  char *p, line[256];
+  int n;
+  char *p;
   trustitem_t *table, *ti;
   int tableidx;
   size_t tablesize;
   int lnr = 0;
-  int no_trailing_lf = 0;
+  int errlnr = 0;  /* lnr where the first error occured.  */
+  char *line = NULL;
+  size_t length_of_line = 0;
+  size_t maxlen;
+  ssize_t len;
 
   table = *addr_of_table;
   tablesize = *addr_of_tablesize;
@@ -176,29 +183,24 @@ read_one_trustfile (const char *fname, int systrust,
       goto leave;
     }
 
-  while (es_fgets (line, DIM(line)-1, fp))
+  while (maxlen = 512,
+         (len = es_read_line (fp, &line, &length_of_line, &maxlen)) > 0)
     {
       lnr++;
 
-      n = strlen (line);
-      if (!n || line[n-1] != '\n')
+      if (!maxlen)
         {
-          if (n && es_feof (fp))
-            no_trailing_lf = 1;  /* (The next fgets will break the loop.) */
-          /* Eat until end of line. */
-          while ( (c=es_getc (fp)) != EOF && c != '\n')
-            ;
-          err = gpg_error (*line && !no_trailing_lf? GPG_ERR_LINE_TOO_LONG
-                           : GPG_ERR_INCOMPLETE_LINE);
-          log_error (_("file '%s', line %d: %s\n"),
-                     fname, lnr, gpg_strerror (err));
-          if (no_trailing_lf)
-            err = 0;  /* Clear the error.  */
-          continue;
+          if (!err)
+            {
+              err = gpg_error (GPG_ERR_LINE_TOO_LONG);
+              errlnr = lnr;
+            }
+          /* Keep on working despite the truncation.  */
         }
-      line[--n] = 0; /* Chop the LF. */
-      if (n && line[n-1] == '\r')
-        line[--n] = 0; /* Chop an optional CR. */
+      /* Strip newline and carriage return, if present.  */
+      while (len > 0
+	     && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+	line[--len] = '\0';
 
       /* Allow for empty lines and spaces */
       for (p=line; spacep (p); p++)
@@ -233,13 +235,15 @@ read_one_trustfile (const char *fname, int systrust,
             }
           else
             {
-              err2 = read_one_trustfile (etcname, 1,
+              err2 = read_one_trustfile (ctrl, etcname, 1,
                                          &table, &tablesize, &tableidx);
-              if (err2)
-                err = err2;
+              if (err2 && !err)
+                {
+                  err = err2;
+                  errlnr = lnr;  /* Actually the include-default line.  */
+                }
             }
           xfree (etcname);
-
           continue;
         }
 
@@ -275,7 +279,11 @@ read_one_trustfile (const char *fname, int systrust,
       if (n < 0)
         {
           log_error (_("bad fingerprint in '%s', line %d\n"), fname, lnr);
-          err = gpg_error (GPG_ERR_BAD_DATA);
+          if (!err)
+            {
+              err = gpg_error (GPG_ERR_BAD_DATA);
+              errlnr = lnr;
+            }
           continue;
         }
       p += n;
@@ -300,14 +308,22 @@ read_one_trustfile (const char *fname, int systrust,
       else
         {
           log_error (_("invalid keyflag in '%s', line %d\n"), fname, lnr);
-          err = gpg_error (GPG_ERR_BAD_DATA);
+          if (!err)
+            {
+              err = gpg_error (GPG_ERR_BAD_DATA);
+              errlnr = lnr;
+            }
           continue;
         }
       p++;
       if ( *p && !spacep (p) )
         {
           log_error (_("invalid keyflag in '%s', line %d\n"), fname, lnr);
-          err = gpg_error (GPG_ERR_BAD_DATA);
+          if (!err)
+            {
+              err = gpg_error (GPG_ERR_BAD_DATA);
+              errlnr = lnr;
+            }
           continue;
         }
 
@@ -323,7 +339,11 @@ read_one_trustfile (const char *fname, int systrust,
             {
               log_error ("assigning a value to a flag is not yet supported; "
                          "in '%s', line %d\n", fname, lnr);
-              err = gpg_error (GPG_ERR_BAD_DATA);
+              if (!err)
+                {
+                  err = gpg_error (GPG_ERR_BAD_DATA);
+                  errlnr = lnr;
+                }
               p++;
             }
           else if (n == 5 && !memcmp (p, "relax", 5))
@@ -345,15 +365,21 @@ read_one_trustfile (const char *fname, int systrust,
         }
       tableidx++;
     }
-  if ( !err && !es_feof (fp) )
-    {
+
+    if (!err && (len < 0 || es_ferror (fp)))
       err = gpg_error_from_syserror ();
-      log_error (_("error reading '%s', line %d: %s\n"),
-                 fname, lnr, gpg_strerror (err));
-    }
+    if (err)
+      {
+        log_error (_("error reading '%s', line %d: %s\n"),
+                   fname, errlnr? errlnr:lnr, gpg_strerror (err));
+        agent_print_status (ctrl, "ERROR", "read_trustlist %u "
+                            "error reading '%s', line %d: %s",
+                            err, fname, errlnr? errlnr:lnr, gpg_strerror (err));
+      }
 
  leave:
   es_fclose (fp);
+  gpgrt_free (line);
   *addr_of_table = table;
   *addr_of_tablesize = tablesize;
   *addr_of_tableidx = tableidx;
@@ -364,7 +390,7 @@ read_one_trustfile (const char *fname, int systrust,
 /* Read the trust files and update the global table on success.  The
    trusttable is assumed to be locked. */
 static gpg_error_t
-read_trustfiles (void)
+read_trustfiles (ctrl_t ctrl)
 {
   gpg_error_t err;
   trustitem_t *table, *ti;
@@ -408,7 +434,8 @@ read_trustfiles (void)
       fname = make_sys_trustlist_name ();
       systrust = 1;
     }
-  err = read_one_trustfile (fname, systrust, &table, &tablesize, &tableidx);
+  err = read_one_trustfile (ctrl, fname, systrust,
+                            &table, &tablesize, &tableidx);
   xfree (fname);
 
   if (err)
@@ -473,7 +500,7 @@ istrusted_internal (ctrl_t ctrl, const char *fpr, int listmode, int *r_disabled,
 
   if (!trusttable)
     {
-      err = read_trustfiles ();
+      err = read_trustfiles (ctrl);
       if (err)
         {
           log_error (_("error reading list of trusted root certificates\n"));
@@ -560,7 +587,7 @@ agent_listtrusted (ctrl_t ctrl, void *assuan_context, int status_mode)
   table_locked = 1;
   if (!trusttable)
     {
-      err = read_trustfiles ();
+      err = read_trustfiles (ctrl);
       if (err)
         {
           unlock_trusttable ();
