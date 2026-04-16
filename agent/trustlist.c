@@ -834,7 +834,7 @@ agent_marktrusted (ctrl_t ctrl, const char *name, const char *fpr, int flag)
       xfree (nameformatted);
       return err;
     }
-  if ((ec = access (fname, F_OK)) && ec == GPG_ERR_ENOENT)
+  if ((ec = gnupg_access (fname, F_OK)) && ec == GPG_ERR_ENOENT)
     {
       fp = es_fopen (fname, "wx,mode=-rw-r");
       if (!fp)
