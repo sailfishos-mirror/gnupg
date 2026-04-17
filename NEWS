@@ -1,8 +1,56 @@
 Noteworthy changes in version 2.5.19 (unreleased)
 -------------------------------------------------
 
+ * New and extended features:
 
-  Release-info: https://dev.gnupg.org/T7998
+   - gpg: New option --use-ocb-sym.  [rGccdcdfbb37]
+
+   - gpgsm: Allow cipher mode to be part of the algo given to the
+     --cipher-algo option.  [T3979]
+
+   - gpgsm: Emit more details when failing to check a crlDP.  [T8221]
+
+   - agent: Improve pinentry behavior and texts in smartcard context.
+     [T6425]
+
+ * Bug fixes:
+
+   - gpg: Fix edge case in --refresh-keys.  [T8197]
+
+   - gpg: Don't call gcry_kdf_derive with empty passphrase.  [T7739]
+
+   - gpgsm: Skip the optional PKCS#12 PBES2 keyLength parameter to
+     allow import of recently issued certificates by the German
+     Telekom.  [rGc8c9604bba]
+
+   - gpgsm: Fix a bug so that a certificate can be signed using a
+     different algo.  [rG66fdafab3c]
+
+   - gpgsm: Make GCM fully compliant in de-vs mode.  [rG04fd775fce]
+
+   - gpgsm: Add a certificate chain check for de-vs compliance.
+     [T8188]
+
+   - gpgsm: Show rsaPSS certificates as de-vs compliant in listings.
+     [T8222]
+
+   - agent: Rework the trustlist reading code to finally allow a
+     trustlist.txt with a missing trailing LF.  [T8078]
+
+   - ssh: Fix RSA padding in signature handling.  [T7882,T8202]
+
+   - keyboxd: New command SETEPHEMERAL.  This fixes a bug that X.509
+     certificates are not stored ephemeral on an LDAP search.  [T8048]
+
+   - gpgtar: Fix -C (--directory) to check the output directory.
+     [T8159]
+
+ * Other changes:
+
+   - agent: Raise an error when p >= q for RSA keys to detect
+     incorrect generated *PGP keys.  [T8171]
+
+ Release-info: https://dev.gnupg.org/T7998
 
 
 Noteworthy changes in version 2.5.18 (2026-02-24)
