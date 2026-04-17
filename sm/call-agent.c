@@ -956,7 +956,13 @@ istrusted_status_cb (void *opaque, const char *line)
 
       /* Copy the current flags to the current list item.  */
       if (parm->cache)
-        parm->cache->flags = parm->flags;
+        {
+          /* Check the cache for the de_vs flag which was set by
+           * OPT.COMPAT_FLAGS. If set copy it too. */
+          if (parm->cache->flags.de_vs)
+            parm->flags.de_vs = 1;
+          parm->cache->flags = parm->flags;
+        }
     }
   else if ((s = has_leading_keyword (line, "TRUSTLISTFPR")) && *s)
     {
@@ -972,7 +978,10 @@ istrusted_status_cb (void *opaque, const char *line)
       memset (&ci->flags, 0, sizeof ci->flags);
 
       if ((opt.compat_flags & COMPAT_DE_VS_TRUSTLIST))
-        parm->flags.de_vs = 1;
+        {
+          parm->flags.de_vs = 1;
+          ci->flags.de_vs = 1;
+        }
 
       ci->next = parm->cache;
       parm->cache = ci;
