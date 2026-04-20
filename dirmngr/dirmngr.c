@@ -879,7 +879,9 @@ parse_rereadable_options (gpgrt_argparse_t *pargs, int reread)
       break;
 
     case oKeyServer:
-      if (*pargs->r.ret_str)
+      if (!strcmp (pargs->r.ret_str, "clear"))
+        FREE_STRLIST (opt.keyserver);
+      else if (*pargs->r.ret_str)
         add_to_strlist (&opt.keyserver, pargs->r.ret_str);
       break;
 
