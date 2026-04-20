@@ -686,10 +686,6 @@ msgid "error opening '%s': %s\n"
 msgstr "erro lendo `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "non se atopou a chave `%s': %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "erro de lectura: %s\n"
 
@@ -1133,6 +1129,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Non hai axuda dispoñible para `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "non se atopou a chave `%s': %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

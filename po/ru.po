@@ -676,10 +676,6 @@ msgid "error opening '%s': %s\n"
 msgstr "ошибка открытия '%s': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "файл '%s', строка %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "выражение \"%s\" в '%s' игнорируется, строка %d\n"
 
@@ -1094,6 +1090,10 @@ msgstr "Dirmgr годен"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Нет справки для '%s'."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "файл '%s', строка %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "игнорируем дефектную строку"

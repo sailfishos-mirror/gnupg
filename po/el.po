@@ -684,10 +684,6 @@ msgid "error opening '%s': %s\n"
 msgstr "σφάλμα κατά την ανάγνωση του `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "το κλειδί '%s' δε βρέθηκε: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "σφάλμα ανάγνωσης: %s\n"
 
@@ -1127,6 +1123,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Δεν υπάρχει διαθέσιμη βοήθεια για `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "το κλειδί '%s' δε βρέθηκε: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

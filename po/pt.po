@@ -685,10 +685,6 @@ msgid "error opening '%s': %s\n"
 msgstr "erro na leitura de `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "chave `%s' não encontrada: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "armadura: %s\n"
 
@@ -1129,6 +1125,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Nenhuma ajuda disponível para `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "chave `%s' não encontrada: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

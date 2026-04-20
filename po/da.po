@@ -757,11 +757,6 @@ msgid "error opening '%s': %s\n"
 msgstr "fejl ved åbning af »%s«: %s\n"
 
 #, fuzzy, c-format
-#| msgid "file `%s', line %d: %s\n"
-msgid "file '%s', line %d: %s\n"
-msgstr "fil »%s«, linje %d: %s\n"
-
-#, fuzzy, c-format
 #| msgid "statement \"%s\" ignored in `%s', line %d\n"
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "udtryk »%s« ignoreret i »%s«, linje %d\n"
@@ -1202,6 +1197,11 @@ msgstr "Dirmngr er brugbar"
 #| msgid "No help available for `%s'."
 msgid "No help available for '%s'."
 msgstr "Ingen hjælp tilgængelig for »%s«."
+
+#, fuzzy, c-format
+#| msgid "file `%s', line %d: %s\n"
+msgid "file '%s', line %d: %s\n"
+msgstr "fil »%s«, linje %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorerer affaldslinje"

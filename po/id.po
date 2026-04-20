@@ -686,10 +686,6 @@ msgid "error opening '%s': %s\n"
 msgstr "kesalahan membaca `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "kunci '%s' tidak ditemukan: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "kesalahan pembacaan: %s\n"
 
@@ -1129,6 +1125,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Tidak tersedia bantuan untuk `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "kunci '%s' tidak ditemukan: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

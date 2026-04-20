@@ -773,11 +773,6 @@ msgid "error opening '%s': %s\n"
 msgstr "fel vid öppnandet av \"%s\": %s\n"
 
 #, fuzzy, c-format
-#| msgid "file `%s', line %d: %s\n"
-msgid "file '%s', line %d: %s\n"
-msgstr "fil \"%s\", rad %d: %s\n"
-
-#, fuzzy, c-format
 #| msgid "statement \"%s\" ignored in `%s', line %d\n"
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "uttrycket \"%s\" ignorerat i \"%s\", rad %d\n"
@@ -1221,6 +1216,11 @@ msgstr "Dirmngr användbar"
 #| msgid "No help available for `%s'."
 msgid "No help available for '%s'."
 msgstr "Det finns ingen hjälp tillgänglig för \"%s\"."
+
+#, fuzzy, c-format
+#| msgid "file `%s', line %d: %s\n"
+msgid "file '%s', line %d: %s\n"
+msgstr "fil \"%s\", rad %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorerar skräprad"

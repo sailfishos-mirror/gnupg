@@ -676,10 +676,6 @@ msgid "error opening '%s': %s\n"
 msgstr "feil under åpning av «%s»: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "fil «%s», linje %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "uttrykk «%s» ignorert i «%s», linje %d\n"
 
@@ -1099,6 +1095,10 @@ msgstr "Dirmngr kan brukes"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Ingen hjelp tilgjengelig for «%s»"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "fil «%s», linje %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorerer ubrukelig linje"

@@ -704,10 +704,6 @@ msgid "error opening '%s': %s\n"
 msgstr "chyba při otevírání „%s“: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "soubor „%s“, řádek %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "ignorováno sdělení „%s“ z „%s“, řádku %d\n"
 
@@ -1123,6 +1119,10 @@ msgstr "Dirmngr je použitelný"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Nápověda pro „%s“ není dostupná.'"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "soubor „%s“, řádek %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignoruji řádek s nepořádkem"

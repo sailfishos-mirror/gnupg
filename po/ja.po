@@ -660,10 +660,6 @@ msgid "error opening '%s': %s\n"
 msgstr "'%s'を開く際、エラー: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "ファイル'%s'(行 %d): %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "ステートメント \"%s\" は'%s'で無視されました(行 %d)\n"
 
@@ -1079,6 +1075,10 @@ msgstr "Dirmngr利用可能"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s'のヘルプはありません。"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "ファイル'%s'(行 %d): %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ガベージ行を無視します"

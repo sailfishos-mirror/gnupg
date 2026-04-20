@@ -673,10 +673,6 @@ msgid "error opening '%s': %s\n"
 msgstr "Fehler beim Öffnen von `%s': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "Datei `%s', Zeile %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr ""
 "Anweisung \"%s\" in `%s', Zeile %d\n"
@@ -1103,6 +1099,10 @@ msgstr "Dirmngr benutzbar"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Keine Hilfe für '%s' vorhanden."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "Datei `%s', Zeile %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "Zeile mit nicht identifizierten Zeichen wird ignoriert"

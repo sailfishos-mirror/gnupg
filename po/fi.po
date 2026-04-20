@@ -698,10 +698,6 @@ msgid "error opening '%s': %s\n"
 msgstr "virhe luettaessa tiedostoa \"%s\": %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "avainta \"%s\" ei löydy: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "lukuvirhe: %s\n"
 
@@ -1141,6 +1137,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Ei ohjetta aiheesta \"%s\""
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "avainta \"%s\" ei löydy: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

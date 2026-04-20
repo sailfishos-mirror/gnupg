@@ -735,11 +735,6 @@ msgid "error opening '%s': %s\n"
 msgstr "'%s' açılırken hata: %s\n"
 
 #, fuzzy, c-format
-#| msgid "file `%s', line %d: %s\n"
-msgid "file '%s', line %d: %s\n"
-msgstr "`%s' dosyası, %d. satır: %s\n"
-
-#, fuzzy, c-format
 #| msgid "statement \"%s\" ignored in `%s', line %d\n"
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "`%2$s' dosyasının %3$d. satırındaki \"%1$s\" deyimi yoksayıldı\n"
@@ -1189,6 +1184,11 @@ msgstr "Dirmngr elverişli"
 #| msgid "No help available for `%s'."
 msgid "No help available for '%s'."
 msgstr "`%s' için yardım mevcut değil."
+
+#, fuzzy, c-format
+#| msgid "file `%s', line %d: %s\n"
+msgid "file '%s', line %d: %s\n"
+msgstr "`%s' dosyası, %d. satır: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "bozuk satır yok sayılıyor"

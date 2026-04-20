@@ -683,10 +683,6 @@ msgid "error opening '%s': %s\n"
 msgstr "eraro dum legado de '%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "ŝlosilo '%s' ne trovita: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "kiraso: %s\n"
 
@@ -1131,6 +1127,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Nenia helpo disponata por '%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "ŝlosilo '%s' ne trovita: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

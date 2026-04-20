@@ -701,10 +701,6 @@ msgid "error opening '%s': %s\n"
 msgstr "eroare în `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "fişier opţiuni `%s': %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "eroare citire în `%s': %s\n"
 
@@ -1149,6 +1145,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Nici un disponibil disponibil pentru `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "fişier opţiuni `%s': %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"

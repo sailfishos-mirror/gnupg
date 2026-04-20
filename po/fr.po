@@ -678,10 +678,6 @@ msgid "error opening '%s': %s\n"
 msgstr "erreur d'ouverture de « %s » : %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "fichier « %s », ligne %d : %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "déclaration « %s » ignorée dans « %s », ligne %d\n"
 
@@ -1106,6 +1102,10 @@ msgstr "Dirmngr utilisable"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Pas d'aide disponible pour « %s »."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "fichier « %s », ligne %d : %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ligne inutile ignorée"

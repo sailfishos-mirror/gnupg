@@ -679,10 +679,6 @@ msgid "error opening '%s': %s\n"
 msgstr "помилка під час відкриття «%s»: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "файл «%s», рядок %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "проігноровано інструкцію «%s» у «%s», рядок %d\n"
 
@@ -1106,6 +1102,10 @@ msgstr "Dirmngr придатна до використання"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Довідки щодо «%s» не виявлено."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "файл «%s», рядок %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ігноруємо беззмістовний рядок"

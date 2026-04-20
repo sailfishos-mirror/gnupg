@@ -684,10 +684,6 @@ msgid "error opening '%s': %s\n"
 msgstr "開啟 '%s' 時出錯: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "檔案 '%s', 第 %d 列: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "陳述句 \"%s\" 忽略於 '%s', 第 %d 列\n"
 
@@ -1103,6 +1099,10 @@ msgstr "Dirmngr 可以使用"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s' 沒有可用的說明."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "檔案 '%s', 第 %d 列: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "忽略垃圾列"

@@ -669,10 +669,6 @@ msgid "error opening '%s': %s\n"
 msgstr "błąd podczas otwierania ,,%s'': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "plik ,,%s'', linia %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "instrukcja \"%s\" zignorowana w ,,%s'', w linii %d\n"
 
@@ -1088,6 +1084,10 @@ msgstr "Dirmngr sprawny"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Brak pomocy dla ,,%s''."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "plik ,,%s'', linia %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "zignorowano błędną linię"

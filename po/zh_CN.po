@@ -648,10 +648,6 @@ msgid "error opening '%s': %s\n"
 msgstr "打开‘%s’时出现错误：%s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "文件‘%s’ 的第 %d 行：%s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "已忽略声明 “%s” ，其位于‘%s’的第 %d 行\n"
 
@@ -1065,6 +1061,10 @@ msgstr "Dirmngr 可用"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "没有关于 ‘%s’ 的可用帮助。"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "文件‘%s’ 的第 %d 行：%s\n"
 
 msgid "ignoring garbage line"
 msgstr "忽略无用行"
