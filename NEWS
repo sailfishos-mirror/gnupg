@@ -1,5 +1,15 @@
-Noteworthy changes in version 2.2.54 (unreleased)
+Noteworthy changes in version 2.2.54 (2026-04-20)
 -------------------------------------------------
+
+  * gpg: Fix an edge case in --refresh-keys.  [T8197]
+
+  * gpgsm: Add a certificate chain check for de-vs compliance.
+    [T8188]
+
+  * gpgsm: Show rsaPSS certificates as de-vs compliant in listings.
+    [T8222]
+
+  * agent: Accept a trustlist with a missing LF at the end.  [T8078]
 
   Release-info: https://dev.gnupg.org/T8170
 
