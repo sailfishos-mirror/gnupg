@@ -19,11 +19,12 @@
  * For example, in the Makefiles of GnuPG, we do specify REGEXP_PREFIX
  * with "gnupg_".
  */
-#define ADD_PREFIX(name) REGEXP_PREFIX ## name
-#define regcomp ADD_PREFIX(regcomp)
-#define regexec ADD_PREFIX(regexec)
-#define regerror ADD_PREFIX(regerror)
-#define regfree ADD_PREFIX(regfree)
+#define ADD_PREFIX0(prefix,name) prefix ## name
+#define ADD_PREFIX(prefix,name) ADD_PREFIX0(prefix,name)
+#define regcomp ADD_PREFIX(REGEXP_PREFIX,regcomp)
+#define regexec ADD_PREFIX(REGEXP_PREFIX,regexec)
+#define regerror ADD_PREFIX(REGEXP_PREFIX,regerror)
+#define regfree ADD_PREFIX(REGEXP_PREFIX,regfree)
 #endif
 
 /** regexp(3)-compatible regular expression implementation for Jim.
