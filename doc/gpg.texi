@@ -3862,6 +3862,16 @@ This is not for normal use. Use the source to see for what it might be useful.
 @opindex set-filesize
 This is not for normal use. Use the source to see for what it might be useful.
 
+@item --show-session-hash
+@itemx --show-only-session-hash
+@opindex show-session-hash
+@opindex show-only-session-hash
+During decryption emit a status line @code{SESSION_HASH} with the
+base64 encoded hash of the session key.  The variant
+@option{--show-only-session-key} does not actually use the session key
+but stops processing after having printed the hash of the session key.
+These options are can be used to implement a replay attack detection.
+
 @item --show-session-key
 @itemx --show-only-session-key
 @opindex show-session-key

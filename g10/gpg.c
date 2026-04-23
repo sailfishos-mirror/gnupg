@@ -371,6 +371,8 @@ enum cmd_and_opt_values
     oIgnoreValidFrom,
     oIgnoreCrcError,
     oIgnoreMDCError,
+    oShowSessionHash,
+    oShowOnlySessionHash,
     oShowSessionKey,
     oShowOnlySessionKey,
     oOverrideSessionKey,
@@ -783,6 +785,8 @@ static gpgrt_opt_t opts[] = {
   ARGPARSE_s_n (oNoForYourEyesOnly, "no-for-your-eyes-only", "@"),
   ARGPARSE_s_n (oShowNotation,      "show-notation", "@"),
   ARGPARSE_s_n (oNoShowNotation, "no-show-notation", "@"),
+  ARGPARSE_s_n (oShowSessionHash, "show-session-hash", "@"),
+  ARGPARSE_s_n (oShowOnlySessionHash, "show-only-session-hash", "@"),
   ARGPARSE_s_n (oShowSessionKey, "show-session-key", "@"),
   ARGPARSE_s_n (oShowOnlySessionKey, "show-only-session-key", "@"),
   ARGPARSE_s_n (oUseEmbeddedFilename,      "use-embedded-filename", "@"),
@@ -3617,6 +3621,13 @@ main (int argc, char **argv)
 
           case oAutoKeyUpload: opt.flags.auto_key_upload = 1; break;
           case oNoAutoKeyUpload: opt.flags.auto_key_upload = 0; break;
+
+	  case oShowOnlySessionHash:
+            opt.show_only_session_key = 1; /*  Right, this is ..._key */
+            /* fallthru */
+	  case oShowSessionHash:
+            opt.show_session_hash = 1;
+            break;
 
 	  case oShowOnlySessionKey:
             opt.show_only_session_key = 1;

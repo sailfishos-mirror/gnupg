@@ -623,6 +623,10 @@ pkd:0:1024:B665B1435F4C2 .... FF26ABB:
     return an errorcode because it may not be possible to verify a
     signature for some reasons.
 
+*** SESSION_HASH <base64_hash>
+    The gpg option --show-session-hash printd this status line during
+    decryption.  BASE64_HASH is the SHA-256 hash of the session key.
+
 *** SESSION_KEY <algo>:<hexdigits>
     The session key used to decrypt the message.  This message will
     only be emitted if the option --show-session-key is used.  The
