@@ -352,6 +352,8 @@ enum cmd_and_opt_values
     oIgnoreValidFrom,
     oIgnoreCrcError,
     oIgnoreMDCError,
+    oShowSessionHash,
+    oShowOnlySessionHash,
     oShowSessionKey,
     oOverrideSessionKey,
     oOverrideSessionKeyFD,
@@ -747,6 +749,8 @@ static ARGPARSE_OPTS opts[] = {
   ARGPARSE_s_n (oNoForYourEyesOnly, "no-for-your-eyes-only", "@"),
   ARGPARSE_s_n (oShowNotation,      "show-notation", "@"),
   ARGPARSE_s_n (oNoShowNotation, "no-show-notation", "@"),
+  ARGPARSE_s_n (oShowSessionHash, "show-session-hash", "@"),
+  ARGPARSE_s_n (oShowOnlySessionHash, "show-only-session-hash", "@"),
   ARGPARSE_s_n (oShowSessionKey, "show-session-key", "@"),
   ARGPARSE_s_n (oUseEmbeddedFilename,      "use-embedded-filename", "@"),
   ARGPARSE_s_n (oNoUseEmbeddedFilename, "no-use-embedded-filename", "@"),
@@ -3454,6 +3458,13 @@ main (int argc, char **argv)
           case oNoAutoKeyUpload: opt.flags.auto_key_upload = 0; break;
 
 	  case oShowSessionKey: opt.show_session_key = 1; break;
+
+	  case oShowOnlySessionHash:
+            opt.show_only_session_hash = 1;
+            /* fallthru */
+	  case oShowSessionHash:
+            opt.show_session_hash = 1;
+            break;
 
 	  case oOverrideSessionKey:
 		opt.override_session_key = pargs.r.ret_str;

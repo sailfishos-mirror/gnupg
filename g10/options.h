@@ -226,6 +226,8 @@ struct
   int command_fd;
   const char *override_session_key;
   int show_session_key;
+  int show_session_hash;
+  int show_only_session_hash;
 
   const char *gpg_agent_info;
   int try_all_secrets;

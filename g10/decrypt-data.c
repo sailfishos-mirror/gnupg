@@ -304,6 +304,23 @@ decrypt_data (ctrl_t ctrl, void *procctx, PKT_encrypted *ed, DEK *dek,
       xfree (hexbuf);
     }
 
+  if (opt.show_session_hash)
+    {
+      char hashbuf[32];  /* For SHA-256.  */
+      char *rad64buf;
+
+      gcry_md_hash_buffer (GCRY_MD_SHA256, hashbuf, dek->key, dek->keylen);
+      rad64buf = make_radix64_string (hashbuf, sizeof hashbuf);
+      write_status_text (STATUS_SESSION_HASH, rad64buf);
+      xfree (rad64buf);
+    }
+
+  if (opt.show_only_session_hash)
+    {
+      rc = 0;
+      goto leave;
+    }
+
   rc = openpgp_cipher_test_algo (dek->algo);
   if (rc)
     goto leave;
