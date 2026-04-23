@@ -1241,37 +1241,37 @@ check_key_signature2 (ctrl_t ctrl,
         }
     }
   else if (IS_KEY_SIG (sig)) /* direct key signature */
-      {
-        rc = check_signature_metadata_validity (pk, sig,
-                                                r_expired, NULL);
-        if (! rc)
-          rc = check_signature_over_key_or_uid (ctrl, pk, sig, root, root->pkt,
-                                                is_selfsig, ret_pk);
-      }
-    else if (IS_UID_SIG (sig) || IS_UID_REV (sig))
-      {
-	kbnode_t unode = find_prev_kbnode (root, node, PKT_USER_ID);
+    {
+      rc = check_signature_metadata_validity (pk, sig,
+                                              r_expired, NULL);
+      if (! rc)
+        rc = check_signature_over_key_or_uid (ctrl, pk, sig, root, root->pkt,
+                                              is_selfsig, ret_pk);
+    }
+  else if (IS_UID_SIG (sig) || IS_UID_REV (sig))
+    {
+      kbnode_t unode = find_prev_kbnode (root, node, PKT_USER_ID);
 
-	if (unode)
-          {
-            rc = check_signature_metadata_validity (pk, sig, r_expired, NULL);
-            if (! rc)
-              {
-                /* If this is a self-sig, ignore check_pk.  */
-                rc = check_signature_over_key_or_uid
-                  (ctrl,
-                   keyid_cmp (pk_keyid (pk), sig->keyid) == 0 ? pk : check_pk,
-                   sig, root, unode->pkt, NULL, ret_pk);
-              }
-          }
-	else
-	  {
-            if (!opt.quiet)
-	      log_info ("key %s: no user ID for key signature packet"
-			" of class %02x\n",keystr_from_pk(pk),sig->sig_class);
-	    rc = GPG_ERR_SIG_CLASS;
-	  }
-      }
+      if (unode)
+        {
+          rc = check_signature_metadata_validity (pk, sig, r_expired, NULL);
+          if (! rc)
+            {
+              /* If this is a self-sig, ignore check_pk.  */
+              rc = check_signature_over_key_or_uid
+                (ctrl,
+                 keyid_cmp (pk_keyid (pk), sig->keyid) == 0 ? pk : check_pk,
+                 sig, root, unode->pkt, NULL, ret_pk);
+            }
+        }
+      else
+        {
+          if (!opt.quiet)
+            log_info ("key %s: no user ID for key signature packet"
+                      " of class %02x\n",keystr_from_pk(pk),sig->sig_class);
+          rc = GPG_ERR_SIG_CLASS;
+        }
+    }
   else
     {
       log_info ("sig issued by %s with class %d (digest: %02x %02x)"
