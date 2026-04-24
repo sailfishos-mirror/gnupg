@@ -1,7 +1,7 @@
 # configure.ac - for GnuPG 2.1
 # Copyright (C) 1998-2019 Werner Koch
 # Copyright (C) 1998-2021 Free Software Foundation, Inc.
-# Copyright (C) 2003-2025 g10 Code GmbH
+# Copyright (C) 2003-2026 g10 Code GmbH
 #
 # This file is part of GnuPG.
 #
@@ -29,7 +29,7 @@ min_automake_version="1.16.3"
 m4_define([mym4_package],[gnupg])
 m4_define([mym4_major], [2])
 m4_define([mym4_minor], [5])
-m4_define([mym4_micro], [19])
+m4_define([mym4_micro], [20])
 
 # To start a new development series, i.e a new major or minor number
 # you need to mark an arbitrary commit before the first beta release
@@ -515,7 +515,7 @@ AH_BOTTOM([
 #define GNUPG_OPENPGP_REVOC_DIR "openpgp-revocs.d"
 #define GNUPG_CACHE_DIR         "cache.d"
 
-#define GNUPG_DEF_COPYRIGHT_LINE "Copyright (C) 2025 g10 Code GmbH"
+#define GNUPG_DEF_COPYRIGHT_LINE "Copyright (C) 2026 g10 Code GmbH"
 
 /* For some systems (DOS currently), we hardcode the path here.  For
    POSIX systems the values are constructed by the Makefiles, so that
