@@ -693,10 +693,6 @@ msgid "error opening '%s': %s\n"
 msgstr "chyba při otevírání „%s“: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "soubor „%s“, řádek %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "ignorováno sdělení „%s“ z „%s“, řádku %d\n"
 
@@ -1130,6 +1126,10 @@ msgstr "Dirmngr je použitelný"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Nápověda pro „%s“ není dostupná.'"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "soubor „%s“, řádek %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignoruji řádek s nepořádkem"
@@ -6697,8 +6697,8 @@ msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr ""
 "||Prosím, zadejte PIN klíče určeného na tvorbu kvalifikovaných podpisů."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Prosím, zadejte PIN správce"
 
@@ -6777,26 +6777,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sČíslo: %s%%0ADržitel: %s%%0APočítadlo: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "použije se výchozí PIN jako %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"použití výchozího PINu jako %s selhalo: %s – vypínám jeho budoucí použití\n"
-
-msgid "||Please unlock the card"
-msgstr "||Prosím, odemkněte kartu"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "PIN pro CHV%d je příliš krátký; minimální délka je %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "ověření CHV%d se nezdařilo: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "karta je trvale uzamčena!\n"
 
@@ -6810,6 +6790,26 @@ msgstr[1] ""
 "Do trvalého uzamčení karty zůstávají %d pokusy na zadání PINu správce\n"
 msgstr[2] ""
 "Do trvalého uzamčení karty zůstává %d pokusů na zadání PINu správce\n"
+
+msgid "||Please unlock the card"
+msgstr "||Prosím, odemkněte kartu"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "použije se výchozí PIN jako %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"použití výchozího PINu jako %s selhalo: %s – vypínám jeho budoucí použití\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "PIN pro CHV%d je příliš krátký; minimální délka je %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "ověření CHV%d se nezdařilo: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7565,6 +7565,11 @@ msgstr "Poznámka: nebude možné šifrovat pro „%s“: %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "neznámý model ověřování „%s“\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "šifrovací algoritmus %d%s je neznámý nebo je zneplatněn\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

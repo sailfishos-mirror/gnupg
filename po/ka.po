@@ -648,10 +648,6 @@ msgid "error opening '%s': %s\n"
 msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "ფაილი '%s', ხაზი %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "ოპერატორი \"%s\" გამოტოვებულია '%s'-ში, ხაზი %d\n"
 
@@ -1077,6 +1073,10 @@ msgstr "Dirmngr გამოყენებადია"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s'-ისთვის დახმარება ხელმისაწვდომი არაა."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "ფაილი '%s', ხაზი %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ნაგვიანი ხაზი გამოტოვებულია"
@@ -6336,8 +6336,8 @@ msgstr "პასუხი საჯარო გასაღების მო
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr ""
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|შეიყვანეთ ადმინის PIN-კოდი"
 
@@ -6409,25 +6409,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr ""
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr ""
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-
-msgid "||Please unlock the card"
-msgstr "||განბლოკეთ ბარათი"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr ""
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "CHV%d-ის გადამოწმება ჩავარდა: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "ბარათი სამუდამოდაა დაბლოკილი!\n"
 
@@ -6437,6 +6418,25 @@ msgid_plural ""
 "%d Admin PIN attempts remaining before card is permanently locked\n"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "||Please unlock the card"
+msgstr "||განბლოკეთ ბარათი"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr ""
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr ""
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "CHV%d-ის გადამოწმება ჩავარდა: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7170,6 +7170,11 @@ msgstr "შენიშვნა: '%s'-ზე ვერ დავშიფრა
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "უცნობი გადამოწმების მოდელი '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "შიფრის ალგორითმი %d%s უცნობია, ან გათიშულია\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

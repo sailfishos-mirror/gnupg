@@ -682,10 +682,6 @@ msgid "error opening '%s': %s\n"
 msgstr "feil under åpning av «%s»: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "fil «%s», linje %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "uttrykk «%s» ignorert i «%s», linje %d\n"
 
@@ -1130,6 +1126,10 @@ msgstr "Dirmngr kan brukes"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Ingen hjelp tilgjengelig for «%s»"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "fil «%s», linje %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorerer ubrukelig linje"
@@ -6766,8 +6766,8 @@ msgstr "svar inneholder ikke offentlig nøkkeldata\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||Skriv inn PIN for å la nøkkelen lage kvalifiserte signaturer."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Skriv inn admin-PIN"
 
@@ -6842,27 +6842,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sNummer\\x1f: %s%%0AHolder\\x1f: %s%%0ATeller\\x1f: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "bruker forvalgt PIN som %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"klarte ikke å bruke forvalgt PIN som %s: %s. Lar være å bruke forvalgt PIN "
-"senere\n"
-
-msgid "||Please unlock the card"
-msgstr "||Lås opp kort"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "PIN for CHV%d er for kort; minum lengde er %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "bekreftelse av CHV%d mislyktes: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "kortet er låst for godt.\n"
 
@@ -6872,6 +6851,27 @@ msgid_plural ""
 "%d Admin PIN attempts remaining before card is permanently locked\n"
 msgstr[0] "%d Admin-PIN-forsøk gjenstår før kortet blir låst permanent\n"
 msgstr[1] "%d Admin-PIN-forsøk gjenstår før kortet blir låst permanent\n"
+
+msgid "||Please unlock the card"
+msgstr "||Lås opp kort"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "bruker forvalgt PIN som %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"klarte ikke å bruke forvalgt PIN som %s: %s. Lar være å bruke forvalgt PIN "
+"senere\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "PIN for CHV%d er for kort; minum lengde er %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "bekreftelse av CHV%d mislyktes: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7624,6 +7624,11 @@ msgstr "Merk: det er ikke mulig å kryptere til «%s»: %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "«%s» er en ukjent kontrollmodell\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "krypteringsalgoritme %d%s er ukjent eller slått av\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

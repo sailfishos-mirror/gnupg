@@ -645,10 +645,6 @@ msgid "error opening '%s': %s\n"
 msgstr "開啟 '%s' 時出錯: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "檔案 '%s', 第 %d 列: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "陳述句 \"%s\" 忽略於 '%s', 第 %d 列\n"
 
@@ -1074,6 +1070,10 @@ msgstr "Dirmngr 可以使用"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s' 沒有可用的說明."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "檔案 '%s', 第 %d 列: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "忽略垃圾列"
@@ -6409,8 +6409,8 @@ msgstr "回應中未包含公鑰資料\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||請輸入金鑰的個人識別碼 (PIN) 以建立完善的簽章."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|請輸入管理者 PIN"
 
@@ -6482,25 +6482,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%s序號: %s%%0A持有者: %s%%0A計數器: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "以 %s 做為預設 PIN\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr "使用 %s 做為預設個人識別碼 (PIN) 失敗: %s - 正在停用之後的預設使用\n"
-
-msgid "||Please unlock the card"
-msgstr "||請解鎖卡片"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "用於 CHV%d 的個人識別碼 (PIN) 太短; 長度最少要有 %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "驗證 CHV%d 失敗: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "卡片永久鎖定了!!\n"
 
@@ -6509,6 +6490,25 @@ msgid "%d Admin PIN attempt remaining before card is permanently locked\n"
 msgid_plural ""
 "%d Admin PIN attempts remaining before card is permanently locked\n"
 msgstr[0] "卡片永久鎖定前還剩下 %d 次管理員 PIN 碼嘗試機會\n"
+
+msgid "||Please unlock the card"
+msgstr "||請解鎖卡片"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "以 %s 做為預設 PIN\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr "使用 %s 做為預設個人識別碼 (PIN) 失敗: %s - 正在停用之後的預設使用\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "用於 CHV%d 的個人識別碼 (PIN) 太短; 長度最少要有 %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "驗證 CHV%d 失敗: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7248,6 +7248,11 @@ msgstr "請注意: 將無法加密為 '%s': %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "未知的驗證模型 '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "%d%s 編密演算法未知或已停用\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

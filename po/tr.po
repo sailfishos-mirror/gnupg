@@ -662,10 +662,6 @@ msgid "error opening '%s': %s\n"
 msgstr "'%s' açılırken hata: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "'%s' dosyası, %d. satır: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "\"%s\" beyanı; '%s', %d. satırda yok sayıldı\n"
 
@@ -1104,6 +1100,10 @@ msgstr "Dirmngr elverişli"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s' için yardım mevcut değil."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "'%s' dosyası, %d. satır: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "anlamsız satır yok sayılıyor"
@@ -6642,8 +6642,8 @@ msgstr "yanıt genel anahtar verisini içermiyor\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||Nitelikli imzalar üretmek için lütfen PIN'i girin."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Lütfen yönetici PIN'ini girin"
 
@@ -6719,27 +6719,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sSayı: %s%%0Aİyesi: %s%%0ASayaç: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "öntanımlı PIN olarak %s kullanılıyor\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"öntanımlı PIN olarak %s kullanılamadı: %s - sonrası için öntanımlı kullanım "
-"devre dışı bırakılıyor\n"
-
-msgid "||Please unlock the card"
-msgstr "||Lütfen kart kilidini açın"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "CHV%d için PIN çok kısa; gereken en kısa uzunluk %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "CHV%d doğrulaması başarısız oldu: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "kart kalıcı olarak kilitli!\n"
 
@@ -6751,6 +6730,27 @@ msgstr[0] ""
 "kart kalıcı olarak kilitlenmeden önce %d Yönetici PIN denemesi kaldı\n"
 msgstr[1] ""
 "kart kalıcı olarak kilitlenmeden önce %d Yönetici PIN denemesi kaldı\n"
+
+msgid "||Please unlock the card"
+msgstr "||Lütfen kart kilidini açın"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "öntanımlı PIN olarak %s kullanılıyor\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"öntanımlı PIN olarak %s kullanılamadı: %s - sonrası için öntanımlı kullanım "
+"devre dışı bırakılıyor\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "CHV%d için PIN çok kısa; gereken en kısa uzunluk %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "CHV%d doğrulaması başarısız oldu: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7494,6 +7494,11 @@ msgstr "Not: '%s' ögesine şifreleme yapılamayacak: %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "bilinmeyen geçerlilik modeli '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "şifre algoritması %d%s bilinmiyor veya devre dışı bırakılmış\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

@@ -736,10 +736,6 @@ msgid "error opening '%s': %s\n"
 msgstr "erro ao abrir '%s': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "ficheiro '%s', linha %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "instrução \"%s\" ignorada em '%s', linha %d\n"
 
@@ -1174,6 +1170,10 @@ msgstr "Dirmngr utilizável"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Nenhuma ajuda disponível para '%s'."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "ficheiro '%s', linha %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorando linha de lixo"
@@ -6704,8 +6704,8 @@ msgstr "a resposta não contém os dados da chave pública\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||Introduza o PIN da chave para criar assinaturas qualificadas."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Introduza o PIN do Admin"
 
@@ -6782,27 +6782,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sNúmero: %s%%0ATitular: %s%%0AContador: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "usando o PIN pré-definido como %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"falha ao usar o PIN pré-definido como %s: %s - desabilitando um uso pré-"
-"definido adicional\n"
-
-msgid "||Please unlock the card"
-msgstr "||Desbloqueie o cartão"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "O PIN para CHV%d é muito curto; o comprimento mínimo é %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "verificar CHV%d falhou: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "cartão está permanentemente bloqueado!\n"
 
@@ -6816,6 +6795,27 @@ msgstr[0] ""
 msgstr[1] ""
 "%d tentativas de PIN do Admin restantes antes de o cartão ser "
 "permanentemente bloqueado\n"
+
+msgid "||Please unlock the card"
+msgstr "||Desbloqueie o cartão"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "usando o PIN pré-definido como %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"falha ao usar o PIN pré-definido como %s: %s - desabilitando um uso pré-"
+"definido adicional\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "O PIN para CHV%d é muito curto; o comprimento mínimo é %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "verificar CHV%d falhou: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7564,6 +7564,11 @@ msgstr "Nota: não será possível cifrar para '%s': %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "modelo de validação '%s' desconhecido\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "o algoritmo de cifra %d%s é desconhecido ou foi desabilitado\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

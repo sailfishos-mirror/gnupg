@@ -696,10 +696,6 @@ msgid "error opening '%s': %s\n"
 msgstr "eroare în `%s': %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "fişier opţiuni `%s': %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "eroare citire în `%s': %s\n"
 
@@ -1168,6 +1164,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Nici un disponibil disponibil pentru `%s'"
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "fişier opţiuni `%s': %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"
@@ -7042,8 +7042,8 @@ msgstr "răspunsul nu conţine datele cheii publice\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr ""
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 #, fuzzy
 msgid "|A|Please enter the Admin PIN"
 msgstr "||Vă rugăm introduceţi PIN%%0A[semnături făcute: %lu]"
@@ -7122,26 +7122,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr ""
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr ""
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-
-#, fuzzy
-msgid "||Please unlock the card"
-msgstr "||Vă rugăm introduceţi PIN%%0A[semnături făcute: %lu]"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "PIN-ul pentru CHV%d este prea scurt; lungimea minimă este %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "verificarea CHV%d a eşuat: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "cardul este încuiat permanent!\n"
 
@@ -7154,6 +7134,26 @@ msgstr[0] ""
 "%d încercări PIN Admin rămase înainte de a încuia cardul permanent\n"
 msgstr[1] ""
 "%d încercări PIN Admin rămase înainte de a încuia cardul permanent\n"
+
+#, fuzzy
+msgid "||Please unlock the card"
+msgstr "||Vă rugăm introduceţi PIN%%0A[semnături făcute: %lu]"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr ""
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "PIN-ul pentru CHV%d este prea scurt; lungimea minimă este %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "verificarea CHV%d a eşuat: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7944,6 +7944,11 @@ msgstr "nu mă pot conecta la `%s': %s\n"
 #, fuzzy, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "opţiune necunoscută `%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "algoritm cifrare %d%s este necunoscut sau deactivat\n"
 
 #, fuzzy, c-format
 msgid "importing common certificates '%s'\n"

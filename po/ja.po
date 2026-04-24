@@ -659,10 +659,6 @@ msgid "error opening '%s': %s\n"
 msgstr "'%s'を開く際、エラー: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "ファイル'%s'(行 %d): %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "ステートメント \"%s\" は'%s'で無視されました(行 %d)\n"
 
@@ -1096,6 +1092,10 @@ msgstr "Dirmngr利用可能"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "'%s'のヘルプはありません。"
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "ファイル'%s'(行 %d): %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ガベージ行を無視します"
@@ -6457,8 +6457,8 @@ msgstr "応答に公開鍵データが含まれていません\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||新しいPINを認定署名を生成する鍵のために入力してください。"
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|管理者PINを入力してください"
 
@@ -6532,6 +6532,19 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%s番号: %s%%0A保持者: %s%%0Aカウンタ: %lu%s"
 
 #, c-format
+msgid "card is permanently locked!\n"
+msgstr "カードが永久にロックされてます!\n"
+
+#, c-format
+msgid "%d Admin PIN attempt remaining before card is permanently locked\n"
+msgid_plural ""
+"%d Admin PIN attempts remaining before card is permanently locked\n"
+msgstr[0] "カードの永久ロック前に%d回の管理者PINの試行が残っています\n"
+
+msgid "||Please unlock the card"
+msgstr "||カードをアンロックしてください"
+
+#, c-format
 msgid "using default PIN as %s\n"
 msgstr "デフォルトPINを%sとして使います\n"
 
@@ -6541,9 +6554,6 @@ msgstr ""
 "デフォルトのPIN %s を使うのに失敗しました: %s - これ以上デフォルトとしての使"
 "用を無効とします\n"
 
-msgid "||Please unlock the card"
-msgstr "||カードをアンロックしてください"
-
 #, c-format
 msgid "PIN for CHV%d is too short; minimum length is %d\n"
 msgstr "CHV%dのPINが短すぎます。最短で%dです\n"
@@ -6551,16 +6561,6 @@ msgstr "CHV%dのPINが短すぎます。最短で%dです\n"
 #, c-format
 msgid "verify CHV%d failed: %s\n"
 msgstr "CHV%dの認証に失敗しました: %s\n"
-
-#, c-format
-msgid "card is permanently locked!\n"
-msgstr "カードが永久にロックされてます!\n"
-
-#, c-format
-msgid "%d Admin PIN attempt remaining before card is permanently locked\n"
-msgid_plural ""
-"%d Admin PIN attempts remaining before card is permanently locked\n"
-msgstr[0] "カードの永久ロック前に%d回の管理者PINの試行が残っています\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7308,6 +7308,11 @@ msgstr "注意:'%s'に対して暗号化できません: %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "不明の検証モデル '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "暗号アルゴリズム%d%sは不明か使用禁止です\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

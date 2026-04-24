@@ -681,10 +681,6 @@ msgid "error opening '%s': %s\n"
 msgstr "Hiba \"%s\" olvasásakor: %s\n"
 
 #, fuzzy, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "\"%s\" kulcs nem található: %s\n"
-
-#, fuzzy, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "Olvasási hiba: %s.\n"
 
@@ -1143,6 +1139,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No help available for '%s'."
 msgstr "Nem áll rendelkezésre segítség \"%s\" témához."
+
+#, fuzzy, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "\"%s\" kulcs nem található: %s\n"
 
 #, fuzzy
 msgid "ignoring garbage line"
@@ -6925,8 +6925,8 @@ msgstr ""
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr ""
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 #, fuzzy
 msgid "|A|Please enter the Admin PIN"
 msgstr "jelszóváltoztatás"
@@ -7005,26 +7005,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr ""
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr ""
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-
-#, fuzzy
-msgid "||Please unlock the card"
-msgstr "jelszóváltoztatás"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "Küldés a kulcsszerverre sikertelen: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr ""
 
@@ -7034,6 +7014,26 @@ msgid_plural ""
 "%d Admin PIN attempts remaining before card is permanently locked\n"
 msgstr[0] ""
 msgstr[1] ""
+
+#, fuzzy
+msgid "||Please unlock the card"
+msgstr "jelszóváltoztatás"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr ""
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "Küldés a kulcsszerverre sikertelen: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7817,6 +7817,11 @@ msgstr "Nem tudok kapcsolódni \"%s\" objektumhoz: %s\n"
 #, fuzzy, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "Ismeretlen alapértelmezett címzett: \"%s\"\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "A %d%s rejtjelező algoritmus ismeretlen vagy tiltott.\n"
 
 #, fuzzy, c-format
 msgid "importing common certificates '%s'\n"

@@ -693,10 +693,6 @@ msgid "error opening '%s': %s\n"
 msgstr "fout bij het openen van '%s': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "bestand '%s', regel %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "instructie \"%s\" genegeerd in '%s', regel %d\n"
 
@@ -1142,6 +1138,10 @@ msgstr "Dirmngr kan gebruikt worden"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Geen hulp beschikbaar voor '%s'."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "bestand '%s', regel %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "regel met rommel wordt genegeerd"
@@ -6846,8 +6846,8 @@ msgstr ""
 "||Gelieve de pincode in te voeren voor de sleutel die bevoegde "
 "handtekeningen kan aanmaken."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Gelieve de pincode van de beheerder in te voeren"
 
@@ -6929,27 +6929,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sNummer: %s%%0AHouder: %s%%0ATeller: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "de standaardpincode wordt gebruikt voor %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"de standaardpincode gebruiken voor %s is mislukt: %s - standaard\n"
-"wordt in het vervolg niet meer gebruikt\n"
-
-msgid "||Please unlock the card"
-msgstr "||Gelieve de kaart te ontgrendelen"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "Pincode voor CHV%d is te kort; die moet minimaal %d lang zijn\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "controle van CHV%d is mislukt: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "kaart is permanent vergrendeld!\n"
 
@@ -6963,6 +6942,27 @@ msgstr[0] ""
 msgstr[1] ""
 "De beheerder heeft %d resterende pogingen om de pincode in te voeren\n"
 "voordat de kaart permanent vergrendeld wordt\n"
+
+msgid "||Please unlock the card"
+msgstr "||Gelieve de kaart te ontgrendelen"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "de standaardpincode wordt gebruikt voor %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"de standaardpincode gebruiken voor %s is mislukt: %s - standaard\n"
+"wordt in het vervolg niet meer gebruikt\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "Pincode voor CHV%d is te kort; die moet minimaal %d lang zijn\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "controle van CHV%d is mislukt: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7747,6 +7747,11 @@ msgstr "Let op: zal niet in staat zijn om te versleutelen naar '%s': %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "onbekend valideringsmodel '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "versleutelingsalgoritme %d%s is onbekend of uitgeschakeld\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

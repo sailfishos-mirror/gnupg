@@ -670,10 +670,6 @@ msgid "error opening '%s': %s\n"
 msgstr "fel vid öppning av '%s': %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "filen '%s', rad %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "villkoret \"%s\" ignoreras i '%s', rad %d\n"
 
@@ -1111,6 +1107,10 @@ msgstr "Dirmngr användbar"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Ingen hjälp tillgänglig för '%s'."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "filen '%s', rad %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ignorerar skräprad"
@@ -6729,8 +6729,8 @@ msgstr "svaret innehåller inte publikt nyckeldata\n"
 msgid "||Please enter the PIN for the key to create qualified signatures."
 msgstr "||Ange PIN-koden för nyckeln att skapa kvalificerade signaturer med."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Ange administratörens PIN-kod"
 
@@ -6807,27 +6807,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sNummer\\x1f: %s%%0AInnehavare\\x1f: %s%%0ARäknare\\x1f: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "använder standard-PIN som %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"misslyckades med att använda standard-PIN som %s: %s - inaktiverar "
-"ytterligare standardanvändning\n"
-
-msgid "||Please unlock the card"
-msgstr "||Lås upp kortet"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "PIN-kod för CHV%d är för kort; minimumlängd är %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "validering av CHV%d misslyckades: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "kortet är låst permanent!\n"
 
@@ -6841,6 +6820,27 @@ msgstr[0] ""
 msgstr[1] ""
 "%d återstående försök att ange PIN-kod för administratör innan kortet låses "
 "permanent\n"
+
+msgid "||Please unlock the card"
+msgstr "||Lås upp kortet"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "använder standard-PIN som %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"misslyckades med att använda standard-PIN som %s: %s - inaktiverar "
+"ytterligare standardanvändning\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "PIN-kod för CHV%d är för kort; minimumlängd är %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "validering av CHV%d misslyckades: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7592,6 +7592,11 @@ msgstr "Observera: kommer inte kunna kryptera till '%s': %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "okänd valideringsmodell '%s'\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "chifferalgoritmen %d%s är okänd eller inaktiverad\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"

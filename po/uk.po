@@ -685,10 +685,6 @@ msgid "error opening '%s': %s\n"
 msgstr "помилка під час відкриття «%s»: %s\n"
 
 #, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "файл «%s», рядок %d: %s\n"
-
-#, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
 msgstr "проігноровано інструкцію «%s» у «%s», рядок %d\n"
 
@@ -1139,6 +1135,10 @@ msgstr "Dirmngr придатна до використання"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Довідки щодо «%s» не виявлено."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "файл «%s», рядок %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "ігноруємо беззмістовний рядок"
@@ -6913,8 +6913,8 @@ msgstr ""
 "||Будь ласка, вкажіть пінкод для ключа, призначеного для створення якісних "
 "підписів."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Вкажіть адміністративний пінкод"
 
@@ -7002,27 +7002,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr ""
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "використовуємо типовий пінкод як %s\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"не вдалося використати типовий пінкод як %s: %s — вимикаємо подальше типове "
-"використання\n"
-
-msgid "||Please unlock the card"
-msgstr "||Будь ласка, розблокуйте картку"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "Пінкод для CHV%d занадто короткий; мінімальна довжина — %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "помилка перевірки CHV%d: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "картку заблоковано!\n"
 
@@ -7039,6 +7018,27 @@ msgstr[1] ""
 msgstr[2] ""
 "залишилося %d спроб визначення адміністративного пінкоду перед тим, як "
 "картку буде остаточно заблоковано\n"
+
+msgid "||Please unlock the card"
+msgstr "||Будь ласка, розблокуйте картку"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "використовуємо типовий пінкод як %s\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"не вдалося використати типовий пінкод як %s: %s — вимикаємо подальше типове "
+"використання\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "Пінкод для CHV%d занадто короткий; мінімальна довжина — %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "помилка перевірки CHV%d: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7802,6 +7802,11 @@ msgstr "ЗАУВАЖЕННЯ: не вдасться зашифрувати до 
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "невідома модель перевірки «%s»\n"
+
+#, fuzzy, c-format
+#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "алгоритм шифрування %d%s є невідомим або вимкненим\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"
