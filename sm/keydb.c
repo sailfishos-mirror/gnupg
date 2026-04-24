@@ -655,6 +655,20 @@ keydb_new (ctrl_t ctrl)
   return hd;
 }
 
+
+static void
+kbx_client_set_ephemeral (kbx_client_data_t kcd, int is_ephemeral)
+{
+  gpg_error_t err;
+
+  err = kbx_client_data_simple (kcd, is_ephemeral
+                                ? "SETEPHEMERAL --clear"
+                                : "SETEPHEMERAL");
+  if (err)
+    log_error ("failed to set ephemeral mode\n");
+}
+
+
 void
 keydb_release (KEYDB_HANDLE hd)
 {
@@ -673,6 +687,8 @@ keydb_release (KEYDB_HANDLE hd)
   if (hd->use_keyboxd)
     {
       kbl = hd->kbl;
+      if (hd->is_ephemeral)
+        kbx_client_set_ephemeral (kbl->kcd, 0);
       if (DBG_CLOCK)
         log_clock ("close_context (found)");
       if (!kbl->is_active)
@@ -741,6 +757,7 @@ keydb_get_resource_name (KEYDB_HANDLE hd)
   return s? s: "";
 }
 
+
 /* Switch the handle into ephemeral mode and return the original value. */
 int
 keydb_set_ephemeral (KEYDB_HANDLE hd, int yes)
@@ -750,24 +767,24 @@ keydb_set_ephemeral (KEYDB_HANDLE hd, int yes)
   if (!hd)
     return 0;
 
-  if (hd->use_keyboxd)
-    return 0; /* FIXME: No support yet.  */
-
-
   yes = !!yes;
+
   if (hd->is_ephemeral != yes)
     {
-      for (i=0; i < hd->used; i++)
-        {
-          switch (hd->active[i].type)
-            {
-            case KEYDB_RESOURCE_TYPE_NONE:
-              break;
-            case KEYDB_RESOURCE_TYPE_KEYBOX:
-              keybox_set_ephemeral (hd->active[i].u.kr, yes);
-              break;
-            }
-        }
+      if (hd->use_keyboxd)
+        kbx_client_set_ephemeral (hd->kbl->kcd, yes);
+      else
+        for (i=0; i < hd->used; i++)
+          {
+            switch (hd->active[i].type)
+              {
+              case KEYDB_RESOURCE_TYPE_NONE:
+                break;
+              case KEYDB_RESOURCE_TYPE_KEYBOX:
+                keybox_set_ephemeral (hd->active[i].u.kr, yes);
+                break;
+              }
+          }
     }
 
   i = hd->is_ephemeral;
@@ -2070,58 +2087,17 @@ keydb_store_cert (ctrl_t ctrl, ksba_cert_t cert, int ephemeral, int *existed)
 /* This is basically do_set_flags but it implements a complete
    transaction by locating the certificate in the DB and updating the
    flags. */
-gpg_error_t
-keydb_set_cert_flags (ctrl_t ctrl, ksba_cert_t cert, int ephemeral,
-                      int which, int idx,
-                      unsigned int mask, unsigned int value)
+static gpg_error_t
+set_cert_flags (KEYDB_HANDLE kh, int which, int idx,
+                unsigned int mask, unsigned int value)
 {
-  KEYDB_HANDLE kh;
   gpg_error_t err;
-  unsigned char fpr[20];
   unsigned int old_value;
-
-  if (!gpgsm_get_fingerprint (cert, 0, fpr, NULL))
-    {
-      log_error (_("failed to get the fingerprint\n"));
-      return gpg_error (GPG_ERR_GENERAL);
-    }
-
-  kh = keydb_new (ctrl);
-  if (!kh)
-    {
-      log_error (_("failed to allocate keyDB handle\n"));
-      return gpg_error (GPG_ERR_ENOMEM);;
-    }
-
-  if (ephemeral)
-    keydb_set_ephemeral (kh, 1);
-
-  if (!kh->use_keyboxd)
-    {
-      err = keydb_lock (kh);
-      if (err)
-        {
-          log_error (_("error locking keybox: %s\n"), gpg_strerror (err));
-          keydb_release (kh);
-          return err;
-        }
-    }
-
-  err = keydb_search_fpr (ctrl, kh, fpr);
-  if (err)
-    {
-      if (gpg_err_code (err) != GPG_ERR_NOT_FOUND)
-        log_error (_("problem re-searching certificate: %s\n"),
-                   gpg_strerror (err));
-      keydb_release (kh);
-      return err;
-    }
 
   err = keydb_get_flags (kh, which, idx, &old_value);
   if (err)
     {
       log_error (_("error getting stored flags: %s\n"), gpg_strerror (err));
-      keydb_release (kh);
       return err;
     }
 
@@ -2133,15 +2109,98 @@ keydb_set_cert_flags (ctrl_t ctrl, ksba_cert_t cert, int ephemeral,
       if (err)
         {
           log_error (_("error storing flags: %s\n"), gpg_strerror (err));
-          keydb_release (kh);
           return err;
         }
     }
 
-  keydb_release (kh);
   return 0;
 }
 
+
+/*
+ * Modify a flag (specified by WHICH) using VALUE with MASK on CERT.
+ * EPHEMERAL and IDX argument are not in use.
+ */
+gpg_error_t
+keydb_set_cert_flags (ctrl_t ctrl, ksba_cert_t cert, int ephemeral,
+                      int which, int idx,
+                      unsigned int mask, unsigned int value)
+{
+  gpg_error_t err;
+  KEYDB_HANDLE hd;
+  unsigned char fpr[20];
+
+  if (!gpgsm_get_fingerprint (cert, 0, fpr, NULL))
+    {
+      log_error (_("failed to get the fingerprint\n"));
+      return gpg_error (GPG_ERR_GENERAL);
+    }
+
+  hd = keydb_new (ctrl);
+  if (!hd)
+    {
+      log_error (_("failed to allocate keyDB handle\n"));
+      return gpg_error (GPG_ERR_ENOMEM);;
+    }
+
+  keydb_set_ephemeral (hd, 1);
+
+  if (!hd->use_keyboxd)
+    {
+      err = keydb_lock (hd);
+      if (err)
+        {
+          log_error (_("error locking keybox: %s\n"), gpg_strerror (err));
+          goto leave;
+        }
+    }
+
+  err = keydb_search_fpr (ctrl, hd, fpr);
+  if (err)
+    {
+      if (gpg_err_code (err) != GPG_ERR_NOT_FOUND)
+        log_error (_("problem re-searching certificate: %s\n"),
+                   gpg_strerror (err));
+      goto leave;
+    }
+
+  if (hd->use_keyboxd)
+    {
+      char line[ASSUAN_LINELENGTH];
+      unsigned char hexubid[UBID_LEN * 2 + 1];
+      const char *flag;
+
+      if (!hd->last_ubid_valid)
+        {
+          err = gpg_error (GPG_ERR_VALUE_NOT_FOUND);
+          goto leave;
+        }
+
+      bin2hex (hd->last_ubid, UBID_LEN, hexubid);
+      if (which == KEYBOX_FLAG_VALIDITY)
+        flag = "--revoked";
+      else if (which == KEYBOX_FLAG_BLOB)
+        flag = "--ephemeral";
+      else
+        {
+          err = gpg_error (GPG_ERR_NOT_SUPPORTED);
+          goto leave;
+        }
+
+      snprintf (line, sizeof line, "PUTKEYFLAG %s%s%s",
+                flag, value ? " " : " --clear ", hexubid);
+      err = assuan_transact (hd->kbl->ctx, line,
+                             NULL, NULL,
+                             NULL, NULL,
+                             keydb_default_status_cb, hd);
+    }
+  else
+    err = set_cert_flags (hd, which, idx, mask, value);
+
+ leave:
+  keydb_release (hd);
+  return err;
+}
 
 /* Reset all the certificate flags we have stored with the certificates
    for performance reasons. */
@@ -2210,22 +2269,44 @@ keydb_clear_some_cert_flags (ctrl_t ctrl, strlist_t names)
       if (!names)
         desc[0].mode = KEYDB_SEARCH_MODE_NEXT;
 
-      err = keydb_get_flags (hd, KEYBOX_FLAG_VALIDITY, 0, &old_value);
-      if (err)
+      if (hd->use_keyboxd)
         {
-          log_error (_("error getting stored flags: %s\n"),
-                     gpg_strerror (err));
-          goto leave;
-        }
+          char line[ASSUAN_LINELENGTH];
+          unsigned char hexubid[UBID_LEN * 2 + 1];
 
-      value = (old_value & ~VALIDITY_REVOKED);
-      if (value != old_value)
+          if (!hd->last_ubid_valid)
+            {
+              err = gpg_error (GPG_ERR_VALUE_NOT_FOUND);
+              goto leave;
+            }
+
+          bin2hex (hd->last_ubid, UBID_LEN, hexubid);
+          snprintf (line, sizeof line, "PUTKEYFLAG --revoked --clear %s",
+                    hexubid);
+          err = assuan_transact (hd->kbl->ctx, line,
+                                 NULL, NULL,
+                                 NULL, NULL,
+                                 keydb_default_status_cb, hd);
+        }
+      else
         {
-          err = do_set_flags (hd, KEYBOX_FLAG_VALIDITY, 0, value);
+          err = keydb_get_flags (hd, KEYBOX_FLAG_VALIDITY, 0, &old_value);
           if (err)
             {
-              log_error (_("error storing flags: %s\n"), gpg_strerror (err));
+              log_error (_("error getting stored flags: %s\n"),
+                         gpg_strerror (err));
               goto leave;
+            }
+
+          value = (old_value & ~VALIDITY_REVOKED);
+          if (value != old_value)
+            {
+              err = do_set_flags (hd, KEYBOX_FLAG_VALIDITY, 0, value);
+              if (err)
+                {
+                  log_error (_("error storing flags: %s\n"), gpg_strerror (err));
+                  goto leave;
+                }
             }
         }
     }
