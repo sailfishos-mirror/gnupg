@@ -683,6 +683,60 @@ cmd_setephemeral (assuan_context_t ctx, char *line)
 
   return leave_cmd (ctx, err);
 }
+
+
+static const char hlp_putkeyflag[] =
+  "PUTKEYFLAG [--ephemeral|--revoked] [--clear] <ubid>\n"
+  "\n"
+  "Put ephemeral/revoked flag on a key identified by UBID.\n";
+static gpg_error_t
+cmd_putkeyflag (assuan_context_t ctx, char *line)
+{
+  ctrl_t ctrl = assuan_get_pointer (ctx);
+  gpg_error_t err = 0;
+  int opt_clear;
+  int opt_ephemeral;
+  int opt_revoked;
+  int flags = 0;
+  int n;
+  unsigned char ubid[UBID_LEN];
+
+  opt_clear = has_option (line, "--clear");
+  opt_ephemeral = has_option (line, "--ephemeral");
+  opt_revoked = has_option (line, "--revoked");
+
+  if (opt_ephemeral)
+    flags = (1 << 0);
+
+  if (opt_revoked)
+    flags = (1 << 1);
+
+  line = skip_options (line);
+  if (!*line)
+    {
+      err = set_error (GPG_ERR_INV_ARG, "UBID missing");
+      goto leave;
+    }
+
+  /* Skip an optional UBID identifier character.  */
+  if (*line == '^' && line[1])
+    line++;
+  if ((n=hex2bin (line, ubid, UBID_LEN)) < 0)
+    {
+      err = set_error (GPG_ERR_INV_USER_ID, "invalid UBID");
+      goto leave;
+    }
+  if (line[n])
+    {
+      err = set_error (GPG_ERR_INV_ARG, "garbage after UBID");
+      goto leave;
+    }
+
+  err = kbxd_putkeyflag (ctrl, ubid, flags, opt_clear);
+
+ leave:
+  return leave_cmd (ctx, err);
+}
 
 static const char hlp_transaction[] =
   "TRANSACTION [begin|commit|rollback]\n"
@@ -880,6 +934,7 @@ register_commands (assuan_context_t ctx)
     { "NEXT",          cmd_next,          hlp_next   },
     { "STORE",         cmd_store,         hlp_store  },
     { "DELETE",        cmd_delete,        hlp_delete  },
+    { "PUTKEYFLAG",    cmd_putkeyflag,    hlp_putkeyflag  },
     { "TRANSACTION",   cmd_transaction,   hlp_transaction },
     { "SETEPHEMERAL",  cmd_setephemeral,  hlp_setephemeral },
     { "GETINFO",       cmd_getinfo,       hlp_getinfo },

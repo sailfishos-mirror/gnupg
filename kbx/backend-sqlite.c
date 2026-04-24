@@ -1998,3 +1998,88 @@ be_sqlite_delete (ctrl_t ctrl, backend_handle_t backend_hd,
   release_mutex ();
   return err;
 }
+
+
+/* Put ephemeral/revoked flag on a key identified by UBID from the
+ * database.  BACKEND_HD is the handle for this backend and REQUEST
+ * is the current database request object.
+ * FLAGS means: 1 for ephemeral, 2 for revoked.
+ * CLEAR = 1 when clearing the flag.
+ */
+gpg_error_t
+be_sqlite_putkeyflag (ctrl_t ctrl, backend_handle_t backend_hd,
+                      db_request_t request, const unsigned char *ubid,
+                      unsigned int flags, int clear)
+{
+  gpg_error_t err;
+  db_request_part_t part;
+  /* be_sqlite_local_t ctx; */
+  sqlite3_stmt *stmt = NULL;
+  int in_transaction = 0;
+
+  (void)ctrl;
+
+  log_assert (backend_hd && backend_hd->db_type == DB_TYPE_SQLITE);
+  log_assert (request);
+
+  acquire_mutex ();
+
+  /* Find the specific request part or allocate it.  */
+  err = be_find_request_part (backend_hd, request, &part);
+  if (err)
+    goto leave;
+  /* ctx = part->besqlite; */
+
+  if (!opt.active_transaction)
+    {
+      err = run_sql_statement ("begin transaction");
+      if (err)
+        goto leave;
+      if (opt.in_transaction)
+        opt.active_transaction = 1;
+    }
+  in_transaction = 1;
+
+  if (flags & (1 << 0))
+    {
+      if (clear)
+        err = run_sql_statement_bind_ubid
+          ("UPDATE pubkey SET ephemeral = 0 WHERE ubid = ?1", ubid);
+      else
+        err = run_sql_statement_bind_ubid
+          ("UPDATE pubkey SET ephemeral = 1 WHERE ubid = ?1", ubid);
+      if (err)
+        goto leave;
+    }
+
+  if (flags & (1 << 1))
+    {
+      if (clear)
+        err = run_sql_statement_bind_ubid
+          ("UPDATE pubkey SET revoked = 0 WHERE ubid = ?1", ubid);
+      else
+        err = run_sql_statement_bind_ubid
+          ("UPDATE pubkey SET revoked = 1 WHERE ubid = ?1", ubid);
+    }
+
+ leave:
+  if (stmt)
+    sqlite3_finalize (stmt);
+
+  if (in_transaction && !err)
+    {
+      if (opt.active_transaction)
+        ; /* We are in a global transaction.  */
+      else
+        err = run_sql_statement ("commit");
+    }
+  else if (in_transaction)
+    {
+      if (opt.active_transaction)
+        ; /* We are in a global transaction.  */
+      else if (run_sql_statement ("rollback"))
+        log_error ("Warning: database rollback failed - should not happen!\n");
+    }
+  release_mutex ();
+  return err;
+}
