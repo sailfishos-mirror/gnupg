@@ -1,9 +1,11 @@
-Noteworthy changes in version 2.5.19 (unreleased)
+Noteworthy changes in version 2.5.19 (2026-04-24)
 -------------------------------------------------
 
  * New and extended features:
 
    - gpg: New option --use-ocb-sym.  [rGccdcdfbb37]
+
+   - gpg: New options --show-[only-]session-hash.  [rGecd0f7afa1]
 
    - gpgsm: Allow cipher mode to be part of the algo given to the
      --cipher-algo option.  [T3979]
@@ -12,6 +14,8 @@ Noteworthy changes in version 2.5.19 (unreleased)
 
    - agent: Improve pinentry behavior and texts in smartcard context.
      [T6425]
+
+   - dirmngr: New keyword "clear" for --keyserver.  [rG2ab4cba36c]
 
  * Bug fixes:
 
@@ -38,9 +42,6 @@ Noteworthy changes in version 2.5.19 (unreleased)
      trustlist.txt with a missing trailing LF.  [T8078]
 
    - ssh: Fix RSA padding in signature handling.  [T7882,T8202]
-
-   - keyboxd: New command SETEPHEMERAL.  This fixes a bug that X.509
-     certificates are not stored ephemeral on an LDAP search.  [T8048]
 
    - gpgtar: Fix -C (--directory) to check the output directory.
      [T8159]
