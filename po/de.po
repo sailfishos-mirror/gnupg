@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnupg-2.5.15\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2026-04-14T13:35+02:00\n"
+"PO-Revision-Date: 2026-04-24 13:03+0200\n"
 "Last-Translator: Eva Bolten <ebo@gnupg.org>\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -477,8 +477,7 @@ msgstr "Erlaube die Eingabe eines Passwortes über Emacs"
 #. reporting address.  This is so that we can change the
 #. reporting address without breaking the translations.
 msgid "Please report bugs to <@EMAIL@>.\n"
-msgstr ""
-"Berichte über Programmfehler bitte in englisch an <@EMAIL@>.\n"
+msgstr "Berichte über Programmfehler bitte in englisch an <@EMAIL@>.\n"
 
 msgid "Usage: @GPG_AGENT@ [options] (-h for help)"
 msgstr "Gebrauch: @GPG_AGENT@ [Optionen] [Kommando [Argumente]]"
@@ -669,10 +668,6 @@ msgstr "Fehler bei der Abfrage des Passwortes: %s\n"
 #, c-format
 msgid "error opening '%s': %s\n"
 msgstr "Fehler beim Öffnen von `%s': %s\n"
-
-#, c-format
-msgid "file '%s', line %d: %s\n"
-msgstr "Datei `%s', Zeile %d: %s\n"
 
 #, c-format
 msgid "statement \"%s\" ignored in '%s', line %d\n"
@@ -1118,6 +1113,10 @@ msgstr "Dirmngr benutzbar"
 #, c-format
 msgid "No help available for '%s'."
 msgstr "Keine Hilfe für '%s' vorhanden."
+
+#, c-format
+msgid "file '%s', line %d: %s\n"
+msgstr "Datei `%s', Zeile %d: %s\n"
 
 msgid "ignoring garbage line"
 msgstr "Zeile mit nicht identifizierten Zeichen wird ignoriert"
@@ -6767,8 +6766,8 @@ msgstr ""
 "||Bitte geben Sie die PIN für den Schlüssel zur Erstellung qualifizierter "
 "Signaturen ein."
 
-#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at
-#. the start of the string.  Use %0A (single percent) for a linefeed.
+#. TRANSLATORS: Do not translate the "|A|" prefix but keep it at the
+#. start of the string.
 msgid "|A|Please enter the Admin PIN"
 msgstr "|A|Bitte die Admin-PIN eingeben."
 
@@ -6849,27 +6848,6 @@ msgid "%sNumber: %s%%0AHolder: %s%%0ACounter: %lu%s"
 msgstr "%sNummer: %s%%0ABesitzer: %s%%0AZähler: %lu%s"
 
 #, c-format
-msgid "using default PIN as %s\n"
-msgstr "Die Standard PIN wird für %s benutzt\n"
-
-#, c-format
-msgid "failed to use default PIN as %s: %s - disabling further default use\n"
-msgstr ""
-"Die Standard PIN für %s konnte nicht benutzt werden: %s - Die Standard PIN "
-"wird nicht weiter benutzt\n"
-
-msgid "||Please unlock the card"
-msgstr "||Bitte entsperren Sie die Karte"
-
-#, c-format
-msgid "PIN for CHV%d is too short; minimum length is %d\n"
-msgstr "PIN für CHV%d ist zu kurz; die Mindestlänge beträgt %d\n"
-
-#, c-format
-msgid "verify CHV%d failed: %s\n"
-msgstr "Prüfung des CHV%d fehlgeschlagen: %s\n"
-
-#, c-format
 msgid "card is permanently locked!\n"
 msgstr "Karte ist dauerhaft gesperrt!\n"
 
@@ -6879,6 +6857,27 @@ msgid_plural ""
 "%d Admin PIN attempts remaining before card is permanently locked\n"
 msgstr[0] "Noch %d Admin-PIN-Versuch, bis die Karte dauerhaft gesperrt ist\n"
 msgstr[1] "Noch %d Admin-PIN-Versuche, bis die Karte dauerhaft gesperrt ist\n"
+
+msgid "||Please unlock the card"
+msgstr "||Bitte entsperren Sie die Karte"
+
+#, c-format
+msgid "using default PIN as %s\n"
+msgstr "Die Standard PIN wird für %s benutzt\n"
+
+#, c-format
+msgid "failed to use default PIN as %s: %s - disabling further default use\n"
+msgstr ""
+"Die Standard PIN für %s konnte nicht benutzt werden: %s - Die Standard PIN "
+"wird nicht weiter benutzt\n"
+
+#, c-format
+msgid "PIN for CHV%d is too short; minimum length is %d\n"
+msgstr "PIN für CHV%d ist zu kurz; die Mindestlänge beträgt %d\n"
+
+#, c-format
+msgid "verify CHV%d failed: %s\n"
+msgstr "Prüfung des CHV%d fehlgeschlagen: %s\n"
 
 #, c-format
 msgid "access to admin commands is not configured\n"
@@ -7643,6 +7642,10 @@ msgstr "Hinweis: Verschlüsselung für `%s' wird nicht möglich sein: %s\n"
 #, c-format
 msgid "unknown validation model '%s'\n"
 msgstr "Unbekanntes Gültigkeitsmodell '%s'\n"
+
+#, c-format
+msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
+msgstr "Verschlüsselungsverfahren '%s' ist unbekannt - nutze '%s'\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"
