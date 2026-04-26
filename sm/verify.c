@@ -287,7 +287,7 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
       char *issuer = NULL;
       gcry_sexp_t sigval = NULL;
       ksba_isotime_t sigtime, keyexptime;
-      ksba_sexp_t serial;
+      ksba_sexp_t serial = NULL;
       char *msgdigest = NULL;
       size_t msgdigestlen;
       char *ctattr;
