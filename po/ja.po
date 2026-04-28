@@ -9,9 +9,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.5.17\n"
+"Project-Id-Version: gnupg 2.5.19\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2026-02-19 10:25+0900\n"
+"PO-Revision-Date: 2026-04-28 15:28+0900\n"
 "Last-Translator: NIIBE Yutaka <gniibe@fsij.org>\n"
 "Language-Team: none\n"
 "Language: ja\n"
@@ -7309,10 +7309,9 @@ msgstr "注意:'%s'に対して暗号化できません: %s\n"
 msgid "unknown validation model '%s'\n"
 msgstr "不明の検証モデル '%s'\n"
 
-#, fuzzy, c-format
-#| msgid "cipher algorithm %d%s is unknown or disabled\n"
+#, c-format
 msgid "given cipher algorithm '%s' is unknown - using '%s'\n"
-msgstr "暗号アルゴリズム%d%sは不明か使用禁止です\n"
+msgstr "与えられた暗号アルゴリズム '%s' は不明です - '%s' を使います\n"
 
 #, c-format
 msgid "importing common certificates '%s'\n"
