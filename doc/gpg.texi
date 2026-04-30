@@ -3037,7 +3037,7 @@ done with @code{--with-colons}.
 Use the OCB mode for symmetric-only encryption.  The default is to use
 the legacy CFB+MDC mode.  OCB is a modern and faster way to do
 authenticated encryption than the old CFB+MDC method.  OCB mode
-decryption is supproted since GnuPG version 2.2.21 released
+decryption is supported since GnuPG version 2.2.21 released
 2020-07-09.
 
 @item --force-ocb

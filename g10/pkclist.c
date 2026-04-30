@@ -714,7 +714,7 @@ check_signatures_trust (ctrl_t ctrl, kbnode_t keyblock, PKT_public_key *pk,
   if ((trustlevel & TRUST_FLAG_DISABLED))
     log_info (_("Note: This key has been disabled.\n"));
 
-  /* Now let the user know what up with the trustlevel. */
+  /* Now let the user know what is up with the trustlevel. */
   switch ( (trustlevel & TRUST_MASK) )
     {
     case TRUST_EXPIRED:
