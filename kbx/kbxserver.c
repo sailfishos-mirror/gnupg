@@ -666,9 +666,9 @@ cmd_delete (assuan_context_t ctx, char *line)
 
 
 static const char hlp_setephemeral[] =
-  "SETEPHEMERAL [--clear]\n"
+  "SETEPHEMERAL [--clear|--set]\n"
   "\n"
-  "Set ephemeral mode or clear the mode.\n";
+  "Set ephemeral mode or clear the mode. --set is the default.\n";
 static gpg_error_t
 cmd_setephemeral (assuan_context_t ctx, char *line)
 {

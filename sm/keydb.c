@@ -662,8 +662,8 @@ kbx_client_set_ephemeral (kbx_client_data_t kcd, int is_ephemeral)
   gpg_error_t err;
 
   err = kbx_client_data_simple (kcd, is_ephemeral
-                                ? "SETEPHEMERAL --clear"
-                                : "SETEPHEMERAL");
+                                ? "SETEPHEMERAL"
+                                : "SETEPHEMERAL --clear");
   if (err)
     log_error ("failed to set ephemeral mode\n");
 }
