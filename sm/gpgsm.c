@@ -525,6 +525,9 @@ int assert_validsig_true = 0;
 /* It is possible that we are currentlu running under setuid permissions */
 static int maybe_setuid = 1;
 
+/* If this flag is set the final exit status line will not be printed.  */
+static int no_final_failure_status;
+
 /* Helper to implement --debug-level and --debug*/
 static const char *debug_level;
 static unsigned int debug_value;
@@ -1698,6 +1701,13 @@ main ( int argc, char **argv)
 
   gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
 
+  /* If we are not running in server mode and --status-fd has not been
+   * used we should not emit a final status line.  This extra flag is
+   * required because gpgsm_status is not used for the final fallback
+   * failure status.  */
+  if (cmd != aServer && ctrl.status_fd == -1)
+    no_final_failure_status = 1;
+
   set_debug ();
   if (opt.verbose) /* Print the compatibility flags.  */
     parse_compatibility_flags (NULL, &opt.compat_flags, compatibility_flags);
@@ -2377,7 +2387,7 @@ gpgsm_exit (int rc)
   /* If we had an error but not printed an error message, do it now.
    * Note that the function will never print a second failure status
    * line. */
-  if (rc)
+  if (rc && !no_final_failure_status)
     gpgsm_exit_failure_status ();
 
   gcry_control (GCRYCTL_UPDATE_RANDOM_SEED_FILE);

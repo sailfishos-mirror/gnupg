@@ -1635,7 +1635,9 @@ gpgsm_status_with_error (ctrl_t ctrl, int no, const char *text,
 }
 
 
-/* Function to print a FAILURE status line on exit.  */
+/* Function to print a FAILURE status line on exit.  This is quite
+ * special and only used by gpgsm_exit - it needs to be here because
+ * of the considered global variables.  */
 void
 gpgsm_exit_failure_status (void)
 {
