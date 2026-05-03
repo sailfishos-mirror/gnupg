@@ -555,8 +555,11 @@ static int default_validation_model;
 static unsigned int parent_cache_stats;
 
 /* The default cipher algo.  */
-#define DEFAULT_CIPHER_ALGO "AES256-CBC"
+#define DEFAULT_CIPHER_ALGO       "AES256-CBC"
+#define DEFAULT_CIPHER_ALGO_DE_VS "AES256-GCM"
 
+/* A flag to track whether --cipher-algo was used.  */
+static int cipher_algo_option_seen;
 
 static char *build_list (const char *text,
 			 const char *(*mapf)(int), int (*chkf)(int));
@@ -1461,6 +1464,7 @@ main ( int argc, char **argv)
 
         case oCipherAlgo:
           opt.def_cipher_algoid = pargs.r.ret_str;
+          cipher_algo_option_seen = 1;
           break;
 
         case oDisableCipherAlgo:
@@ -1723,6 +1727,10 @@ main ( int argc, char **argv)
     }
 
 
+  /* In de-vs mode switch the default cipher.  */
+  if (!cipher_algo_option_seen && opt.compliance == CO_DE_VS)
+    opt.def_cipher_algoid = DEFAULT_CIPHER_ALGO_DE_VS;
+
   /* Must do this after dropping setuid, because the mapping functions
      may try to load an module and we may have disabled an algorithm.
      We remap the commonly used algorithms to the OIDs for
@@ -1735,10 +1743,11 @@ main ( int argc, char **argv)
     mappedoid = gpgsm_map_cipher_name_to_oid (opt.def_cipher_algoid);
     if (!mappedoid)
       {
+        const char *fallback = (opt.compliance == CO_DE_VS?
+                                DEFAULT_CIPHER_ALGO_DE_VS:DEFAULT_CIPHER_ALGO);
         log_info (_("given cipher algorithm '%s' is unknown - using '%s'\n"),
-                  opt.def_cipher_algoid, DEFAULT_CIPHER_ALGO);
-        opt.def_cipher_algoid
-          = gpgsm_map_cipher_name_to_oid (DEFAULT_CIPHER_ALGO);
+                  opt.def_cipher_algoid, fallback);
+        opt.def_cipher_algoid = gpgsm_map_cipher_name_to_oid (fallback);
         log_assert (opt.def_cipher_algoid);
       }
     else
@@ -1942,7 +1951,8 @@ main ( int argc, char **argv)
         es_printf ("include-certs:%lu:%d:\n", GC_OPT_FLAG_DEFAULT,
                    DEFAULT_INCLUDE_CERTS);
         es_printf ("cipher-algo:%lu:\"%s:\n", GC_OPT_FLAG_DEFAULT,
-                   DEFAULT_CIPHER_ALGO);
+                   opt.compliance == CO_DE_VS? DEFAULT_CIPHER_ALGO_DE_VS
+                   /* */                     : DEFAULT_CIPHER_ALGO);
         es_printf ("p12-charset:%lu:\n", GC_OPT_FLAG_DEFAULT);
         es_printf ("default-key:%lu:\n", GC_OPT_FLAG_DEFAULT);
         es_printf ("encrypt-to:%lu:\n", GC_OPT_FLAG_DEFAULT);
