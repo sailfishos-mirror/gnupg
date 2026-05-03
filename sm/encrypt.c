@@ -41,6 +41,7 @@
 struct dek_s {
   const char *algoid;
   int algo;
+  int mode;
   gcry_cipher_hd_t chd;
   char key[32];
   int keylen;
@@ -67,15 +68,15 @@ struct encrypt_cb_parm_s
 
 
 
-/* Initialize the data encryption key (session key). */
+/* Initialize the data encryption key (session key).  The caller must
+ * have initilaized the DEK fields algoid, algo, and mode before
+ * calling this function.  */
 static int
 init_dek (DEK dek)
 {
-  int rc=0, mode, i;
+  int rc=0, i;
 
-  dek->algo = gcry_cipher_map_name (dek->algoid);
-  mode = gcry_cipher_mode_from_oid (dek->algoid);
-  if (!dek->algo || !mode)
+  if (!dek->algo || !dek->mode)
     {
       log_error ("unsupported algorithm '%s'\n", dek->algoid);
       return gpg_error (GPG_ERR_UNSUPPORTED_ALGORITHM);
@@ -110,7 +111,7 @@ init_dek (DEK dek)
       return gpg_error (GPG_ERR_UNSUPPORTED_ALGORITHM);
     }
 
-  rc = gcry_cipher_open (&dek->chd, dek->algo, mode, GCRY_CIPHER_SECURE);
+  rc = gcry_cipher_open (&dek->chd, dek->algo, dek->mode, GCRY_CIPHER_SECURE);
   if (rc)
     {
       log_error ("failed to create cipher context: %s\n", gpg_strerror (rc));
@@ -689,9 +690,24 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
 
   audit_log (ctrl->audit, AUDIT_GOT_DATA);
 
+  /* Allocate the session key info (DEK = Data Encryption Key) */
+  dek = xtrycalloc_secure (1, sizeof *dek);
+  if (!dek)
+    {
+      err = gpg_error_from_syserror ();
+      goto leave;
+    }
+  /* Set required values into the DEK.  */
+  dek->algoid = opt.def_cipher_algoid;
+  dek->algo = gcry_cipher_map_name (opt.def_cipher_algoid);
+  dek->mode = gcry_cipher_mode_from_oid (opt.def_cipher_algoid);
+
   /* We are going to create enveloped data with uninterpreted data as
      inner content */
-  err = ksba_cms_set_content_type (cms, 0, KSBA_CT_ENVELOPED_DATA);
+  err = ksba_cms_set_content_type (cms, 0,
+                                   dek->mode == GCRY_CIPHER_MODE_GCM ?
+                                   KSBA_CT_AUTHENVELOPED_DATA :
+                                   KSBA_CT_ENVELOPED_DATA );
   if (!err)
     err = ksba_cms_set_content_type (cms, 1, KSBA_CT_DATA);
   if (err)
@@ -702,9 +718,7 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
     }
 
   /* Check compliance.  */
-  if (!gnupg_cipher_is_allowed
-      (opt.compliance, 1, gcry_cipher_map_name (opt.def_cipher_algoid),
-       gcry_cipher_mode_from_oid (opt.def_cipher_algoid)))
+  if (!gnupg_cipher_is_allowed (opt.compliance, 1, dek->algo, dek->mode))
     {
       log_error (_("cipher algorithm '%s' may not be used in %s mode\n"),
 		 opt.def_cipher_algoid,
@@ -724,15 +738,8 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
       goto leave;
     }
 
-  /* Create a session key */
-  dek = xtrycalloc_secure (1, sizeof *dek);
-  if (!dek)
-    err = gpg_error_from_syserror ();
-  else
-    {
-      dek->algoid = opt.def_cipher_algoid;
-      err = init_dek (dek);
-    }
+  /* Initialize the session key */
+  err = init_dek (dek);
   if (err)
     {
       log_error ("failed to create the session key: %s\n",
@@ -760,9 +767,7 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
 
   audit_log_s (ctrl->audit, AUDIT_SESSION_KEY, dek->algoid);
 
-  log_debug ("FIXME: We may need to switch to GCM\n");
-  compliant = gnupg_cipher_is_compliant (CO_DE_VS, dek->algo,
-                                         GCRY_CIPHER_MODE_CBC);
+  compliant = gnupg_cipher_is_compliant (CO_DE_VS, dek->algo, dek->mode);
 
   /* Gather certificates of recipients, encrypt the session key for
      each and store them in the CMS object */
@@ -850,6 +855,27 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
           log_error ("creating CMS object failed: %s\n", gpg_strerror (err));
           goto leave;
         }
+      if (stopreason == KSBA_SR_NEED_SIG)
+        {
+          char authtag[12]; /* The recommended length for GCM.  */
+
+          /* This is issued by libksba after the bulk encryption has
+           * been done and the auth tag needs to be supplied.  */
+          err = gcry_cipher_gettag (dek->chd, authtag, sizeof authtag);
+          if (err)
+            {
+              log_error ("error getting auth tag: %s\n", gpg_strerror (err));
+              goto leave;
+            }
+          if (DBG_CRYPTO)
+            log_printhex (authtag, sizeof authtag, "Authtag ...:");
+          err = ksba_cms_set_message_digest (cms, 0, authtag, sizeof authtag);
+          if (err)
+            {
+              log_error ("error setting auth tag: %s\n", gpg_strerror (err));
+              goto leave;
+            }
+        }
     }
   while (stopreason != KSBA_SR_READY);
 
@@ -869,7 +895,9 @@ gpgsm_encrypt (ctrl_t ctrl, certlist_t recplist, estream_t data_fp,
     }
   audit_log (ctrl->audit, AUDIT_ENCRYPTION_DONE);
   if (!opt.quiet)
-    log_info ("encrypted data created\n");
+    log_info ("%s.%s encrypted data created\n",
+              gcry_cipher_algo_name (dek->algo),
+              cipher_mode_to_string (dek->mode));
 
  leave:
   ksba_cms_release (cms);
