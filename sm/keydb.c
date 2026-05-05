@@ -2130,6 +2130,8 @@ keydb_set_cert_flags (ctrl_t ctrl, ksba_cert_t cert, int ephemeral,
   KEYDB_HANDLE hd;
   unsigned char fpr[20];
 
+  (void)ephemeral;
+
   if (!gpgsm_get_fingerprint (cert, 0, fpr, NULL))
     {
       log_error (_("failed to get the fingerprint\n"));
