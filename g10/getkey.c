@@ -346,6 +346,10 @@ get_pubkey_for_sig (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig,
   pk->req_usage = (PUBKEY_USAGE_SIG | PUBKEY_USAGE_VERIFY
                    | (pk->req_usage & PUBKEY_USAGE_CERT));
 
+  /* If SIG is a revocation signature we also consider certify keys. */
+  if (IS_KEY_REV (sig))
+    pk->req_usage |= PUBKEY_USAGE_CERT;
+
   /* First try the ISSUER_FPR info.  */
   fpr = issuer_fpr_raw (sig, &fprlen);
   if (fpr && !get_pubkey_byfpr (ctrl, pk, r_keyblock, fpr, fprlen))
