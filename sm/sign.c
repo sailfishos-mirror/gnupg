@@ -363,7 +363,7 @@ add_signed_attribute (ksba_cms_t cms, const char *attrstr)
     }
 
   /* Store the data in the CMS object for all signers.  */
-#if 0
+#if KSBA_VERSION_NUMBER >= 0x010700  /* 1.7.0 */
   err = ksba_cms_add_attribute (cms, -1, fields[0], 0, der, derlen);
 #else
   (void)cms;
