@@ -551,6 +551,9 @@ static int default_include_certs = DEFAULT_INCLUDE_CERTS;
 /* Whether the chain mode shall be used for validation.  */
 static int default_validation_model;
 
+/* The collected --attributes values from the command line.  */
+static strlist_t opt_attributes;
+
 /* Counter used to convey data from deinit_ctrl to gpgsm_exit.  */
 static unsigned int parent_cache_stats;
 
@@ -1521,7 +1524,7 @@ main ( int argc, char **argv)
         case oAuthenticode: opt.authenticode = 1; break;
 
         case oAttribute:
-          add_to_strlist (&opt.attributes, pargs.r.ret_str);
+          add_to_strlist (&opt_attributes, pargs.r.ret_str);
           break;
 
         case oNoAutostart: opt.autostart = 0; break;
@@ -2417,6 +2420,7 @@ gpgsm_exit (int rc)
 void
 gpgsm_init_default_ctrl (struct server_control_s *ctrl)
 {
+  ctrl->attributes = strlist_copy (opt_attributes);
   ctrl->include_certs = default_include_certs;
   ctrl->use_ocsp = opt.enable_ocsp;
   ctrl->validation_model = default_validation_model;
@@ -2437,6 +2441,7 @@ gpgsm_deinit_default_ctrl (ctrl_t ctrl)
   gpgsm_flush_keyinfo_cache (ctrl);
   xfree (ctrl->revocation_reason);
   ctrl->revocation_reason = NULL;
+  FREE_STRLIST (ctrl->attributes);
   n = 0;
   while (ctrl->parent_cert_cache)
     {

@@ -974,7 +974,7 @@ gpgsm_sign (ctrl_t ctrl, certlist_t signerlist,
   {
     strlist_t sl;
 
-    for (sl = opt.attributes; sl; sl = sl->next)
+    for (sl = ctrl->attributes; sl; sl = sl->next)
       if ((err = add_signed_attribute (cms, sl->d)))
         goto leave;
   }

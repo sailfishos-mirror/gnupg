@@ -172,18 +172,6 @@ struct
   /* Enable creation of authenticode signatures.  */
   int authenticode;
 
-  /* A list of extra attributes put into a signed data object.  For a
-   * signed each attribute each string has the format:
-   *   <oid>:s:<hex_or_filename>
-   * and for an unsigned attribute
-   *   <oid>:u:<hex_or_filename>
-   * The OID is in the usual dotted decimal for. The HEX_OR_FILENAME
-   * is either a list of hex digits or a filename with the DER encoded
-   * value.  A filename is detected by the presence of a slash in the
-   * HEX_OR_FILENAME.  The actual value needs to be encoded as a SET OF
-   * attribute values.  */
-  strlist_t attributes;
-
   /* The list of --assert-signer option values.  Note: The values are
    * modified to uppercase if they represent a fingerrint */
   strlist_t assert_signer_list;
@@ -320,6 +308,18 @@ struct server_control_s
   /* The revocation info.  Used as a helper inc ertchain.c */
   gnupg_isotime_t revoked_at;
   char *revocation_reason;
+
+  /* A list of extra attributes put into a signed data object.  For a
+   * signed each attribute each string has the format:
+   *   <oid>:s:<hex_or_filename>
+   * and for an unsigned attribute
+   *   <oid>:u:<hex_or_filename>
+   * The OID is in the usual dotted decimal form. The HEX_OR_FILENAME
+   * is either a list of hex digits or a filename with the DER encoded
+   * value.  A filename is detected by the presence of a slash in the
+   * HEX_OR_FILENAME.  The actual value needs to be DER encoded and
+   * multiple values are concatenated w/o an outer container.  */
+  strlist_t attributes;
 
   /* The cache used to find the parent cert.  */
   cert_cache_item_t parent_cert_cache;

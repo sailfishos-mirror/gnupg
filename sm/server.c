@@ -629,6 +629,69 @@ cmd_verify (assuan_context_t ctx, char *line)
 }
 
 
+static const char hlp_setattr[] =
+  "SETATTR [--append|--clear] <string>\n"
+  "\n"
+  "The client may use this command to setup attributes to be included\n"
+  "in the signature.  For details see the CLI option --attributes.  This\n"
+  "command can be used several times to include different attributes.  With\n"
+  "--append, <string> is appended to the string provided by the previous\n"
+  "SETATTR command.  With --clear, the list of attributes is cleared\n"
+  "including those copied from the configuration file or the CLI; the\n"
+  "collected attributes are not cleared by a RESET or SIGN command.";
+static gpg_error_t
+cmd_setattr (assuan_context_t ctx, char *line)
+{
+  ctrl_t ctrl = assuan_get_pointer (ctx);
+  int append, clear;
+  gpg_error_t err;
+
+  append = has_option (line, "--append");
+  clear  = has_option (line, "--clear");
+
+  line = skip_options (line);
+
+  if (clear)
+    FREE_STRLIST (ctrl->attributes);
+
+  if (!*line)
+    return 0;  /* No value given - ignore.  */
+
+  /* Note that we ignore append if no attributes are already set.  */
+  /* We should do a syntax check on the finished attributes but that
+   * would require the use of a "--more" option which is more
+   * cumbersome for the client side.  Maybe a --check option can be
+   * implemented but it in the end it is easier to wait for the
+   * outcome of the SIGN command.  */
+  if (append && ctrl->attributes)
+    {
+      char *tmp, *tmp2;
+
+      err = gpg_error (strlist_pop_try (&ctrl->attributes, &tmp));
+      if (!err)
+        {
+          tmp2 = strconcat (tmp, line, NULL);
+          if (!tmp2)
+            err = gpg_error_from_syserror ();
+          else if (!add_to_strlist_try (&ctrl->attributes, tmp2))
+            err = gpg_error_from_syserror ();
+
+          xfree (tmp);
+          xfree (tmp2);
+        }
+    }
+  else
+    {
+      if (!add_to_strlist_try (&ctrl->attributes, line))
+        err = out_of_core ();
+      else
+        err = 0;
+    }
+
+  return err;
+}
+
+
 static const char hlp_sign[] =
   "SIGN [--detached]\n"
   "\n"
@@ -1380,6 +1443,7 @@ register_commands (assuan_context_t ctx)
     { "ENCRYPT",       cmd_encrypt,   hlp_encrypt },
     { "DECRYPT",       cmd_decrypt,   hlp_decrypt },
     { "VERIFY",        cmd_verify,    hlp_verify },
+    { "SETATTR",       cmd_setattr,   hlp_setattr },
     { "SIGN",          cmd_sign,      hlp_sign },
     { "IMPORT",        cmd_import,    hlp_import },
     { "EXPORT",        cmd_export,    hlp_export },

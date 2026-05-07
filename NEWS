@@ -4,7 +4,9 @@ Noteworthy changes in version 2.5.20 (unreleased)
  * New and extended features:
 
    - gpgsm: New option --attribute to include arbitrary signed
-     attributes into a signature.  Requires libksba 1.7.0.
+     attributes into a signature.  Requires libksba 1.7.0.  [T4537]
+
+   - gpgsm: New server command SETATTR.  [T4537]
 
  * Bug fixes:
 
