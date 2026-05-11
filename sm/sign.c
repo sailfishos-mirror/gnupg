@@ -286,8 +286,85 @@ add_certificate_list (ctrl_t ctrl, ksba_cms_t cms, ksba_cert_t cert)
 }
 
 
+/* This is similar to add_signed_attribute but takes the system
+ * attribute name (w/o the underscore prefix).  System attributes are
+ * either simple attributes and special attributes build up on fly
+ * which are identified by a gpgsm specific name.  */
 static gpg_error_t
-add_signed_attribute (ksba_cms_t cms, const char *attrstr)
+add_signed_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
+                             const char *attrname)
+{
+  gpg_error_t err;
+  ksba_der_t d;               /* DER builder context.  */
+  unsigned char *der = NULL;  /* Resulting DER    */
+  size_t derlen;              /* and its length.  */
+  const char *oid;
+  unsigned char sha256buf[32];
+
+  d = ksba_der_builder_new (0);
+  if (!d)
+    {
+      err = gpg_error_from_syserror ();
+      log_error ("error creating new DER builder: %s\n", gpg_strerror (err));
+      goto leave;
+    }
+
+  if (!strcmp (attrname, "signingCertificateV2"))
+    {
+      oid = "1.2.840.113549.1.9.16.2.47";
+      gpgsm_get_fingerprint (cert, GCRY_MD_SHA256, sha256buf, NULL);
+
+      ksba_der_add_tag (d, KSBA_CLASS_UNIVERSAL, KSBA_TYPE_SEQUENCE);
+      ksba_der_add_tag (d, KSBA_CLASS_UNIVERSAL, KSBA_TYPE_SEQUENCE);
+      ksba_der_add_tag (d, KSBA_CLASS_UNIVERSAL, KSBA_TYPE_SEQUENCE);
+      ksba_der_add_ptr (d, KSBA_CLASS_UNIVERSAL, KSBA_TYPE_OCTET_STRING,
+                        sha256buf, 32);
+      ksba_der_add_end (d);
+      ksba_der_add_end (d);
+      ksba_der_add_end (d);
+    }
+  else
+    {
+      log_error ("system attribute '_%s' is not known\n", attrname);
+      err = gpg_error (GPG_ERR_INV_ATTR);
+      goto leave;
+    }
+
+  err = ksba_der_builder_get (d, &der, &derlen);
+  if (err)
+    {
+      log_error ("error building DER for system attribute '_%s': %s\n",
+                 attrname, gpg_strerror (err));
+      goto leave;
+    }
+
+  /* Store the data in the CMS object for all signers.  */
+#if KSBA_VERSION_NUMBER >= 0x010700  /* 1.7.0 */
+  err = ksba_cms_add_attribute (cms, signer, oid, 0, der, derlen);
+#else
+  (void)cms;
+  err = gpg_error (GPG_ERR_NOT_IMPLEMENTED);
+#endif
+  if (err)
+    {
+      log_error ("error setting system attribute '_%s': %s\n",
+                 attrname, gpg_strerror (err));
+      goto leave;
+    }
+
+ leave:
+  xfree (der);
+  ksba_der_release (d);
+  return err;
+}
+
+
+/* Add one attribute specifified by ATTRSTR to all signers or for
+ * specific attributes only to the signer with index SIGNER.  CERT is
+ * the certificate of the current signer. */
+static gpg_error_t
+add_signed_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
+                      const char *attrstr)
 {
   gpg_error_t err;
   char **fields = NULL;
@@ -295,6 +372,15 @@ add_signed_attribute (ksba_cms_t cms, const char *attrstr)
   int i;
   unsigned char *der = NULL;
   size_t derlen;
+
+  /* Divert to special system signers.  */
+  if (*attrstr == '_' && attrstr[1])
+    return add_signed_system_attribute (cms, cert, signer, attrstr+1);
+
+  /* The code below tells ksba to add it to all signers (-1) and thus
+   * we need to skip all signers except for the first.  */
+  if (signer > 0)
+    return 0;
 
   fields = strtokenize (attrstr, ":");
   if (!fields)
@@ -962,6 +1048,8 @@ gpgsm_sign (ctrl_t ctrl, certlist_t signerlist,
   gnupg_get_isotime (signed_at);
   for (cl=signerlist,signer=0; cl; cl = cl->next, signer++)
     {
+      strlist_t sl;
+
       err = ksba_cms_set_signing_time (cms, signer, signed_at);
       if (err)
         {
@@ -969,16 +1057,11 @@ gpgsm_sign (ctrl_t ctrl, certlist_t signerlist,
                      gpg_strerror (err));
           goto leave;
         }
+
+      for (sl = ctrl->attributes; sl; sl = sl->next)
+        if ((err = add_signed_attribute (cms, cl->cert, signer, sl->d)))
+          goto leave;
     }
-
-  {
-    strlist_t sl;
-
-    for (sl = ctrl->attributes; sl; sl = sl->next)
-      if ((err = add_signed_attribute (cms, sl->d)))
-        goto leave;
-  }
-
 
   /* We need to write at least a minimal list of our capabilities to
    * try to convince some MUAs to use 3DES and not the crippled
