@@ -803,8 +803,8 @@ find_up_dirmngr (ctrl_t ctrl, KEYDB_HANDLE kh,
 
   (void)kh;
 
+  memset (&find_up_store_certs_parm, 0, sizeof find_up_store_certs_parm);
   find_up_store_certs_parm.ctrl = ctrl;
-  find_up_store_certs_parm.count = 0;
 
   if (no_dirmngr)
     {
