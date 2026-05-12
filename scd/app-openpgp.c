@@ -1511,7 +1511,7 @@ get_remaining_tries (app_t app, int chvno)
       xfree (relptr);
       return -1;
     }
-  remaining = value[(chvno == 3)? 6 : ((chvno == 2)? 5: 1)];
+  remaining = value[(chvno == 3)? 6 : ((chvno == 2)? 5: 4)];
   xfree (relptr);
   return remaining;
 }
