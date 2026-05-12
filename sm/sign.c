@@ -291,13 +291,14 @@ add_certificate_list (ctrl_t ctrl, ksba_cms_t cms, ksba_cert_t cert)
  * either simple attributes and special attributes build up on fly
  * which are identified by a gpgsm specific name.  */
 static gpg_error_t
-add_signed_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
-                             const char *attrname)
+add_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
+                      const char *attrname)
 {
   gpg_error_t err;
   ksba_der_t d;               /* DER builder context.  */
   unsigned char *der = NULL;  /* Resulting DER    */
   size_t derlen;              /* and its length.  */
+  int uattr;
   const char *oid;
   unsigned char sha256buf[32];
 
@@ -309,6 +310,7 @@ add_signed_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
       goto leave;
     }
 
+  uattr = 0;  /* Default is a signed attribute.  */
   if (!strcmp (attrname, "signingCertificateV2"))
     {
       oid = "1.2.840.113549.1.9.16.2.47";
@@ -340,7 +342,7 @@ add_signed_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
 
   /* Store the data in the CMS object for all signers.  */
 #if KSBA_VERSION_NUMBER >= 0x010700  /* 1.7.0 */
-  err = ksba_cms_add_attribute (cms, signer, oid, 0, der, derlen);
+  err = ksba_cms_add_attribute (cms, signer, oid, uattr, der, derlen);
 #else
   (void)cms;
   err = gpg_error (GPG_ERR_NOT_IMPLEMENTED);
@@ -363,8 +365,8 @@ add_signed_system_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
  * specific attributes only to the signer with index SIGNER.  CERT is
  * the certificate of the current signer. */
 static gpg_error_t
-add_signed_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
-                      const char *attrstr)
+add_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
+               const char *attrstr)
 {
   gpg_error_t err;
   char **fields = NULL;
@@ -372,10 +374,11 @@ add_signed_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
   int i;
   unsigned char *der = NULL;
   size_t derlen;
+  int uattr;
 
   /* Divert to special system signers.  */
   if (*attrstr == '_' && attrstr[1])
-    return add_signed_system_attribute (cms, cert, signer, attrstr+1);
+    return add_system_attribute (cms, cert, signer, attrstr+1);
 
   /* The code below tells ksba to add it to all signers (-1) and thus
    * we need to skip all signers except for the first.  */
@@ -399,18 +402,18 @@ add_signed_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
                  attrstr, i < 3 ? "not enough fields":"too many fields");
       goto leave;
     }
+
+  uattr = 0;
   if (!ascii_strcasecmp (fields[1], "u"))
-    {
-      err = 0;
-      goto leave; /* Skip unsigned attributes.  */
-    }
-  if (ascii_strcasecmp (fields[1], "s"))
+    uattr = 1;
+  else if (ascii_strcasecmp (fields[1], "s"))
     {
       err = gpg_error (GPG_ERR_SYNTAX);
       log_error ("invalid attribute specification '%s': %s\n",
                  attrstr, "type is not 's' or 'u'");
       goto leave;
     }
+
   /* Check that the OID is valid.  */
   err = ksba_oid_from_str (fields[0], &der, &derlen);
   if (err)
@@ -450,7 +453,7 @@ add_signed_attribute (ksba_cms_t cms, ksba_cert_t cert, int signer,
 
   /* Store the data in the CMS object for all signers.  */
 #if KSBA_VERSION_NUMBER >= 0x010700  /* 1.7.0 */
-  err = ksba_cms_add_attribute (cms, -1, fields[0], 0, der, derlen);
+  err = ksba_cms_add_attribute (cms, -1, fields[0], uattr, der, derlen);
 #else
   (void)cms;
   err = gpg_error (GPG_ERR_NOT_IMPLEMENTED);
@@ -1059,7 +1062,7 @@ gpgsm_sign (ctrl_t ctrl, certlist_t signerlist,
         }
 
       for (sl = ctrl->attributes; sl; sl = sl->next)
-        if ((err = add_signed_attribute (cms, cl->cert, signer, sl->d)))
+        if ((err = add_attribute (cms, cl->cert, signer, sl->d)))
           goto leave;
     }
 

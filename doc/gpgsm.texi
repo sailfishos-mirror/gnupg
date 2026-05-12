@@ -525,13 +525,23 @@ will not be rejected due to an unknown critical extension.  Use this
 option with care because extensions are usually flagged as critical
 for a reason.
 
-@item --attribute @var{hexstring}
+@item --attribute @var{string}
 @opindex attribute
-Add a signed attribute to a signature.  The attribute is expected as
-an an OID in dotted-decimal form, a colon, the letter 's', a colon,
-the hex-encoded DER representation of the attribute value without the
-outer SET_OF tag.  To include several elements into the SET they are
-simply concatenated.
+Add a signed or unsigend attribute to a signature.  The attribute is
+expected as an an OID in dotted-decimal form, a colon, the letters 's'
+or 'u', a colon, the hex-encoded DER representation of the attribute
+value without the outer SET_OF tag.  To include several elements into
+the SET they are simply concatenated.  Take care to provide proper
+DER.  Instead of this format a few special system attributes may also
+be requested.  Here is the very short list of currently defined system
+attributes:
+
+@table @code
+@item _signingCertificateV2
+Insert a signed attribute with the SHA-256 hash of the respective
+signer's certificate.
+@end table
+
 
 
 @end table
