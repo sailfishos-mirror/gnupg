@@ -8007,12 +8007,12 @@ msgid "error storing certificate: %s\n"
 msgstr "eroare la obţinerea numărului serial: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? probleme la verificare revocării: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "eroare la citire `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? probleme la verificare revocării: %s\n"
 
 msgid "Error - "
 msgstr ""

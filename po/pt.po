@@ -7627,12 +7627,12 @@ msgid "error storing certificate: %s\n"
 msgstr "erro ao armazenar certificado: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "problema ao pesquisar novamente o certificado: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "erro ao armazenar flags: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "problema ao pesquisar novamente o certificado: %s\n"
 
 msgid "Error - "
 msgstr "Erro - "

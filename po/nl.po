@@ -7813,12 +7813,12 @@ msgid "error storing certificate: %s\n"
 msgstr "fout bij het opslaan van het certificaat: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "probleem bij het opnieuw opzoeken van het certificaat: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "fout bij het opslaan van de vlaggen: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "probleem bij het opnieuw opzoeken van het certificaat: %s\n"
 
 msgid "Error - "
 msgstr "Fout - "

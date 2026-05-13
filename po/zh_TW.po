@@ -7311,12 +7311,12 @@ msgid "error storing certificate: %s\n"
 msgstr "存放憑證時出錯: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "重新搜尋憑證的問題: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "存放旗標時出錯: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "重新搜尋憑證的問題: %s\n"
 
 msgid "Error - "
 msgstr "錯誤 - "

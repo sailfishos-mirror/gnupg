@@ -7688,12 +7688,12 @@ msgid "error storing certificate: %s\n"
 msgstr "feil under lagring av sertifikat: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "det oppstod en feil under nytt søk etter sertifikat: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "feil under lagring av valg: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "det oppstod en feil under nytt søk etter sertifikat: %s\n"
 
 msgid "Error - "
 msgstr "Feil - "

@@ -7853,12 +7853,12 @@ msgid "error storing certificate: %s\n"
 msgstr "viga parooli loomisel: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? probleem tühistamise kontrollimisel: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "viga `%s' lugemisel: %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? probleem tühistamise kontrollimisel: %s\n"
 
 msgid "Error - "
 msgstr ""

@@ -7557,12 +7557,12 @@ msgid "error storing certificate: %s\n"
 msgstr "serifika saklanırken hata: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "sertifika yeniden aranırken sorun çıktı: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "bayraklar saklanırken hata: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "sertifika yeniden aranırken sorun çıktı: %s\n"
 
 msgid "Error - "
 msgstr "Hata - "

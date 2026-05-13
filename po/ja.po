@@ -7370,12 +7370,12 @@ msgid "error storing certificate: %s\n"
 msgstr "証明書保存エラー: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "証明書の再検索の問題: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "フラグの保存エラー: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "証明書の再検索の問題: %s\n"
 
 msgid "Error - "
 msgstr "エラー - "

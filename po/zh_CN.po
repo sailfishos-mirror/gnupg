@@ -7344,12 +7344,12 @@ msgid "error storing certificate: %s\n"
 msgstr "存储证书时出现错误：%s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "重新搜索证书时出现问题：%s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "存储选项时出现错误：%s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "重新搜索证书时出现问题：%s\n"
 
 msgid "Error - "
 msgstr "错误 - "

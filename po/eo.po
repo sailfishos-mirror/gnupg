@@ -7848,12 +7848,12 @@ msgid "error storing certificate: %s\n"
 msgstr "eraro dum kreado de pasfrazo: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? problemo en kontrolo de revoko: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "eraro dum legado de '%s': %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? problemo en kontrolo de revoko: %s\n"
 
 msgid "Error - "
 msgstr ""

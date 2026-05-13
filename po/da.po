@@ -8141,12 +8141,12 @@ msgid "error storing certificate: %s\n"
 msgstr "fejl ved lagring af certifikat: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "problem under gensøgning af certifikat: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "fejl ved lagring af flag: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "problem under gensøgning af certifikat: %s\n"
 
 msgid "Error - "
 msgstr "Fejl - "

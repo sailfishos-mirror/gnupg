@@ -7704,12 +7704,12 @@ msgid "error storing certificate: %s\n"
 msgstr "Fehler beim Speichern des Zertifikats: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "Problem bei Wiederfinden des Zertifikats: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "Fehler beim Speichern der Flags: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "Problem bei Wiederfinden des Zertifikats: %s\n"
 
 msgid "Error - "
 msgstr "Fehler - "

@@ -7879,12 +7879,12 @@ msgid "error storing certificate: %s\n"
 msgstr "kesalahan penciptaan passphrase: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? masalah memeriksa pembatalan: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "kesalahan membaca `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? masalah memeriksa pembatalan: %s\n"
 
 msgid "Error - "
 msgstr ""

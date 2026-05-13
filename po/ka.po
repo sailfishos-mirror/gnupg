@@ -7233,12 +7233,12 @@ msgid "error storing certificate: %s\n"
 msgstr "სერტიფიკატის დამახსოვრების შეცდომა: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "სერტიფიკატის თავიდან მოძებნის პრობლემა: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "ალმების შენახვის შეცდომა: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "სერტიფიკატის თავიდან მოძებნის პრობლემა: %s\n"
 
 msgid "Error - "
 msgstr "შეცდომა - "

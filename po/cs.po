@@ -7628,12 +7628,12 @@ msgid "error storing certificate: %s\n"
 msgstr "chyba při ukládání certifikátu: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "problém při opakovaném hledání certifikátu: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "chyba při ukládání příznaků: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "problém při opakovaném hledání certifikátu: %s\n"
 
 msgid "Error - "
 msgstr "Chyba – "

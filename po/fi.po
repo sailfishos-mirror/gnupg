@@ -7917,12 +7917,12 @@ msgid "error storing certificate: %s\n"
 msgstr "virhe luotaessa salasanaa: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? mitätöinnin tarkistuksessa ongelmia: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "virhe luettaessa tiedostoa \"%s\": %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? mitätöinnin tarkistuksessa ongelmia: %s\n"
 
 msgid "Error - "
 msgstr ""

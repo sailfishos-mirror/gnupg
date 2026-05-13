@@ -7880,12 +7880,12 @@ msgid "error storing certificate: %s\n"
 msgstr "Hiba a jelszó létrehozásakor: %s.\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? Nem tudom ellenőrizni a visszavonást: %s.\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "Hiba \"%s\" olvasásakor: %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? Nem tudom ellenőrizni a visszavonást: %s.\n"
 
 msgid "Error - "
 msgstr ""

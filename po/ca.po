@@ -8095,12 +8095,12 @@ msgid "error storing certificate: %s\n"
 msgstr "error en la creació de la contrasenya: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? hi ha problemes en la comprovació de la revocació: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "error en la lectura de «%s»: %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? hi ha problemes en la comprovació de la revocació: %s\n"
 
 msgid "Error - "
 msgstr ""

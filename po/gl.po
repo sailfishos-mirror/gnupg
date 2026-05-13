@@ -7927,12 +7927,12 @@ msgid "error storing certificate: %s\n"
 msgstr "erro ao crea-lo contrasinal: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? problema ao comproba-la revocación: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "erro lendo `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? problema ao comproba-la revocación: %s\n"
 
 msgid "Error - "
 msgstr ""

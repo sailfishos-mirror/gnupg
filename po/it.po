@@ -7695,12 +7695,12 @@ msgid "error storing certificate: %s\n"
 msgstr "errore durante l'archiviazione del certificato: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "problema durante la ri-ricerca del certificato: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "errore durante l'archiviazione dei flag: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "problema durante la ri-ricerca del certificato: %s\n"
 
 msgid "Error - "
 msgstr "Errore - "

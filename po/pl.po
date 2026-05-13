@@ -7663,12 +7663,12 @@ msgid "error storing certificate: %s\n"
 msgstr "błąd zapisywania certyfikatu: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "problem z ponownym odszukaniem certyfikatu: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "błąd zapisywania flag: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "problem z ponownym odszukaniem certyfikatu: %s\n"
 
 msgid "Error - "
 msgstr "Błąd - "

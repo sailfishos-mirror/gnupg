@@ -7909,12 +7909,12 @@ msgid "error storing certificate: %s\n"
 msgstr "chyba pri vytváraní hesla: %s\n"
 
 #, fuzzy, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "rev? problém overenia revokácie: %s\n"
-
-#, fuzzy, c-format
 msgid "error storing flags: %s\n"
 msgstr "chyba pri čítaní `%s': %s\n"
+
+#, fuzzy, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "rev? problém overenia revokácie: %s\n"
 
 msgid "Error - "
 msgstr ""

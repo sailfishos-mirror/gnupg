@@ -7757,12 +7757,12 @@ msgid "error storing certificate: %s\n"
 msgstr "ошибка сохранения сертификата: %s\n"
 
 #, c-format
-msgid "problem re-searching certificate: %s\n"
-msgstr "проблема повторного поиска сертификата: %s\n"
-
-#, c-format
 msgid "error storing flags: %s\n"
 msgstr "ошибка сохранения признаков: %s\n"
+
+#, c-format
+msgid "problem re-searching certificate: %s\n"
+msgstr "проблема повторного поиска сертификата: %s\n"
 
 msgid "Error - "
 msgstr "Ошибка - "
