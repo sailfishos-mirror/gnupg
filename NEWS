@@ -1,17 +1,48 @@
-Noteworthy changes in version 2.5.20 (unreleased)
+Noteworthy changes in version 2.5.20 (2026-05-13)
 -------------------------------------------------
 
  * New and extended features:
 
-   - gpgsm: New option --attribute to include arbitrary signed
-     attributes into a signature.  Requires libksba 1.7.0.  [T4537]
+   - gpgsm: Implement GCM encryption.  Note that decryption works
+     since version 2.3.2.  [T3979]
 
-   - gpgsm: New server command SETATTR.  [T4537]
+   - gpgsm: New option --attribute and server command SETATTR to
+     include arbitrary signed or unsigned attributes into a signature.
+     Enable only with libksba 1.7.0 or later.  [T4537]
+
+   - gpgsm: Introduce system attribute _signingCertificateV2.
+     [rG0335a9cb04]
 
  * Bug fixes:
 
- * Other changes:
+   - gpg: Fix wrong assertion failure which could very rarely occur
+     during key signature checking.  [rG693f5642f6]
 
+   - gpg: Consider certify-only keys for revocation signature check.
+     [T8196]
+
+   - gpgsm: Fix possible double free in the CMS parser.  [T8240]
+
+   - gpgsm: Fix possible too early removal of ephemeral keys.  [T8236]
+
+   - gpgsm: Avoid emitting a final FAILURE status line if --status-fd
+     is not used.  [rG69c27fe377]
+
+   - gpgsm: Fix a regression in 2.5.19 for password encrypted GCM
+     data.  [rG60a823c97b]
+
+   - agent: Fix not using cache for pinentry loopback.  [rGd4b608a31f]
+
+   - agent: Fix command PUT_SECRET by saving input line.  [rG1875bc185e]
+
+   - keyboxd: Mark keys searched but not imported via LDAP correctly
+     as ephemeral.  [T8048]
+
+   - scdaemon: Avoid buffer overflow with SC-HSM cards providing RSA
+     keys > 2k.  [T8244]
+
+   - dirmngr: Fix uninitialized use of the dns_any union in
+     dns_rr_cmp.  [T8251]
 
  Release-info: https://dev.gnupg.org/T7997
 
