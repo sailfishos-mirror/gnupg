@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>
+#include <time.h>
 #include <float.h>
 #include <ctype.h>
 
