@@ -615,6 +615,40 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
                                  keyexptime, 0,
                                  NULL, 0, &verifyflags);
 
+      {
+        char *fpr, *buf, *tstr;
+
+        fpr = gpgsm_fpr_and_name_for_status (cert);
+        if (gpg_err_code (rc) == GPG_ERR_CERT_EXPIRED)
+          {
+            gpgsm_status (ctrl, STATUS_EXPKEYSIG, fpr);
+            rc = 0;
+          }
+        else
+          gpgsm_status (ctrl, STATUS_GOODSIG, fpr);
+
+        xfree (fpr);
+
+        /* FIXME: INFO_PKALGO correctly shows ECDSA but PKALGO is then
+         * ECC.  We should use the ECDSA here and need to find a way to
+         * figure this out without using the bogus assumption in
+         * gpgsm_check_cms_signature that ECC is always ECDSA.  */
+
+        fpr = gpgsm_get_fingerprint_hexstring (cert, GCRY_MD_SHA1);
+        tstr = strtimestamp_r (sigtime);
+        buf = xasprintf ("%s %s %s %s 0 0 %d %d 00", fpr, tstr,
+                         *sigtime? sigtime : "0",
+                         *keyexptime? keyexptime : "0",
+                         info_pkalgo, algo);
+        xfree (tstr);
+        /* Handle the --assert-signer option.  */
+        check_assert_signer_list (ctrl, fpr);
+        xfree (fpr);
+        /* Print the status line.  */
+        gpgsm_status (ctrl, STATUS_VALIDSIG, buf);
+        xfree (buf);
+      }
+
       audit_log_ok (ctrl->audit, AUDIT_CHAIN_STATUS, rc);
       if (rc) /* of validate_chain */
         {
@@ -670,40 +704,6 @@ gpgsm_verify (ctrl_t ctrl, estream_t in_fp, estream_t data_fp,
           gpgsm_errors_seen = 1;
           goto next_signer;
         }
-
-      {
-        char *fpr, *buf, *tstr;
-
-        fpr = gpgsm_fpr_and_name_for_status (cert);
-        if (gpg_err_code (rc) == GPG_ERR_CERT_EXPIRED)
-          {
-            gpgsm_status (ctrl, STATUS_EXPKEYSIG, fpr);
-            rc = 0;
-          }
-        else
-          gpgsm_status (ctrl, STATUS_GOODSIG, fpr);
-
-        xfree (fpr);
-
-        /* FIXME: INFO_PKALGO correctly shows ECDSA but PKALGO is then
-         * ECC.  We should use the ECDSA here and need to find a way to
-         * figure this out without using the bogus assumption in
-         * gpgsm_check_cms_signature that ECC is always ECDSA.  */
-
-        fpr = gpgsm_get_fingerprint_hexstring (cert, GCRY_MD_SHA1);
-        tstr = strtimestamp_r (sigtime);
-        buf = xasprintf ("%s %s %s %s 0 0 %d %d 00", fpr, tstr,
-                         *sigtime? sigtime : "0",
-                         *keyexptime? keyexptime : "0",
-                         info_pkalgo, algo);
-        xfree (tstr);
-        /* Handle the --assert-signer option.  */
-        check_assert_signer_list (ctrl, fpr);
-        xfree (fpr);
-        /* Print the status line.  */
-        gpgsm_status (ctrl, STATUS_VALIDSIG, buf);
-        xfree (buf);
-      }
 
       audit_log_s (ctrl->audit, AUDIT_SIG_STATUS, "good");
 
