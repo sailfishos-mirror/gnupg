@@ -81,7 +81,7 @@ static pointer
 do_logand (scheme *sc, pointer args)
 {
   FFI_PROLOG ();
-  unsigned int v, acc = ~0;
+  unsigned int v, acc = ~0U;
   while (args != sc->NIL)
     {
       FFI_ARG_OR_RETURN (sc, unsigned int, v, number, args);
@@ -168,7 +168,7 @@ rl_gets (const char *prompt)
 
   /* Strip trailing whitespace.  */
   if (line && strlen (line) > 0)
-    for (p = &line[strlen (line) - 1]; isspace (*p); p--)
+    for (p = &line[strlen (line) - 1]; isspace ((unsigned char)*p); p--)
       *p = 0;
 
   return line;
@@ -1572,7 +1572,7 @@ ffi_schemify_name (const char *s, int macro)
 
   for (p = n; *p; p++)
     {
-      *p = (char) tolower (*p);
+      *p = (char) tolower ((unsigned char)*p);
        /* We convert _ to - in identifiers.  We allow, however, for
 	  function names to start with a leading _.  The functions in
 	  this namespace are not yet finalized and might change or

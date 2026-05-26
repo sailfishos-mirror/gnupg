@@ -91,8 +91,8 @@ static int stricmp(const char *s1, const char *s2)
 {
   unsigned char c1, c2;
   do {
-    c1 = tolower(*s1);
-    c2 = tolower(*s2);
+    c1 = tolower((unsigned char)*s1);
+    c2 = tolower((unsigned char)*s2);
     if (c1 < c2)
       return -1;
     else if (c1 > c2)
@@ -107,7 +107,7 @@ static int stricmp(const char *s1, const char *s2)
 static const char *strlwr(char *s) {
   const char *p=s;
   while(*s) {
-    *s=tolower(*s);
+    *s=tolower((unsigned char)*s);
     s++;
   }
   return p;
@@ -1538,21 +1538,21 @@ static pointer mk_atom(scheme *sc, char *q) {
          has_dec_point=1;
          c = *p++;
        }
-       if (!isdigit(c)) {
+       if (!isdigit((unsigned char)c)) {
          return (mk_symbol(sc, strlwr(q)));
        }
      } else if (c == '.') {
        has_dec_point=1;
        c = *p++;
-       if (!isdigit(c)) {
+       if (!isdigit((unsigned char)c)) {
          return (mk_symbol(sc, strlwr(q)));
        }
-     } else if (!isdigit(c)) {
+     } else if (!isdigit((unsigned char)c)) {
        return (mk_symbol(sc, strlwr(q)));
      }
 
      for ( ; (c = *p) != 0; ++p) {
-          if (!isdigit(c)) {
+          if (!isdigit((unsigned char)c)) {
                if(c=='.') {
                     if(!has_dec_point) {
                          has_dec_point=1;
@@ -1564,7 +1564,7 @@ static pointer mk_atom(scheme *sc, char *q) {
                           has_dec_point = 1; /* decimal point illegal
                                                 from now on */
                           p++;
-                          if ((*p == '-') || (*p == '+') || isdigit(*p)) {
+                          if ((*p == '-') || (*p == '+') || isdigit((unsigned char)*p)) {
                              continue;
                           }
                        }
@@ -2062,7 +2062,7 @@ static int basic_inchar(port *pt) {
        pt->rep.string.curr == pt->rep.string.past_the_end) {
       return EOF;
     } else {
-      return *pt->rep.string.curr++;
+      return *(unsigned char *)pt->rep.string.curr++;
     }
   }
 }
@@ -2139,7 +2139,7 @@ INTERFACE void putcharacter(scheme *sc, int c) {
     if(pt->rep.string.curr!=pt->rep.string.past_the_end) {
       *pt->rep.string.curr++=c;
     } else if(pt->kind&port_srfi6&&realloc_port_string(sc,pt)) {
-        *pt->rep.string.curr++=c;
+      *pt->rep.string.curr++=c;
     }
   }
 }
@@ -2235,7 +2235,7 @@ static pointer readstrexp(scheme *sc) {
             break;
         case st_x1:
         case st_x2:
-            c=toupper(c);
+            c=toupper((unsigned char)c);
             if(c>='0' && c<='F') {
                 if(c<='9') {
                     c1=(c1<<4)+c-'0';
@@ -2414,14 +2414,14 @@ static void printslashstring(scheme *sc, char *p, int len) {
         putcharacter(sc,'\\');
         break;
       default: {
-          int d=*s/16;
+          int d=((unsigned char)*s)/16;
           putcharacter(sc,'x');
           if(d<10) {
             putcharacter(sc,d+'0');
           } else {
             putcharacter(sc,d-10+'A');
           }
-          d=*s%16;
+          d=((unsigned char)*s)%16;
           if(d<10) {
             putcharacter(sc,d+'0');
           } else {
@@ -2430,7 +2430,7 @@ static void printslashstring(scheme *sc, char *p, int len) {
         }
       }
     } else {
-      putcharacter(sc,*s);
+      putcharacter(sc,(unsigned char)*s);
     }
     s++;
   }
@@ -2702,7 +2702,7 @@ static int hash_fn(const char *key, int table_size)
   for (c = key; *c; c++) {
     /* letters have about 5 bits in them */
     hashed = (hashed<<5) | (hashed>>(bits_per_int-5));
-    hashed ^= *c;
+    hashed ^= (unsigned char)*c;
   }
   return hashed % table_size;
 }
