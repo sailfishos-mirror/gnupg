@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU gnupg 2.3.8\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2022-10-22 19:41+0800\n"
+"PO-Revision-Date: 2026-05-26 11:35+0900\n"
 "Last-Translator: bobwxc <bobwxc@yeah.net>\n"
 "Language-Team: None\n"
 "Language: zh_CN\n"
@@ -4777,11 +4777,11 @@ msgstr "已损坏的签名，来自于 “%s”"
 
 #, c-format
 msgid "Expired signature from \"%s\""
-msgstr "过期的签名，来自于 “%s”"
+msgstr "过期的签名，来自于   “%s”"
 
 #, c-format
 msgid "Good signature from \"%s\""
-msgstr "完好的签名，来自于 “%s”"
+msgstr "完好的签名，来自于   “%s”"
 
 #, c-format
 msgid "signature verification suppressed\n"
