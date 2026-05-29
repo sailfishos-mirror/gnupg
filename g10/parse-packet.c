@@ -3172,6 +3172,9 @@ parse_key (IOBUF inp, int pkttype, unsigned long pktlen,
 
 	  if (pktlen < 2)
 	    {
+              if (opt.verbose)
+                log_info ("checksum is missing (remaining bytes: %lu)\n",
+                          pktlen);
               err = gpg_error (GPG_ERR_INV_PACKET);
 	      goto leave;
 	    }
