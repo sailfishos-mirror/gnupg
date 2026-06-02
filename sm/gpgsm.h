@@ -218,12 +218,15 @@ struct
  * key usage: digitalSignature nonRepudiation keyAgreement
  *  policies: 1.3.6.1.4.1.7924.1.1:N:
  */
-#define COMPAT_ALLOW_KA_TO_ENCR   1
+#define COMPAT_ALLOW_KA_TO_ENCR    1
 /* Not actually a compatibiliy flag but useful to limit the
  * required memory for a validated key listing.  */
-#define COMPAT_NO_CHAIN_CACHE     2
+#define COMPAT_NO_CHAIN_CACHE      2
 /* Ditto.  But here to disable the keyinfo and istrusted cache.  */
-#define COMPAT_NO_KEYINFO_CACHE   4
+#define COMPAT_NO_KEYINFO_CACHE    4
+/* Don't use PartialFileGuard (writing to .part file,
+ * renaming/deleting at the finish) by gpgsm itself.  */
+#define COMPAT_NO_PARTIALFILEGUARD 8
 
 /* Forward declaration for an object defined in server.c */
 struct server_local_s;

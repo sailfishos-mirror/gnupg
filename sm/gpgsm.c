@@ -509,6 +509,7 @@ static struct compatibility_flags_s compatibility_flags [] =
     { COMPAT_ALLOW_KA_TO_ENCR, "allow-ka-to-encr" },
     { COMPAT_NO_CHAIN_CACHE, "no-chain-cache"     },
     { COMPAT_NO_KEYINFO_CACHE, "no-keyinfo-cache" },
+    { COMPAT_NO_PARTIALFILEGUARD, "no-partialfileguard" },
     { 0, NULL }
   };
 
@@ -2129,7 +2130,24 @@ main ( int argc, char **argv)
 
     case aDecrypt:
       {
-        estream_t fp = open_es_fwrite (opt.outfile?opt.outfile:"-");
+        char *output_filename = NULL;
+        estream_t fp = NULL;
+
+        if (!(opt.compat_flags & COMPAT_NO_PARTIALFILEGUARD)
+            && opt.outfile && strcmp (opt.outfile, "-") != 0)
+          {
+            output_filename = xstrconcat (opt.outfile, ".part", NULL);
+            fp = open_es_fwrite (output_filename);
+          }
+        else
+          fp = open_es_fwrite ("-");
+
+        if (fp == NULL)
+          {
+            xfree (output_filename);
+            log_error (_("can't open outputfile: %s\n"), strerror (errno));
+            gpgsm_exit (2);
+          }
 
         set_binary (stdin);
         if (!argc)
@@ -2150,9 +2168,18 @@ main ( int argc, char **argv)
           wrong_args ("--decrypt [filename]");
 
         if (err)
-          gpgrt_fcancel (fp);
+          {
+            gpgrt_fcancel (fp);
+            if (output_filename)
+              gnupg_remove (output_filename);
+          }
         else
-          es_fclose (fp);
+          {
+            es_fclose (fp);
+            if (output_filename)
+              gnupg_rename_file (output_filename, opt.outfile, NULL);
+          }
+        xfree (output_filename);
       }
       break;
 
