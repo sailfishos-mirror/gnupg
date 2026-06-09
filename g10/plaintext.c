@@ -51,14 +51,16 @@
 
    On success, the caller is responsible for calling xfree on *FNAMEP
    and calling es_close on *FPP.  */
-gpg_error_t
+static gpg_error_t
 get_output_file (const byte *embedded_name, int embedded_namelen,
-                 iobuf_t data, char **fnamep, estream_t *fpp)
+                 iobuf_t data, struct pfg *pfg)
 {
   gpg_error_t err = 0;
   char *fname = NULL;
+  char *fname_part = NULL;
   estream_t fp = NULL;
   int nooutput = 0;
+  int using_file = 0;
 
   /* Create the filename as C string.  */
   if (opt.outfp)
@@ -154,11 +156,33 @@ get_output_file (const byte *embedded_name, int embedded_namelen,
       log_error (_("error creating '%s': %s\n"), fname, gpg_strerror (err));
       goto leave;
     }
-  else if (!(fp = es_fopen (fname, "wb")))
+  else
     {
-      err = gpg_error_from_syserror ();
-      log_error (_("error creating '%s': %s\n"), fname, gpg_strerror (err));
-      goto leave;
+      char *filename;
+
+      if ((opt.compat_flags & COMPAT_NO_PARTIALFILEGUARD))
+        filename = fname;
+      else
+        {
+          filename = xstrconcat (fname, ".part", NULL);
+          if (!filename)
+            {
+              err = gpg_error_from_syserror ();
+              log_error ("error building .part filename '%s': %s\n",
+                         fname, gpg_strerror (err));
+              goto leave;
+            }
+          fname_part = filename;
+        }
+
+      if (!(fp = es_fopen (filename, "wb")))
+        {
+          err = gpg_error_from_syserror ();
+          log_error (_("error creating '%s': %s\n"), filename,
+                     gpg_strerror (err));
+          goto leave;
+        }
+      using_file = 1;
     }
 
  leave:
@@ -167,13 +191,57 @@ get_output_file (const byte *embedded_name, int embedded_namelen,
       if (fp && fp != es_stdout && fp != opt.outfp)
         es_fclose (fp);
       xfree (fname);
+      xfree (fname_part);
       return err;
     }
 
-  *fnamep = fname;
-  *fpp = fp;
+  pfg->using_file = using_file;
+  pfg->fname_part = fname_part;
+  pfg->fname = fname;
+  pfg->fp = fp;
   return 0;
 }
+
+
+gpg_error_t
+pfg_open_file (const byte *embedded_name, int embedded_namelen,
+               iobuf_t data, struct pfg *pfg)
+{
+  return get_output_file (embedded_name, embedded_namelen, data, pfg);
+}
+
+void
+pfg_close_file (struct pfg *pfg, gpg_error_t err)
+{
+  if (err)
+    {
+      gpgrt_fcancel (pfg->fp);
+      if (pfg->using_file)
+        {
+          if (pfg->fname_part)
+            gnupg_remove (pfg->fname_part);
+          else
+            gnupg_remove (pfg->fname);
+        }
+    }
+  else
+    {
+      if (es_fclose (pfg->fp))
+        {
+          err = gpg_error_from_syserror ();
+          log_error ("error closing '%s': %s\n",
+                     pfg->fname_part ? pfg->fname_part : pfg->fname,
+                     gpg_strerror (err));
+        }
+
+      if (pfg->fname_part)
+        gnupg_rename_file (pfg->fname_part, pfg->fname, NULL);
+    }
+
+  xfree (pfg->fname);
+  xfree (pfg->fname_part);
+}
+
 
 /* Handle a plaintext packet.  If MFX is not NULL, update the MDs
  * Note: We should have used the filter stuff here, but we have to add
@@ -189,9 +257,7 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
   int err = 0;
   int c;
   int convert;
-#ifdef __riscos__
-  int filetype = 0xfff;
-#endif
+  struct pfg pfg;
 
   if (pt->mode == 't' || pt->mode == 'u' || pt->mode == 'm')
     convert = pt->mode;
@@ -225,9 +291,11 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 
   if (! nooutput)
     {
-      err = get_output_file (pt->name, pt->namelen, pt->buf, &fname, &fp);
+      err = pfg_open_file (pt->name, pt->namelen, pt->buf, &pfg);
       if (err)
         goto leave;
+      fp = pfg.fp;
+      fname = pfg.fname;
     }
 
   if (!pt->is_partial)
@@ -338,6 +406,12 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 	    }
 	  xfree (buffer);
 	}
+
+      /* Even if all data can be read successfully, by the AEAD tag
+       * checking at last, it may be failed.  */
+      if ((err = iobuf_error (pt->buf)))
+        log_error ("problem reading source: %s\n", gpg_strerror (err));
+      pt->buf = NULL;
     }
   else if (!clearsig)
     {
@@ -372,6 +446,8 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 		    }
 		}
 	    }
+          if ((err = iobuf_error (pt->buf)))
+            log_error ("problem reading source: %s\n", gpg_strerror (err));
 	}
       else
 	{			/* binary mode */
@@ -428,6 +504,8 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 		    }
 		}
 	    }
+          if ((err = iobuf_error (pt->buf)))
+            log_error ("problem reading source: %s\n", gpg_strerror (err));
 	  xfree (buffer);
 	}
       pt->buf = NULL;
@@ -489,16 +567,13 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 		}
 	    }
 	}
+      if ((err = iobuf_error (pt->buf)))
+        log_error ("problem reading source: %s\n", gpg_strerror (err));
       pt->buf = NULL;
     }
 
-  if (fp && fp != es_stdout && fp != opt.outfp && es_fclose (fp))
-    {
-      err = gpg_error_from_syserror ();
-      log_error ("error closing '%s': %s\n", fname, gpg_strerror (err));
-      fp = NULL;
-      goto leave;
-    }
+  if (fp && fp != es_stdout && fp != opt.outfp)
+    pfg_close_file (&pfg, err);
   fp = NULL;
 
  leave:
@@ -517,8 +592,7 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
     }
 
   if (fp && fp != es_stdout && fp != opt.outfp)
-    es_fclose (fp);
-  xfree (fname);
+    pfg_close_file (&pfg, err);
   return err;
 }
 

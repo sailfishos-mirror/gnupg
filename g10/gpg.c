@@ -1072,6 +1072,7 @@ static struct compatibility_flags_s compatibility_flags [] =
     { COMPAT_NO_MANU,      "no-manu" },
     { COMPAT_SUGGEST_EMBEDDED_NAME, "suggest-embedded-name" },
     { COMPAT_ALLOW_NOT_DASH_ESCAPED, "allow-not-dash-escaped" },
+    { COMPAT_NO_PARTIALFILEGUARD, "no-partial-file-guard" },
     { 0, NULL }
   };
 

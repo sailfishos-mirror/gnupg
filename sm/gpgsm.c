@@ -509,7 +509,7 @@ static struct compatibility_flags_s compatibility_flags [] =
     { COMPAT_ALLOW_KA_TO_ENCR, "allow-ka-to-encr" },
     { COMPAT_NO_CHAIN_CACHE, "no-chain-cache"     },
     { COMPAT_NO_KEYINFO_CACHE, "no-keyinfo-cache" },
-    { COMPAT_NO_PARTIALFILEGUARD, "no-partialfileguard" },
+    { COMPAT_NO_PARTIALFILEGUARD, "no-partial-file-guard" },
     { 0, NULL }
   };
 

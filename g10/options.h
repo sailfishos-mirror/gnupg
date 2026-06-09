@@ -410,6 +410,8 @@ EXTERN_UNLESS_MAIN_MODULE int memory_stat_debug_mode;
                                          * embedded filename as
                                          * suggestion.  */
 #define COMPAT_ALLOW_NOT_DASH_ESCAPED 32 /* Handle NotDashEscaped header.  */
+#define COMPAT_NO_PARTIALFILEGUARD    64 /* Don't use PartialFileGuard.  */
+
 
 
 /* Compliance test macros.  */

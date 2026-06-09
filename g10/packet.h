@@ -996,8 +996,15 @@ int decrypt_data (ctrl_t ctrl, void *ctx, PKT_encrypted *ed, DEK *dek,
                   int *compliance_error);
 
 /*-- plaintext.c --*/
-gpg_error_t get_output_file (const byte *embedded_name, int embedded_namelen,
-                             iobuf_t data, char **fnamep, estream_t *fpp);
+struct pfg { /* structure for PatialFileGuard */
+  unsigned int using_file : 1;  /* FP is for a file, not from FD.  */
+  char *fname_part;
+  char *fname;
+  estream_t fp;
+};
+gpg_error_t pfg_open_file (const byte *embedded_name, int embedded_namelen,
+                           iobuf_t data, struct pfg *pfg);
+void pfg_close_file (struct pfg *pfg, gpg_error_t err);
 int handle_plaintext( PKT_plaintext *pt, md_filter_context_t *mfx,
 					int nooutput, int clearsig );
 int ask_for_detached_datafile( gcry_md_hd_t md, gcry_md_hd_t md2,
