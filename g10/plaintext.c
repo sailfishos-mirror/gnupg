@@ -315,7 +315,9 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 	    {
 	      if ((c = iobuf_get (pt->buf)) == -1)
 		{
-		  err = gpg_error_from_syserror ();
+		  err = iobuf_error (pt->buf);
+                  if (!err)
+                    err = gpg_error_from_syserror ();
 		  log_error ("problem reading source (%u bytes remaining)\n",
 			     (unsigned) pt->len);
 		  goto leave;
@@ -375,7 +377,9 @@ handle_plaintext (PKT_plaintext * pt, md_filter_context_t * mfx,
 	      len = iobuf_read (pt->buf, buffer, len);
 	      if (len == -1)
 		{
-		  err = gpg_error_from_syserror ();
+		  err = iobuf_error (pt->buf);
+                  if (!err)
+                    err = gpg_error_from_syserror ();
 		  log_error ("problem reading source (%u bytes remaining)\n",
 			     (unsigned) pt->len);
 		  xfree (buffer);

@@ -880,11 +880,6 @@ aead_underflow (decode_filter_ctx_t dfx, iobuf_t a, byte *buf, size_t *ret_len)
     log_debug ("aead_underflow: returning %zu (%s)\n",
                totallen, gpg_strerror (err));
 
-  /* In case of an auth error we map the error code to the same as
-   * used by the MDC decryption.  */
-  if (gpg_err_code (err) == GPG_ERR_CHECKSUM)
-    err = gpg_error (GPG_ERR_BAD_SIGNATURE);
-
   /* In case of an error we better wipe out the buffer than to convey
    * partly decrypted data.  */
   if (err && gpg_err_code (err) != GPG_ERR_EOF)
