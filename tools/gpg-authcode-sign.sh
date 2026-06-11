@@ -10,7 +10,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-VERSION=2026-02-26
+VERSION=2026-06-11
 PGM=gpg-authcode-sign.sh
 
 set -e
@@ -225,6 +225,11 @@ for v in AUTHENTICODE_SIGNHOST AUTHENTICODE_TOOL AUTHENTICODE_TSURL \
     eval $v=$(grep '^[[:blank:]]*'$v'[[:blank:]]*=' "$autogenrc"|cut -d= -f2\
                   |sed -e 's,\\,\\\\,g'| sed -e 's,^",'\', -e 's,"$,'\',)
 done
+
+if [ ! -f "$inname" ]; then
+    echo >&2 "$PGM: error: '$inname' does not exist"
+    exit 1
+fi
 
 # Check whether it has already been signed
 if [ "$stamp" = yes ]; then
