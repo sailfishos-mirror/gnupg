@@ -218,10 +218,17 @@ pfg_close_file (struct pfg *pfg, gpg_error_t err)
       gpgrt_fcancel (pfg->fp);
       if (pfg->using_file)
         {
+          const char *fname;
+
           if (pfg->fname_part)
-            gnupg_remove (pfg->fname_part);
+            fname = pfg->fname_part;
           else
-            gnupg_remove (pfg->fname);
+            fname = pfg->fname;
+
+          if (opt.verbose)
+            log_info (_("file: %s: partial file removed\n"), fname);
+
+          gnupg_remove (fname);
         }
     }
   else
@@ -235,7 +242,7 @@ pfg_close_file (struct pfg *pfg, gpg_error_t err)
         }
 
       if (pfg->fname_part)
-        gnupg_rename_file (pfg->fname_part, pfg->fname, NULL);
+        gnupg_register_partial_file (pfg->fname_part, pfg->fname);
     }
 
   xfree (pfg->fname);

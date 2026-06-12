@@ -1964,3 +1964,61 @@ is_weak_digest (digest_algo_t algo)
       return 1;
   return 0;
 }
+
+
+struct partial_file_item
+{
+  struct partial_file_item *next;
+  char *fname_part;
+  char *fname;
+};
+
+static struct partial_file_item *registered_file_list;
+
+gpg_error_t
+gnupg_register_partial_file (const char *fname_part, const char *fname)
+{
+  struct partial_file_item *pfi;
+
+  if (!(pfi = xtrymalloc (sizeof (*pfi))))
+    return gpg_error_from_syserror ();
+
+  if (!(pfi->fname_part = xtrystrdup (fname_part)))
+    return gpg_error_from_syserror ();
+
+  if (!(pfi->fname = xtrystrdup (fname)))
+    return gpg_error_from_syserror ();
+
+  pfi->next = registered_file_list;
+  registered_file_list = pfi;
+  return 0;
+}
+
+void
+gnupg_process_partial_file (int rc)
+{
+  struct partial_file_item *pfi = registered_file_list;
+  struct partial_file_item *next;
+
+  registered_file_list = NULL;
+
+  while (pfi)
+    {
+      next = pfi->next;
+
+      if (rc)
+        {
+          gnupg_remove (pfi->fname_part);
+          if (opt.verbose)
+            log_info (_("file: %s: partial file removed\n"), pfi->fname_part);
+        }
+      else
+        gnupg_rename_file (pfi->fname_part, pfi->fname, NULL);
+
+      xfree (pfi->fname_part);
+      xfree (pfi->fname);
+      xfree (pfi);
+
+      pfi = next;
+    }
+}

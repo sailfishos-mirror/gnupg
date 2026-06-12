@@ -5684,6 +5684,8 @@ g10_exit( int rc )
   if (rc)
     write_status_failure ("gpg-exit", gpg_error (GPG_ERR_GENERAL));
 
+  gnupg_process_partial_file (rc);
+
   gcry_control (GCRYCTL_UPDATE_RANDOM_SEED_FILE);
   if (DBG_CLOCK)
     log_clock ("stop");

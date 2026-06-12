@@ -115,6 +115,9 @@ u16 checksum( const byte *p, unsigned n );
 u16 checksum_mpi( gcry_mpi_t a );
 u32 buffer_to_u32( const byte *buffer );
 const byte *get_session_marker( size_t *rlen );
+gpg_error_t gnupg_register_partial_file (const char *fname_part,
+                                         const char *fname);
+void gnupg_process_partial_file (int rc);
 
 enum gcry_cipher_algos map_cipher_openpgp_to_gcry (cipher_algo_t algo);
 #define openpgp_cipher_open(_a,_b,_c,_d) \
