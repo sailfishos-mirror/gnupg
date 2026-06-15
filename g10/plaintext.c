@@ -226,7 +226,7 @@ pfg_close_file (struct pfg *pfg, gpg_error_t err)
             fname = pfg->fname;
 
           if (opt.verbose)
-            log_info (_("file: %s: partial file removed\n"), fname);
+            log_info (_("Note: partial file '%s' removed\n"), fname);
 
           gnupg_remove (fname);
         }

@@ -1966,6 +1966,9 @@ is_weak_digest (digest_algo_t algo)
 }
 
 
+/* We keep a list of partial files so that they are handled later.
+ * When it fails at the end, all the partial files will be removed.
+ * If it succeeds, those partial files are renamed as valid ones.  */
 struct partial_file_item
 {
   struct partial_file_item *next;
@@ -1973,8 +1976,12 @@ struct partial_file_item
   char *fname;
 };
 
+/* List of partial files, registered.  */
 static struct partial_file_item *registered_file_list;
 
+/* Remember a partial file so that it will be handled later.
+ * FNAME_PART is a name of a partial file.  FNAME is a name of
+ * original file.  */
 gpg_error_t
 gnupg_register_partial_file (const char *fname_part, const char *fname)
 {
@@ -1984,16 +1991,25 @@ gnupg_register_partial_file (const char *fname_part, const char *fname)
     return gpg_error_from_syserror ();
 
   if (!(pfi->fname_part = xtrystrdup (fname_part)))
-    return gpg_error_from_syserror ();
+    {
+      xfree (pfi);
+      return gpg_error_from_syserror ();
+    }
 
   if (!(pfi->fname = xtrystrdup (fname)))
-    return gpg_error_from_syserror ();
+    {
+      xfree (pfi->fname_part);
+      xfree (pfi);
+      return gpg_error_from_syserror ();
+    }
 
   pfi->next = registered_file_list;
   registered_file_list = pfi;
   return 0;
 }
 
+/* If RC is non-zero, remove the partial files.
+ * If RC is zero, rename those.  */
 void
 gnupg_process_partial_file (int rc)
 {
@@ -2010,7 +2026,7 @@ gnupg_process_partial_file (int rc)
         {
           gnupg_remove (pfi->fname_part);
           if (opt.verbose)
-            log_info (_("file: %s: partial file removed\n"), pfi->fname_part);
+            log_info (_("Note: partial file '%s' removed\n"), pfi->fname_part);
         }
       else
         gnupg_rename_file (pfi->fname_part, pfi->fname, NULL);
