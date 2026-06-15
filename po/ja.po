@@ -9,9 +9,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnupg 2.5.19\n"
+"Project-Id-Version: gnupg 2.5.20\n"
 "Report-Msgid-Bugs-To: translations@gnupg.org\n"
-"PO-Revision-Date: 2026-04-28 15:28+0900\n"
+"PO-Revision-Date: 2026-06-15 17:26+0900\n"
 "Last-Translator: NIIBE Yutaka <gniibe@fsij.org>\n"
 "Language-Team: none\n"
 "Language: ja\n"
@@ -4980,6 +4980,10 @@ msgid "unknown weak digest '%s'\n"
 msgstr "不明の弱いダイジェスト'%s'\n"
 
 #, c-format
+msgid "Note: partial file '%s' removed\n"
+msgstr "注意: 処理中ファイル '%s' は、削除されました\n"
+
+#, c-format
 msgid "File '%s' exists. "
 msgstr "ファイル'%s'は既に存在します。"
 
@@ -7322,6 +7326,10 @@ msgid "can't sign using '%s': %s\n"
 msgstr "'%s'を用いて署名できません: %s\n"
 
 #, c-format
+msgid "can't open outputfile: %s\n"
+msgstr "アウトプットファイルが開けません: %s\n"
+
+#, c-format
 msgid "invalid command (there is no implicit command)\n"
 msgstr "無効なコマンド (暗黙のコマンドはありません)\n"
 
@@ -9160,10 +9168,6 @@ msgstr "コマンド履歴を管理する"
 
 #~ msgid "LDAP server list"
 #~ msgstr "LDAPサーバ・リスト"
-
-#~ msgid "Note: old default options file '%s' ignored\n"
-#~ msgstr ""
-#~ "注意: 以前デフォルトだったオプション・ファイル'%s'は、無視されます\n"
 
 #~ msgid ""
 #~ "@\n"
