@@ -119,6 +119,7 @@ typedef enum
     SIGSUBPKT_ISSUER_FPR    = 33, /* Issuer fingerprint. */
     SIGSUBPKT_PREF_AEAD     = 34, /* Preferred AEAD algorithms. */
 
+    SIGSUBPKT_INT_RCP_FPR   = 35, /* Intended Recipient fingerprint. */
     SIGSUBPKT_ATTST_SIGS    = 37, /* Attested Certifications.  */
     SIGSUBPKT_KEY_BLOCK     = 38, /* Entire key used.          */
 

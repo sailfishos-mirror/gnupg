@@ -1812,7 +1812,7 @@ sign_symencrypt_file (ctrl_t ctrl, const char *fname, strlist_t locusr)
 
 
 /*
- * Create a v4 signature in *RET_SIG.
+ * Create a v4/v5 signature in *RET_SIG.
  *
  * PK is the primary key to sign (required for all sigs)
  * UID is the user id to sign (required for 0x10..0x13, 0x30)
@@ -1831,10 +1831,11 @@ sign_symencrypt_file (ctrl_t ctrl, const char *fname, strlist_t locusr)
  * additional Pinentry popups for the same keyblock.
  *
  * This function creates the following subpackets: issuer, created,
- * and expire (if duration is not 0).  Additional subpackets can be
- * added using MKSUBPKT, which is called after these subpackets are
- * added and before the signature is generated.  OPAQUE is passed to
- * MKSUBPKT.
+ * and expire (if duration is not 0). For revocation signatures the
+ * intended recipient fingerprint subpacket is created.
+ * Additional subpackets can be added using MKSUBPKT, which is called
+ * after these subpackets are added and before the signature is generated.
+ * OPAQUE is passed to MKSUBPKT.
  */
 int
 make_keysig_packet (ctrl_t ctrl,
@@ -1923,6 +1924,17 @@ make_keysig_packet (ctrl_t ctrl,
   if (duration)
     sig->expiredate = sig->timestamp + duration;
   sig->sig_class = sigclass;
+  /* Get the fpr of the subject of the revocation signature. */
+  if (IS_KEY_REV (sig))
+    {
+      size_t rs_fprlen = 0;
+
+      sig->rev_subject_info = xmalloc_clear (sizeof *sig->rev_subject_info);
+
+      fingerprint_from_pk (pk, sig->rev_subject_info->fpr,
+                           &rs_fprlen);
+      sig->rev_subject_info->fprlen = rs_fprlen;
+    }
 
   build_sig_subpkt_from_sig (sig, pksk, signhints);
 

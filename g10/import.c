@@ -2572,7 +2572,10 @@ import_one (ctrl_t ctrl,
   if (!err)
     {
       for (node = otherrevsigs; node; node = node->next)
-        import_revoke_cert (ctrl, node, options, stats);
+        {
+          log_info ("trying to import a revocation\n");
+          import_revoke_cert (ctrl, node, options, stats);
+        }
     }
   release_kbnode (otherrevsigs);
   return err;
@@ -3642,7 +3645,9 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
                     struct import_stats_s *stats)
 {
   PKT_public_key *pk = NULL;
-  kbnode_t onode;
+  PKT_public_key *pk_buffer = NULL;
+  PKT_signature *sig = NULL;
+  kbnode_t onode = NULL;
   kbnode_t keyblock = NULL;
   KEYDB_HANDLE hd = NULL;
   u32 keyid[2];
@@ -3658,61 +3663,117 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
 
   /* FIXME: We can do better here by using the issuer fingerprint if
    * available.  We should also make use of get_keyblock_byfprint_fast.  */
+  sig = node->pkt->pkt.signature;
 
-  keyid[0] = node->pkt->pkt.signature->keyid[0];
-  keyid[1] = node->pkt->pkt.signature->keyid[1];
-
-  pk = xmalloc_clear( sizeof *pk );
-  rc = get_pubkey (ctrl, pk, keyid );
-  if (gpg_err_code (rc) == GPG_ERR_NO_PUBKEY )
+  /* If the revocation signature has an intended recipient fingerprint subpacket
+   * use the provided fingerprint (stored in REV_SUBJECT_INFO). */
+  if (sig->rev_subject_info)
     {
-      if (!silent)
-        log_error (_("key %s: no public key -"
-                     " can't apply revocation certificate\n"), keystr(keyid));
-      rc = 0;
-      goto leave;
+      hd = keydb_new (ctrl);
+      if (!hd)
+        {
+          rc = gpg_error_from_syserror ();
+          return rc;
+        }
+
+      rc = keydb_lock (hd);
+      if (rc)
+        {
+          keydb_release (hd);
+          return rc;
+        }
+
+      rc = keydb_search_fpr (hd,
+                             sig->rev_subject_info->fpr,
+                             sig->rev_subject_info->fprlen);
+
+      keyid_from_fingerprint (ctrl,
+                              sig->rev_subject_info->fpr,
+                              sig->rev_subject_info->fprlen, keyid);
+
+      /* The keyblock might not be found if the revocation subject
+       * is not in the local keyring. This should not be an error. */
+      if (rc)
+        {
+          if (!silent)
+            log_error (_("key %s: can't locate keyblock: %s\n"),
+                       keystr (keyid), gpg_strerror (rc));
+          rc = 0;
+          goto leave;
+        }
+
+      rc = keydb_get_keyblock (hd, &keyblock);
+      if (rc)
+        {
+          log_error (_("key %s: can't read keyblock: %s\n"),
+                     keystr (keyid), gpg_strerror (rc));
+          goto leave;
+        }
+
+      pk = keyblock->pkt->pkt.public_key;
     }
-  else if (rc )
+  else
     {
-      log_error (_("key %s: public key not found: %s\n"),
-                 keystr(keyid), gpg_strerror (rc));
-      goto leave;
-    }
+      log_info ("we may have an old standalone revocation signature\n");
 
-  /* Read the original keyblock. */
-  hd = keydb_new (ctrl);
-  if (!hd)
-    {
-      rc = gpg_error_from_syserror ();
-      goto leave;
-    }
+      /* Path without intended recipient fingerprint subpacket. */
+      keyid[0] = node->pkt->pkt.signature->keyid[0];
+      keyid[1] = node->pkt->pkt.signature->keyid[1];
 
-  rc = keydb_lock (hd);
-  if (rc)
-    {
-      keydb_release (hd);
-      goto leave;
-    }
+      pk_buffer = xmalloc_clear( sizeof *pk_buffer );
+      pk = pk_buffer;
 
-  {
-    byte afp[MAX_FINGERPRINT_LEN];
-    size_t an;
+      rc = get_pubkey (ctrl, pk, keyid);
+      if (gpg_err_code (rc) == GPG_ERR_NO_PUBKEY)
+        {
+          if (!silent)
+            log_error (_("key %s: no public key -"
+                         " can't apply revocation certificate\n"), keystr(keyid));
+          rc = 0;
+          goto leave;
+        }
+      else if (rc )
+        {
+          log_error (_("key %s: public key not found: %s\n"),
+                     keystr(keyid), gpg_strerror (rc));
+          goto leave;
+        }
 
-    fingerprint_from_pk (pk, afp, &an);
-    rc = keydb_search_fpr (hd, afp, an);
-  }
-  if (rc)
-    {
-      log_error (_("key %s: can't locate original keyblock: %s\n"),
-                 keystr(keyid), gpg_strerror (rc));
-      goto leave;
-    }
-  rc = keydb_get_keyblock (hd, &keyblock );
-  if (rc)
-    {
-      log_error (_("key %s: can't read original keyblock: %s\n"),
-                 keystr(keyid), gpg_strerror (rc));
-      goto leave;
+      /* Read the original keyblock. */
+      hd = keydb_new (ctrl);
+      if (!hd)
+        {
+          rc = gpg_error_from_syserror ();
+          goto leave;
+        }
+
+      rc = keydb_lock (hd);
+      if (rc)
+        {
+          keydb_release (hd);
+          goto leave;
+        }
+
+      {
+        byte afp[MAX_FINGERPRINT_LEN];
+        size_t an;
+
+        fingerprint_from_pk (pk, afp, &an);
+        rc = keydb_search_fpr (hd, afp, an);
+      }
+      if (rc)
+        {
+          log_error (_("key %s: can't locate original keyblock: %s\n"),
+                     keystr(keyid), gpg_strerror (rc));
+          goto leave;
+        }
+      rc = keydb_get_keyblock (hd, &keyblock );
+      if (rc)
+        {
+          log_error (_("key %s: can't read original keyblock: %s\n"),
+                     keystr(keyid), gpg_strerror (rc));
+          goto leave;
+        }
     }
 
   /* it is okay, that node is not in keyblock because
@@ -3727,7 +3788,13 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
     case GPG_ERR_UNUSABLE_PUBKEY: sigrc = '?'; break;
     default:                      sigrc = '%'; break;
     }
-  if (rc )
+  if (gpg_err_code (rc) == GPG_ERR_CERT_REVOKED)
+    {
+      log_info ("key %s: already revoked: %s", keystr (keyid), gpg_strerror(rc));
+      rc = 0;
+      goto leave;
+    }
+  else if (rc)
     {
       if (!silent)
         log_error (_("key %s: invalid revocation certificate"
@@ -3786,7 +3853,7 @@ import_revoke_cert (ctrl_t ctrl, kbnode_t node, unsigned int options,
 
   keydb_release (hd);
   release_kbnode( keyblock );
-  free_public_key( pk );
+  free_public_key( pk_buffer );
   return rc;
 }
 

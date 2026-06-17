@@ -1713,6 +1713,20 @@ dump_sig_subpkt (int hashed, int type, int critical,
             }
         }
       break;
+    case SIGSUBPKT_INT_RCP_FPR:
+      if (length >= 21)
+        {
+          char *tmp;
+          es_fprintf (listfp, "intended recipient (revocation subject) fpr v%d ",
+                      buffer[0]);
+          tmp = bin2hex (buffer+1, length -1, NULL);
+          if (tmp)
+            {
+              es_fputs (tmp, listfp);
+              xfree (tmp);
+            }
+        }
+      break;
     case SIGSUBPKT_NOTATION:
       {
 	es_fputs ("notation: ", listfp);
@@ -2391,6 +2405,27 @@ parse_signature (IOBUF inp, int pkttype, unsigned long pktlen,
       else if (!(sig->pubkey_algo >= 100 && sig->pubkey_algo <= 110)
 	       && opt.verbose > 1 && !glo_ctrl.silence_parse_warnings)
 	log_info ("signature packet without keyid\n");
+
+      /* Get the intended recipient (revocation subject) fpr. */
+      p = parse_sig_subpkt (sig, 1, SIGSUBPKT_INT_RCP_FPR, &len);
+      if (p && len == 21 && p[0] == 4)
+        {
+          sig->rev_subject_info = xmalloc_clear (sizeof *sig->rev_subject_info);
+
+          sig->rev_subject_info->fprlen = 20;
+          memcpy (sig->rev_subject_info->fpr, p + 1, 20);
+	}
+      else if (p && len == 33 && p[0] == 5)
+        {
+          sig->rev_subject_info = xmalloc_clear (sizeof *sig->rev_subject_info);
+
+          sig->rev_subject_info->fprlen = 32;
+          memcpy (sig->rev_subject_info->fpr, p + 1, 32);
+	}
+      else
+        {
+         sig->rev_subject_info = NULL;
+        }
 
       p = parse_sig_subpkt (sig, 1, SIGSUBPKT_SIG_EXPIRE, NULL);
       if (p && buf32_to_u32 (p))

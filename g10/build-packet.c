@@ -1500,6 +1500,18 @@ build_sig_subpkt_from_sig (PKT_signature *sig, PKT_public_key *pksk,
 	build_sig_subpkt( sig, SIGSUBPKT_SIG_EXPIRE | SIGSUBPKT_FLAG_CRITICAL,
 			  buf, 4 );
       }
+
+    /* Add fpr of the to-be-revoked key in an intended recipient fpr subpacket. */
+    if (IS_KEY_REV (sig))
+      {
+        log_assert (sizeof buf+1 >= sig->rev_subject_info->fprlen);
+
+        buf[0] = sig->rev_subject_info->fprlen == 20? 4:
+          sig->rev_subject_info->fprlen == 32? 5 : 0;
+
+        memcpy(buf+1, sig->rev_subject_info->fpr, sig->rev_subject_info->fprlen);
+        build_sig_subpkt (sig, SIGSUBPKT_INT_RCP_FPR, buf, fprlen + 1);
+      }
 }
 
 void

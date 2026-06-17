@@ -114,6 +114,8 @@ free_seckey_enc( PKT_signature *sig )
   xfree(sig->hashed);
   xfree(sig->unhashed);
 
+  /* Do not forget to update copy_signature() too. */
+  xfree(sig->rev_subject_info);
   xfree (sig->signers_uid);
 
   xfree(sig);
@@ -304,6 +306,9 @@ copy_public_key (PKT_public_key *d, PKT_public_key *s)
 
 
 
+/* When modifying the signature struct adjust copy_signature()
+ * such that the changes are considered too (e.g. pointers are set to NULL
+ * if they are not copied. */
 PKT_signature *
 copy_signature( PKT_signature *d, PKT_signature *s )
 {
@@ -329,6 +334,15 @@ copy_signature( PKT_signature *d, PKT_signature *s )
 	d->numrevkeys=0;
 	parse_revkeys(d);
       }
+
+    if (s->rev_subject_info)
+      {
+        d->rev_subject_info = xmalloc (sizeof *d->rev_subject_info);
+        memcpy (d->rev_subject_info, s->rev_subject_info, sizeof *d->rev_subject_info);
+      }
+    else
+      d->rev_subject_info = NULL;
+
     return d;
 }
 

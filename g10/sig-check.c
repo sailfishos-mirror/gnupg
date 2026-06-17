@@ -776,7 +776,7 @@ check_revocation_keys (ctrl_t ctrl, PKT_public_key *pk, PKT_signature *sig)
 
   /* Is the issuer of the sig one of our revokers? */
   if (!pk->revkey && pk->numrevkeys)
-     BUG();
+    BUG();
 
   for (i=0; i < pk->numrevkeys; i++)
     {
@@ -1196,8 +1196,37 @@ check_key_signature2 (ctrl_t ctrl,
 
       /* Is it a designated revoker? */
       if (keyid[0] != sig->keyid[0] || keyid[1] != sig->keyid[1])
-        rc = check_revocation_keys (ctrl, pk, sig);
-      else
+        {
+          /* In order to access flags we have to get the PK from the keyring
+           * and cannot use the keyblock. */
+          PKT_public_key *pk_from_keydb;
+          pk_from_keydb = xmalloc_clear (sizeof *pk_from_keydb);
+          rc = get_pubkey (ctrl, pk_from_keydb, keyid);
+          if (gpg_err_code (rc) == GPG_ERR_NO_PUBKEY)
+            {
+              log_error (_("key %s: no public key -"
+                           " can't check revocation signature.\n"),
+                         keystr (keyid));
+            }
+          else if (rc) {
+            log_error ("key %s: can't find public key of revocation sig"
+                       "in keyring: %s\n",
+                       keystr (keyid), gpg_strerror (rc));
+          }
+
+          /* No need to check an already revoked key. */
+          if (pk_from_keydb->flags.revoked)
+            {
+              rc = GPG_ERR_CERT_REVOKED;
+            }
+          else {
+            rc = check_revocation_keys (ctrl, pk_from_keydb, sig);
+          }
+
+          free_public_key (pk_from_keydb);
+          pk_from_keydb = NULL;
+        }
+      else /* Here: Revocation self-signatures. */
         {
           rc = check_signature_metadata_validity (pk, sig,
                                                   r_expired, NULL);

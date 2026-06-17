@@ -242,6 +242,14 @@ struct revocation_key {
   byte fpr[MAX_FINGERPRINT_LEN];
 };
 
+/* Information about the to be revoked key of a revocation signature. */
+struct rev_subject_info_s {
+  /* The length of the fingerprint. */
+  byte fprlen;
+  /* Fingerprint of the to be revoked key. */
+  byte fpr[MAX_FINGERPRINT_LEN];
+
+};
 
 /* A signature packet (RFC 4880, Section 5.2).  Only a subset of these
    fields are directly serialized (these are marked as such); the rest
@@ -293,7 +301,7 @@ typedef struct
   char *signers_uid;         /* Malloced value of the SIGNERS_UID
                               * subpacket or NULL.  This string has
                               * already been sanitized.  */
-  subpktarea_t *hashed;      /* All subpackets with hashed data (v4 only). */
+  subpktarea_t *hashed;      /* All subpackets with hashed data (v4, v5 only). */
   subpktarea_t *unhashed;    /* Ditto for unhashed data. */
   /* First 2 bytes of the digest.  (Serialized.  Note: this is not
      automatically filled in when serializing a signature!)  */
@@ -305,6 +313,8 @@ typedef struct
      the digest's value has not been saved here.  */
   byte digest[512 / 8];
   int digest_len;
+  /* Info about the to-be-revoked key in a revocation signature.*/
+  struct rev_subject_info_s *rev_subject_info;
 } PKT_signature;
 
 #define ATTRIB_IMAGE 1
