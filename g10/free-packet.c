@@ -328,6 +328,9 @@ copy_signature( PKT_signature *d, PKT_signature *s )
     d->unhashed = cp_subpktarea (s->unhashed);
     if (s->signers_uid)
       d->signers_uid = xstrdup (s->signers_uid);
+    else
+      d->signers_uid = NULL;
+
     if(s->numrevkeys)
       {
 	d->revkey=NULL;
