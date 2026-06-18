@@ -1447,7 +1447,14 @@ gpgsm_decrypt (ctrl_t ctrl, estream_t in_fp, estream_t out_fp)
                 }
               if (DBG_CRYPTO)
                 log_printhex (authtag, authtaglen, "Authtag ...:");
-              rc = gcry_cipher_checktag (dfparm.hd, authtag, authtaglen);
+              if (authtaglen < 12)
+                {
+                  log_info ("authentication tag is too short (%zu octets)\n",
+                            authtaglen);
+                  rc = gpg_error (GPG_ERR_CHECKSUM);
+                }
+              else
+                rc = gcry_cipher_checktag (dfparm.hd, authtag, authtaglen);
               xfree (authtag);
               if (rc)
                 log_error ("data is not authentic: %s\n", gpg_strerror (rc));
