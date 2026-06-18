@@ -927,7 +927,7 @@ gnupg_allow_set_foregound_window (pid_t pid)
 #ifdef HAVE_W32_SYSTEM
 static int
 w32_wait_when_sharing_violation (int wtime, const char *fname)
-{
+{                               /* in milliseconds */
   int ec = GetLastError ();
 
   if (ec != ERROR_SHARING_VIOLATION)
@@ -954,7 +954,7 @@ w32_wait_when_sharing_violation (int wtime, const char *fname)
     log_info (_("waiting for file '%s' to become accessible ...\n"),
               fname);
 
-  gnupg_usleep (wtime);
+  gnupg_usleep ((unsigned int)wtime*1000);
   return wtime;  /* Note: WTIME is always > 0 */
 }
 #endif /*HAVE_W32_SYSTEM*/
