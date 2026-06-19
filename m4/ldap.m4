@@ -46,14 +46,14 @@ if test x$_ldap_with != xno ; then
 #else
 #include <ldap.h>
 #endif
-]],[[ldap_open("foobar",1234);]])],
-                [gnupg_cv_func_ldap_init=yes],[gnupg_cv_func_ldap_init=no])
-    AC_MSG_RESULT([$gnupg_cv_func_ldap_init])
+]],[[ldap_err2string(42);]])],
+    [gnupg_cv_func_ldap_errfunc=yes],[gnupg_cv_func_ldap_errfunc=no])
+    AC_MSG_RESULT([$gnupg_cv_func_ldap_errfunc])
 
-    if test $gnupg_cv_func_ldap_init = no; then
+    if test $gnupg_cv_func_ldap_errfunc = no; then
       AC_MSG_CHECKING([whether I can make LDAP be sane with lber.h])
       AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <lber.h>
-#include <ldap.h>]],[[ldap_open("foobar",1234);]])],
+#include <ldap.h>]],[[ldap_err2string(42);]])],
          [gnupg_cv_func_ldaplber_init=yes],[gnupg_cv_func_ldaplber_init=no])
       AC_MSG_RESULT([$gnupg_cv_func_ldaplber_init])
     fi
@@ -62,14 +62,14 @@ if test x$_ldap_with != xno ; then
        AC_DEFINE(NEED_LBER_H,1,[Define if the LDAP library requires including lber.h before ldap.h])
     fi
 
-    if test "$gnupg_cv_func_ldap_init" = yes || \
+    if test "$gnupg_cv_func_ldap_errfunc" = yes || \
         test "$gnupg_cv_func_ldaplber_init" = yes ; then
        LDAPLIBS="$LDAP_LDFLAGS $MY_LDAPLIBS"
        GPGKEYS_LDAP="gpg2keys_ldap$EXEEXT"
        gnupg_have_ldap=yes
 
        AC_CHECK_FUNCS(ldap_get_option ldap_set_option)
-       # The extra test for ldap_start_tls_sA is for W32 because 
+       # The extra test for ldap_start_tls_sA is for W32 because
        # that is the actual function in the library.
        AC_CHECK_FUNCS(ldap_start_tls_s ldap_start_tls_sA)
 
